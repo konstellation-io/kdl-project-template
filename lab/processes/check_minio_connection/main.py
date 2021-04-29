@@ -2,16 +2,20 @@ from pathlib import Path
 import os
 
 
-# DIR_REPO = Path.cwd().parent.parent.parent
-# DIR_DATA = DIR_REPO.parent / "shared-storage" / "kdl-project-template" / "data"
-
 PATH_MINIO_DATA = os.getenv("MINIO_DATA_FOLDER")  # from Drone
-PATH_TEST_FILE = Path(DIR_DATA) / "raw" / "test.txt"
+PATH_TEST_FILE = Path(PATH_MINIO_DATA) / "raw" / "test.txt"
+
+
+def read_text_file(filepath):
+    
+    with open(filepath, 'r') as file:
+        text = file.read()
+    
+    return text
 
 
 if __name__ == "__main__":
 
-    with open(PATH_TEST_FILE, 'r') as file:
-        text = file.read()
-    
+    text = read_text_file(PATH_TEST_FILE)
     print(text)
+    
