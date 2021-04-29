@@ -1,3 +1,6 @@
+"""A simple script to check that the connection between CI/CD runner (e.g. Drone)
+and the shared storage volume on Minio is working correctly."""
+
 from pathlib import Path
 import os
 
