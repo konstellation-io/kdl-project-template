@@ -18,13 +18,13 @@ kind: pipeline
 type: kubernetes
 name: test-components
 
-trigger:
-  ref:
-  - refs/tags/check-components-*
+# trigger:
+#   ref:
+#   - refs/tags/check-components-*
 
 environment:
   PYTHONPATH: /drone/lab/lib
-  MINIO_DATA_FOLDER: /shared-storage/ny-price-estimator/data
+  MINIO_DATA_FOLDER: /shared-storage/kdl-project-template/data
      
 steps:
   - name: check_minio_connection
