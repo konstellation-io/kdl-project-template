@@ -61,7 +61,6 @@ volumes:
     claim:
       name: received-data-claim
 
-
 ---
 
 kind: pipeline
