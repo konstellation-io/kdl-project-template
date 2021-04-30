@@ -31,7 +31,7 @@ environment:
      
 steps:
   - name: check_minio_connection
-    image: terminus7/sci-toolkit-runner:1.1.0
+    image: terminus7/sci-toolkit-runner:1.1.2
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
@@ -44,7 +44,7 @@ steps:
           path: /shared-storage
 
   - name: check_mlflow_connection
-    image: terminus7/sci-toolkit-runner:1.1.0
+    image: terminus7/sci-toolkit-runner:1.1.2
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
@@ -76,7 +76,7 @@ environment:
      
 steps:
   - name: sklearn-example
-    image: terminus7/sci-toolkit-runner:1.1.0
+    image: terminus7/sci-toolkit-runner:1.1.2
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
