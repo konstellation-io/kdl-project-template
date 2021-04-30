@@ -24,6 +24,9 @@ MLFLOW_RUN_NAME = "sklearn_example"
 
 if __name__ == "__main__":
 
+    import sklearn
+    print("sklearn:", sklearn.__version__)
+
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
     
