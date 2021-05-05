@@ -6,9 +6,8 @@ import os
 from matplotlib import pyplot as plt
 import mlflow
 import pandas as pd
-from sklearn.datasets import load_wine
 import seaborn as sns
-
+from sklearn.datasets import load_wine
 from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
@@ -23,9 +22,6 @@ MLFLOW_RUN_NAME = "sklearn_example"
 
 
 if __name__ == "__main__":
-
-    import sklearn
-    print("sklearn:", sklearn.__version__)
 
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
