@@ -35,7 +35,7 @@ RANDOM_SEED = 0
 BATCH_SIZE = 16
 N_WORKERS = 2
 
-EPOCHS = 20
+EPOCHS = 15
 LR = 0.01
 
 DIR_ARTIFACTS = Path("artifacts")
