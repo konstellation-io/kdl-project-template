@@ -18,7 +18,7 @@ import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
 import torchvision
 
-from lib.viz import plot_confusion_matrix, plot_training_history
+from viz import plot_confusion_matrix, plot_training_history
 
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
