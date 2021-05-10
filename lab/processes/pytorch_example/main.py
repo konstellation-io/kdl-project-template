@@ -393,9 +393,4 @@ def main() -> None:
 
 if __name__ == "__main__":
 
-    # Troubleshoot pythonpath issues
-    print("CWD:", os.getcwd())
-    print("ls:", os.listdir())
-
-
     main()

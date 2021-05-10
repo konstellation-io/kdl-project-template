@@ -68,7 +68,7 @@ type: kubernetes
 name: application-examples
 
 environment:
-  PYTHONPATH: "/drone/src/lab"
+  PYTHONPATH: /drone/src/lab
   MINIO_DATA_FOLDER: /shared-storage/kdl-project-template/data
   MLFLOW_URL: http://mlflow-server:5000
   MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
