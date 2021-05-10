@@ -18,7 +18,7 @@ import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
 import torchvision
 
-from viz import plot_confusion_matrix, plot_training_history
+# from viz import plot_confusion_matrix, plot_training_history
 
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
@@ -392,5 +392,10 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+
+    # Troubleshoot pythonpath issues
+    print("CWD:", os.getcwd())
+    print("ls:", os.listdir())
+
 
     main()
