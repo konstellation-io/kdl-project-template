@@ -19,7 +19,6 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 from torchsummary import summary
 from torchvision.utils import make_grid
@@ -36,7 +35,7 @@ BATCH_SIZE = 16
 N_WORKERS = 2
 
 EPOCHS = 15
-LR = 0.01
+LR = 0.001
 
 DIR_ARTIFACTS = Path("artifacts")
 FILEPATH_MODEL = DIR_ARTIFACTS / "convnet.pt"
@@ -410,7 +409,7 @@ def main():
         # Instantiate the ConvNet, loss function and optimizer 
         net = Net()
         loss_fn = nn.CrossEntropyLoss()
-        optimizer = torch.optim.SGD(net.parameters(), lr=LR)
+        optimizer = torch.optim.Adam(net.parameters(), lr=LR)
 
         # Train and validate
         net, df_history, _ = train_and_validate(
