@@ -95,6 +95,7 @@ steps:
         from_secret: minio-key-id
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
+      PYTHONPATH: "/drone/lab/lib"
     commands:
       - python3 lab/processes/pytorch_example/main.py
     volumes:
