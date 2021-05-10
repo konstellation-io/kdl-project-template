@@ -391,7 +391,7 @@ def plot_confusion_matrix(
     cmap: Colormap=plt.cm.Blues, 
     show: bool=True,
     class_names: Union[None, list]=None, 
-    savepath: Union[None, str, Path]) -> None:
+    savepath: Union[None, str, Path]=None) -> None:
     """
     Prints and plots the confusion matrix.
 
