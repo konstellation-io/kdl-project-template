@@ -2,14 +2,10 @@
 This script demonstrates the usage of pytorch within KDL using a simple digit classification (MNIST)
 """
 
-import itertools
 import os
 from pathlib import Path
 from typing import Tuple, Union
 
-from matplotlib import pyplot as plt
-from matplotlib.colors import Colormap
-from matplotlib.ticker import MaxNLocator
 import mlflow
 import numpy as np
 import pandas as pd
@@ -17,14 +13,12 @@ from sklearn.datasets import load_digits
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
-from torchsummary import summary
-from torchvision.utils import make_grid
 import torchvision
-import torchvision.transforms as transforms
+
+from lib.viz import plot_confusion_matrix, plot_training_history
 
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
@@ -64,14 +58,14 @@ def split_data(X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray]:
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-def transform_data(X: np.ndarray, y: np.ndarray, image_size: Tuple=(32, 32)) -> Tuple[torch.Tensor]:
+def transform_data(X: np.ndarray, y: np.ndarray, image_size: Tuple = (32, 32)) -> Tuple[torch.Tensor]:
     """
     Transforms image data as necessary to match the image size specified, and converts arrays to tensors
     """
     # Convert numpy array to torch tensor
     X = torch.tensor(X).float()
     y = torch.tensor(y).float()
-    
+
     # Apply transformation
     transf = torchvision.transforms.Resize(size=image_size)
     X = transf(X)
@@ -89,14 +83,14 @@ def create_dataloader(X: torch.Tensor, y: torch.Tensor, dataloader_args: dict) -
 
 
 def prepare_mnist_data() -> Tuple[DataLoader]:
-    """ 
+    """
     Conducts a series of steps necessary to prepare the MNIST data for training and validation:
     - Loads MNIST image data from sklearn
     - Splits the data into train, val, and test sets
     - Applies transformations as defined in transform_data
-    - Creates DataLoader objects 
+    - Creates DataLoader objects
 
-    Args: 
+    Args:
         (None)
 
     Returns:
@@ -104,7 +98,7 @@ def prepare_mnist_data() -> Tuple[DataLoader]:
     """
     imgs, y = load_mnist_data()
     X_train, X_val, X_test, y_train, y_val, y_test = split_data(X=imgs, y=y)
-    
+
     X_train, y_train = transform_data(X_train, y_train)
     X_val, y_val = transform_data(X_val, y_val)
     X_test, y_test = transform_data(X_test, y_test)
@@ -113,25 +107,25 @@ def prepare_mnist_data() -> Tuple[DataLoader]:
     train_loader = create_dataloader(X_train, y_train, dataloader_args)
     val_loader = create_dataloader(X_val, y_val, dataloader_args)
     test_loader = create_dataloader(X_test, y_test, dataloader_args)
-    
+
     return train_loader, val_loader, test_loader
 
 
 class Net(nn.Module):
-    """ 
+    """
     A simple ConvNet based on https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html
     """
     def __init__(self):
         super(Net, self).__init__()
-        
+
         # 1 input image channel, 6 output channels, 5x5 square convolution kernel
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5)
         self.conv1_bn = nn.BatchNorm2d(6)
-        
+
         # 6 inputs, 16 outputs, 5x5 kernel
         self.conv2 = nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5)
         self.conv2_bn = nn.BatchNorm2d(16)
-        
+
         # Fully connected layers
         self.fc1 = nn.Linear(16 * 5 * 5, 120)  # 5*5 from kernel dimensions
         self.fc1_bn = nn.BatchNorm1d(num_features=120)
@@ -151,7 +145,7 @@ class Net(nn.Module):
         Shape Fc2: torch.Size([16, 84])
         Shape Fc3: torch.Size([16, 10])
         """
-        ## Convolutional layers:
+        # Convolutional layers:
         x = self.conv1(x)
         x = self.conv1_bn(x)
         x = F.relu(x)
@@ -160,23 +154,23 @@ class Net(nn.Module):
         x = self.conv2_bn(x)
         x = F.relu(x)
         x = F.max_pool2d(x, (2, 2))
-                
-        ## Flatten:
+
+        # Flatten:
         x = x.view(-1, self.num_flat_features(x))
 
-        ## Classification (fully-connected) layers:
+        # Classification (fully-connected) layers:
         x = self.fc1(x)
         x = self.fc1_bn(x)
         x = F.relu(x)
-        
+
         x = self.fc2(x)
         x = self.fc2_bn(x)
         x = F.relu(x)
-        
+
         x = self.fc3(x)
-    
+
         return x
-    
+
     def num_flat_features(self, x: torch.Tensor) -> int:
         size = x.size()[1:]  # all dimensions except the batch dimension
         num_features = 1
@@ -185,9 +179,14 @@ class Net(nn.Module):
         return num_features
 
 
-def train_loop(dataloader: DataLoader, model: nn.Module, loss_fn: torch.nn.modules.loss._Loss, optimizer: torch.optim.Optimizer) -> tuple:
+def train_loop(
+    dataloader: DataLoader,
+    model: nn.Module,
+    loss_fn: torch.nn.modules.loss._Loss,
+    optimizer: torch.optim.Optimizer
+        ) -> tuple:
     """
-    Training loop through the dataset for a single epoch of training. 
+    Training loop through the dataset for a single epoch of training.
     Side effect: modifies input objects (model, loss_fn and optimizer) without returning.
 
     Args:
@@ -203,24 +202,24 @@ def train_loop(dataloader: DataLoader, model: nn.Module, loss_fn: torch.nn.modul
     """
     size = len(dataloader.dataset)
     model.train()
-    
+
     train_loss, correct = 0, 0
-    
+
     for X, y in dataloader:
         # Compute prediction and loss
         pred = model(X)
         loss = loss_fn(pred, y.long())
         train_loss += loss.item()
         correct += (pred.argmax(1) == y).type(torch.float).sum().item()
-        
+
         # Backpropagation
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-    
+
     train_loss /= size
     correct /= size
-    
+
     return train_loss, correct
 
 
@@ -241,11 +240,11 @@ def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: torch.nn.modules
     """
     size = len(dataloader.dataset)
     model.eval()
-    
+
     y_true = []
     y_pred = []
     val_loss, correct = 0, 0
-    
+
     with torch.no_grad():
         for X, y in dataloader:
             logits = model(X)
@@ -256,10 +255,10 @@ def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: torch.nn.modules
             y_preds_batch = y_proba.argmax(axis=1)
             y_pred.append(y_preds_batch.tolist())
             y_true.append(y.tolist())
-            
+
     val_loss /= size
     correct /= size
-    
+
     y_pred = flatten_list(y_pred)
     y_true = flatten_list(y_true)
 
@@ -268,22 +267,24 @@ def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: torch.nn.modules
 
 def flatten_list(input_list: list) -> list:
     """
-    Flattens a nested list that contains lists as its elements. 
+    Flattens a nested list that contains lists as its elements.
     Only goes one level deep (i.e. works on lists of lists but not lists of lists of lists).
     """
     return [item for sublist in input_list for item in sublist]
 
 
 def train_and_validate(
-    model: torch.nn.Module, 
-    loss_fn: torch.nn.modules.loss._Loss, 
-    optimizer: torch.optim.Optimizer, 
-    train_loader: DataLoader, 
-    val_loader: DataLoader, 
-    epochs: int, 
-    filepath_model: Union[str, Path]) -> tuple:
+    model: torch.nn.Module,
+    loss_fn: torch.nn.modules.loss._Loss,
+    optimizer: torch.optim.Optimizer,
+    train_loader: DataLoader,
+    val_loader: DataLoader,
+    epochs: int,
+    filepath_model: Union[str, Path]
+        ) -> tuple:
     """
-    Runs model training and validation using the dataloaders provided for the number of epochs specified, saving the best version of the model to specified location.
+    Runs model training and validation using the dataloaders provided for the number of epochs specified,
+    saving the best version of the model to specified location.
 
     Args:
         model: (torch.nn.Module) torch model object to train and validate
@@ -298,7 +299,8 @@ def train_and_validate(
         (tuple):
             (torch.nn.Module): trained model
             (pandas DataFrame): training history metrics
-            (tuple[list]): (y_true, y_pred): lists containing true labels and the labels as predicted by the model for the validation set in last iteration
+            (tuple[list]): (y_true, y_pred): lists containing true labels and the labels as predicted by
+                the model for the validation set in last iteration
     """
     df_history = pd.DataFrame([], columns=['epoch', 'loss', 'val_loss', 'acc', 'val_acc'])
 
@@ -307,13 +309,13 @@ def train_and_validate(
     # Loop through
     for epoch in range(1, epochs+1):
         print(f"Epoch {epoch}\n-------------------------------")
-        
+
         train_loss, train_acc = train_loop(dataloader=train_loader, model=model, loss_fn=loss_fn, optimizer=optimizer)
         print(f"Training set: Accuracy: {(100*train_acc):>0.1f}%, Avg loss: {train_loss:>7f}")
-        
+
         val_loss, val_acc, (y_true, y_pred) = val_loop(dataloader=val_loader, model=model, loss_fn=loss_fn)
         print(f"Validation set: Accuracy: {(100*val_acc):>0.1f}%, Avg loss: {val_loss:>7f} \n")
-        
+
         df_history = df_history.append(
             dict(epoch=epoch, loss=train_loss, val_loss=val_loss, acc=train_acc, val_acc=val_acc), ignore_index=True)
 
@@ -323,123 +325,6 @@ def train_and_validate(
 
     return model, df_history, (y_true, y_pred)
 
-
-def plot_training_history(history: pd.DataFrame, show: bool=True, title: str='', savepath: Union[None, str, Path]=None, accuracy_metric: str='acc') -> None:
-    """
-    Plots training history (validation and loss) for a model, given a table of metrics per epoch.
-
-    Args:
-        history: (pd.DataFrame) a data frame containing data for each epoch for accuracy for the following quantities:
-            - 'acc': training accuracy, 
-            - 'loss':  training loss,
-            - 'val_acc': validation accuracy,
-            - 'val_loss': validation loss
-        show: (bool) show plot if True
-        title: (str) Title of the plot
-        savepath: (str or Path, or None) file path to save resulting plot. If None, omit saving
-        accuracy_metric: (str) name of the accuracy metric in the input model history, if different from 'acc'
-
-    Returns:
-        (None or tuple of (fig, axes))
-    """
-    loss = history['loss']
-    val_loss = history['val_loss']
-
-    acc = history[accuracy_metric]
-    val_acc = history[f"val_{accuracy_metric}"]
-
-    assert len(acc) == len(val_acc) == len(loss) == len(
-        val_loss), "All metrics should have the same number of measurements (one for each epoch)."
-
-    epochs = [int(n) for n in range(len(acc))]
-
-    fig, ax = plt.subplots(1, 1)
-
-    ax.plot(epochs, acc, c='r', lw=1, label='Train accuracy')
-    ax.plot(epochs, val_acc, c='r', lw=2, label='Validation accuracy')
-    ax.set_xlabel('Epoch')
-    plt.xticks(epochs)
-
-    ax.set_ylim(0.5, 1.01)
-    ax.set_ylabel('Accuracy', color='r')
-    ax.tick_params(axis='y', labelcolor='r')
-
-    ax2 = ax.twinx()
-    ax2.plot(epochs, loss, c='b', lw=1, label='Train loss')
-    ax2.plot(epochs, val_loss, c='b', lw=2, label='Validation loss')
-    ax2.set_ylim(0, 1.05 * max(max(loss), max(val_loss)))
-    ax2.set_ylabel('Loss', color='b')
-    ax2.tick_params(axis='y', labelcolor='b')
-
-    ax.legend(loc=6)
-    ax2.legend(loc=5)
-    plt.title(title)
-
-    if savepath:
-        plt.savefig(savepath)
-
-    if show:
-        plt.show()
-
-    plt.close()
-    
-
-def plot_confusion_matrix(
-    cm: np.ndarray, 
-    normalize: bool=True, 
-    title: str='Confusion matrix', 
-    cmap: Colormap=plt.cm.Blues, 
-    show: bool=True,
-    class_names: Union[None, list]=None, 
-    savepath: Union[None, str, Path]=None) -> None:
-    """
-    Prints and plots the confusion matrix.
-
-    Args:
-        cm: (np.array) of shape (2, 2) containing elements of the confusion matrix (order: tn, fp, fn, tp)
-        normalize: (bool) Normalization can be applied by setting normalize = True
-        title: (string) plot title
-        cmap: (pyplot colormap)
-        show: (bool) display resulting plot
-        savepath: (str) destination to save results on disk
-    """
-    assert cm.shape[0] == cm.shape[1], "Confusion matrix not square!"
-
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-
-    vmax = 1 if normalize else np.sum(cm, axis=1).max()
-
-    fig, ax = plt.subplots(figsize=(6, 6))
-
-    ax.imshow(cm, interpolation='nearest', cmap=cmap, vmin=0, vmax=vmax)
-    ax.set_title(title)
-    tick_marks = np.arange(cm.shape[0])
-    if not class_names:
-        class_names = tick_marks
-
-    ax.set_xticks(ticks=tick_marks)
-    ax.set_xticklabels(class_names, rotation=0)
-    ax.set_yticks(ticks=tick_marks)
-    ax.set_yticklabels(class_names, rotation=0)
-
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
-                 horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
-
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.tight_layout()
-
-    if savepath:
-        fig.savefig(savepath)
-        print(f"Saved confusion matrix plot to {savepath}")
-    if show:
-        plt.show()
-    
 
 def main() -> None:
     """
@@ -453,26 +338,26 @@ def main() -> None:
     """
     np.random.seed(RANDOM_SEED)
     torch.manual_seed(RANDOM_SEED)
-    
+
     DIR_ARTIFACTS.mkdir(exist_ok=True)
-    
+
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
-    
+
     with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
 
         # Load the data splits
         train_loader, val_loader, test_loader = prepare_mnist_data()
 
-        # Instantiate the ConvNet, loss function and optimizer 
+        # Instantiate the ConvNet, loss function and optimizer
         net = Net()
         loss_fn = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(net.parameters(), lr=LR)
 
         # Train and validate
         net, df_history, _ = train_and_validate(
-            model=net, loss_fn=loss_fn, optimizer=optimizer, 
-            train_loader=train_loader, val_loader=val_loader,  
+            model=net, loss_fn=loss_fn, optimizer=optimizer,
+            train_loader=train_loader, val_loader=val_loader,
             epochs=EPOCHS, filepath_model=FILEPATH_MODEL)
 
         # Load best version:
@@ -485,7 +370,8 @@ def main() -> None:
         cm = confusion_matrix(y_val_true, y_val_pred)
 
         # Save artifacts
-        plot_confusion_matrix(cm, normalize=False, title="Confusion matrix (validation set)", savepath=FILEPATH_CONF_MATRIX)
+        plot_confusion_matrix(
+            cm, normalize=False, title="Confusion matrix (validation set)", savepath=FILEPATH_CONF_MATRIX)
         plot_training_history(df_history, title="Training history", savepath=FILEPATH_TRAINING_HISTORY)
         df_history.to_csv(FILEPATH_TRAINING_HISTORY_CSV)
 
