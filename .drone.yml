@@ -67,6 +67,10 @@ kind: pipeline
 type: kubernetes
 name: application-examples
 
+trigger:
+  ref:
+  - refs/tags/run-examples-*
+
 environment:
   PYTHONPATH: /drone/src/lab
   MINIO_DATA_FOLDER: /shared-storage/kdl-project-template/data
