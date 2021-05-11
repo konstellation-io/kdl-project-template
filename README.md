@@ -2,6 +2,8 @@
 
 ## Project structure
 
+The project repository has the following directory structure:
+
 ```
 ├── lab
 │   │
@@ -12,7 +14,7 @@
 │   ├── lib       <- Importable functions shared between analysis notebooks and processes scripts
 │   │                (including unit tests)
 │   │
-│   └── processes           <- Source code for reproducible workflow steps, for example:
+│   └── processes           <- Source code for reproducible workflow steps. For example:
 │       ├── process_data   
 │       │   ├── main.py      
 │       │   ├── process_data.py  
@@ -25,9 +27,12 @@
 │   
 ├── goals         <- Acceptance criteria (TBD)
 │   
-├── runtimes       <- Code for generating runtimes for deployment (.krt)
+├── runtimes      <- Code for generating deployment runtimes (.krt)
 │   
-├── .drone.yml     
-│   
+├── .drone.yml
+├── .flake8     
+├── .gitignore
+|
 └── README.md
 ```
+
