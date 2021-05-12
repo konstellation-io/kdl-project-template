@@ -11,14 +11,10 @@ from typing import Tuple, Union
 import mlflow
 import numpy as np
 import pandas as pd
-from sklearn.datasets import load_digits
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import train_test_split
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
-import torchvision
 
 from lib.viz import plot_confusion_matrix, plot_training_history
 
@@ -27,18 +23,14 @@ MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT")
 MLFLOW_RUN_NAME = "pytorch_example"
 
-DIR_ARTIFACTS = Path("artifacts")
+DIR_ARTIFACTS = Path("artifacts")  # Path for temporarily hosting artifacts before logging to MLflow 
 FILEPATH_MODEL = DIR_ARTIFACTS / "convnet.pt"
 FILEPATH_TRAINING_HISTORY = DIR_ARTIFACTS / "training_history.png"
 FILEPATH_TRAINING_HISTORY_CSV = DIR_ARTIFACTS / "training_history.csv"
 FILEPATH_CONF_MATRIX = DIR_ARTIFACTS / "confusion_matrix.png"
 
-# From Drone:
 DIR_DATA = os.getenv("MINIO_DATA_FOLDER")  # From Drone
 DIR_DATA_PROCESSED = Path(DIR_DATA) / "processed"
-
-# From Vscode:
-# DIR_DATA_PROCESSED = Path("temp_processed")
 SAVEPATH_TENSORS = str(DIR_DATA_PROCESSED / "{}.pt")
 
 RANDOM_SEED = 0
