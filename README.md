@@ -42,7 +42,7 @@ The project repository has the following directory structure:
 KDL contains various components that need to be correctly orchestrated and connected. 
 To illustrate their intended usage, we provide two example machine learning pipelines already implemented in KDL. 
 The first example pipeline is a simple classification problem with standard ML models from scikit-learn.
-The second example pipeline is a slightly more complex image classification problem using PyTorch.
+The second example pipeline is an image classification problem addressed with convolutional networks implemented in PyTorch.
 
 ### Scikit-learn example: Wine classification
 
@@ -51,7 +51,7 @@ Based on the [Wine Recognition Dataset](https://scikit-learn.org/stable/datasets
 
 The code for wine classification is in [lab/processes/sklearn_example/main.py](lab/processes/sklearn_example/main.py).
 
-The execution of wine classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml) (for simplicity, we are omitting various additional components, such as the environment variables and the AWS secrets):
+The execution of the wine classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml) (for simplicity, we are omitting various additional components, such as the environment variables and the AWS secrets):
 
 ```yaml
 kind: pipeline
@@ -69,12 +69,13 @@ steps:
       - python3 lab/processes/sklearn_example/main.py
 ```
 
-To trigger pipeline execution on Drone runners, push a tag containing the name matching the trigger (e.g. `run-examples-v1`) to the remote repository.
+To trigger the execution of this pipeline on Drone runners, push a tag containing the name matching the trigger (e.g. in this case, `run-examples-v1`) to the remote repository.
 For more information, see the section Launching experiment runs (Drone) below.
 
 The results of executions are stored in MLflow: 
-in this simple example we are only tracking one parameter (name of the classifier), and one metric (the obtained validation accuracy). 
-The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/sklearn_example/main.py) and with the environment variables in [.drone.yml](.drone.yml). For more information, see the section Logging experiment results (MLflow) below.
+in the simplified example of wine classification, we are only tracking one parameter (name of the classifier), and one metric (the obtained validation accuracy). 
+In a real-world project, you are likely to be tracking many parameters and metrics of interest.
+The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/sklearn_example/main.py) and with the environment variables in [.drone.yml](.drone.yml). For more information, see the section "Logging experiment results (MLflow)" below.
 To see the tracked experiments, visit the MLflow tool UI.
 
 
@@ -87,7 +88,7 @@ In this example pipeline, defined in [lab/processes/pytorch_example/main.py](lab
 
 ## Importing library functions
 
-Reusable functions can be imported from the library (`lib` subdirectory) to avoid code duplication and permit a more organized structuring of the repository.
+Reusable functions can be imported from the library (`lib` subdirectory) to avoid code duplication and to permit a more organized structuring of the repository.
 
 To import library code in notebooks, you may need to add the `lab` directory to PYTHONPATH, for example as follows:
 
@@ -124,13 +125,14 @@ To see a working example, refer to the existing `application-examples` pipeline 
 ## Launching experiment runs (Drone)
 
 To enable full tracability and reproducibility, all executions that generate results or artifacts 
-(e.g. processed datasets, trained models, validation metrics, graphics of model validation, etc.) 
+(e.g. processed datasets, trained models, validation metrics, plots of model validation, etc.) 
 are run on Drone runners instead of the user's Jupyter or Vscode tools. 
 
-This way, any past execution can be traced to the exact version of the code that was run (`VIEW SOURCE </>` in the UI of the Drone run)
+This way, any past execution can always be traced to the exact version of the code that was run (`VIEW SOURCE </>` in the UI of the Drone run)
 and the runs can be reproduced with a click of the button in the UI of the Drone run (`RESTART`).
 
-To launch a pipeline, use a trigger in .drone.yml as shown below:
+The event that launches a pipeline execution is defined by the trigger specified in .drone.yml. 
+An example is shown below:
 
 ```yaml
 trigger:
@@ -138,19 +140,19 @@ trigger:
   - refs/tags/process-data-*
 ```
 
-With this trigger in place, the pipeline will be executed on Drone agents when pushing a tag (matching the pattern specified in the trigger) to the remote repository, for example:
+With this trigger in place, the pipeline will be executed on Drone agents whenever a tag matching the pattern specified in the trigger is pushed to the remote repository, for example:
 
 ```
 git tag process-data-v0
 git push origin process-data-v0 
 ```
 
-If using an external repository (e.g. hosted on Github), a delay in synchronization between Gitea and the mirrored external repo may cause a delay in launching the pipeline on the Drone runners. 
+Note: If using an external repository (e.g. hosted on Github), a delay in synchronization between Gitea and the mirrored external repo may cause a delay in launching the pipeline on the Drone runners. 
 This delay can be overcome by manually forcing a synchronization of the repository in the Gitea UI Settings.
 
 ## Logging experiment results (MLflow)
 
-To compare various experiments between them, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking. Experiment tracking with MLflow enables logging the parameters with which every run was executed and the metrics of interest, as well as any artifacts. 
+To compare various experiments, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking. Experiment tracking with MLflow enables logging the parameters with which every run was executed and the metrics of interest, as well as any artifacts produced by the run. 
 
 The environment variables for connecting to MLflow server are provided in .drone.yml:
 
@@ -158,7 +160,7 @@ The environment variables for connecting to MLflow server are provided in .drone
 environment:
   MLFLOW_URL: http://mlflow-server:5000
   MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
-  MLFLOW_EXPERIMENT: kdl-project-template
+  MLFLOW_EXPERIMENT: {{ ProjectID }}
 ```
 
 The usage of MLflow for experiment tracking is illustrated by the scikit-learn example pipeline in [lab/processes/sklearn_example/main.py](lab/processes/sklearn_example/main.py).
@@ -199,6 +201,6 @@ with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
 
 To compare the executions and vizualise the effect of logged parameters on the logged metrics, 
 you can select the runs you wish to compare in the MLflow UI, select "Compare" and add the desired parameters and metrics to the visualizations provided through the UI. 
-Alternatively, the results can also be queried with the MLflow API: for more information on the latter, see [MLflow documentation on querying runs](https://www.mlflow.org/docs/latest/tracking.html#querying-runs-programmatically).
+Alternatively, the results can also be queried with the MLflow API. For more information on the latter, see [MLflow documentation on querying runs](https://www.mlflow.org/docs/latest/tracking.html#querying-runs-programmatically).
 
 
