@@ -53,9 +53,9 @@ kind: pipeline
 type: kubernetes
 name: pytorch-example
 
-trigger:
-  ref:
-  - refs/tags/run-pytorch-example-*
+# trigger:
+#   ref:
+#   - refs/tags/run-pytorch-example-*
 
 environment:
   PYTHONPATH: /drone/src/lab
