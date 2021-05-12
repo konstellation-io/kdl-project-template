@@ -123,7 +123,30 @@ To see a working example, refer to the existing `application-examples` pipeline 
 
 ## Launching experiment runs (Drone)
 
+To enable full tracability and reproducibility, all executions that generate results or artifacts 
+(e.g. processed datasets, trained models, validation metrics, graphics of model validation, etc.) 
+are run on Drone runners instead of the user's Jupyter or Vscode tools. 
 
+This way, any past execution can be traced to the exact version of the code that was run (`VIEW SOURCE </>`),
+and the runs can be reproduced with a click of the button in the Drone UI (`RESTART`).
+
+To launch a pipeline, use a trigger in .drone.yml as shown below:
+
+```yaml
+trigger:
+  ref:
+  - refs/tags/process-data-*
+```
+
+With this trigger in place, the pipeline will be executed on Drone agents when pushing a tag (matching the pattern specified in the trigger) to the remote repository:
+
+```bash
+git tag process-data-v0
+git push origin process-data-v0 
+```
+
+If using an external repository (e.g. hosted on Github), a delay in synchronization between Gitea and the mirrored external repo may cause a delay in launching the pipeline on the Drone runners. 
+This delay can be overcome by manually forcing a synchronization of the repository in the Gitea UI Settings.
 
 ## Logging experiment results (MLflow)
 
