@@ -16,54 +16,6 @@ get:
 
 kind: pipeline
 type: kubernetes
-name: check-components
-
-trigger:
-  ref:
-  - refs/tags/check-components-*
-
-environment:
-  MINIO_DATA_FOLDER: /shared-storage/kdl-project-template/data
-  MLFLOW_URL: http://mlflow-server:5000
-  MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
-  MLFLOW_EXPERIMENT: kdl-project-template
-     
-steps:
-  - name: check_minio_connection
-    image: terminus7/sci-toolkit-runner:1.1.2
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: minio-key-id
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: minio-secret
-    commands:
-      - python3 lab/processes/check_minio_connection/main.py
-    volumes:
-        - name: shared-storage
-          path: /shared-storage
-
-  - name: check_mlflow_connection
-    image: terminus7/sci-toolkit-runner:1.1.2
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: minio-key-id
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: minio-secret
-    commands:
-      - python3 lab/processes/check_mlflow_connection/main.py
-    volumes:
-        - name: shared-storage
-          path: /shared-storage
-
-volumes:
-  - name: shared-storage
-    claim:
-      name: received-data-claim
-
----
-
-kind: pipeline
-type: kubernetes
 name: application-examples
 
 trigger:
