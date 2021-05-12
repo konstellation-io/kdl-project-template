@@ -34,11 +34,11 @@ FILEPATH_TRAINING_HISTORY_CSV = DIR_ARTIFACTS / "training_history.csv"
 FILEPATH_CONF_MATRIX = DIR_ARTIFACTS / "confusion_matrix.png"
 
 # From Drone:
-# DIR_DATA = os.getenv("MINIO_DATA_FOLDER")  # From Drone
-# DIR_DATA_PROCESSED = Path(DIR_DATA) / "processed"
+DIR_DATA = os.getenv("MINIO_DATA_FOLDER")  # From Drone
+DIR_DATA_PROCESSED = Path(DIR_DATA) / "processed"
 
 # From Vscode:
-DIR_DATA_PROCESSED = Path("temp_processed")
+# DIR_DATA_PROCESSED = Path("temp_processed")
 SAVEPATH_TENSORS = str(DIR_DATA_PROCESSED / "{}.pt")
 
 RANDOM_SEED = 0
