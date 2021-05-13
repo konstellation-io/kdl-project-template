@@ -29,7 +29,7 @@ MLFLOW_RUN_NAME = "pytorch_example_test"
 
 DIR_DATA_PROCESSED = config['paths']['dir_processed']
 DIR_MLFLOW_ARTIFACTS = config['paths']['artifacts_mlflow']
-DIR_ARTIFACTS = config['paths']['artifacts']  # Path for temporarily hosting artifacts before logging to MLflow
+DIR_ARTIFACTS = config['paths']['artifacts_temp']  # Path for temporarily hosting artifacts before logging to MLflow
 RUN_ID = config['testing']['run_id']
 
 FNAME_MODEL = config['filenames']['fname_model']
