@@ -5,7 +5,6 @@ Part 1: Data preparation
 """
 
 import configparser
-import os
 from pathlib import Path
 from typing import Tuple
 
@@ -95,5 +94,5 @@ def prepare_digit_data(dir_output: str) -> None:
 
 if __name__ == "__main__":
 
-    DIR_DATA_PROCESSED.mkdir(exist_ok=True)
+    Path(DIR_DATA_PROCESSED).mkdir(exist_ok=True)
     prepare_digit_data(dir_output=DIR_DATA_PROCESSED)
