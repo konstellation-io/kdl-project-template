@@ -39,3 +39,7 @@ def main():
     print(test_loss)
     print(test_acc)
     print("Test run completed")
+
+
+if __name__ == "__main__":
+    main()
