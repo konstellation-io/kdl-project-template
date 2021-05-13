@@ -30,30 +30,36 @@ FILEPATH_CONF_MATRIX = DIR_ARTIFACTS / "confusion_matrix.png"
 
 def main():
 
+    DIR_ARTIFACTS.mkdir(exist_ok=True)
+
+    mlflow.set_tracking_uri(MLFLOW_URL)
+    mlflow.set_experiment(MLFLOW_EXPERIMENT)
+
     # TODO: Get the best-performing model from MLflow tracking
     # and register the model to MLflow registry
 
-    # Load the saved model
-    net = Net()
-    net.load_state_dict(torch.load(FILEPATH_MODEL))
+    with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
 
-    # Load test data
-    _, _, test_loader = load_data_splits()
+        # Load test data
+        _, _, test_loader = load_data_splits()
 
-    # val_loop with test_loader
-    loss_fn = nn.CrossEntropyLoss()
-    test_loss, test_acc, (y_test_true, y_test_pred) = val_loop(dataloader=test_loader, model=net, loss_fn=loss_fn)
-    cm = confusion_matrix(y_test_true, y_test_pred)
+        # Load the saved model
+        net = Net()
+        net.load_state_dict(torch.load(FILEPATH_MODEL))
+        loss_fn = nn.CrossEntropyLoss()
 
-    plot_confusion_matrix(
-        cm, normalize=False, title="Confusion matrix (validation set)", savepath=FILEPATH_CONF_MATRIX)
+        # Make and score predictions on test data
+        test_loss, test_acc, (y_test_true, y_test_pred) = val_loop(dataloader=test_loader, model=net, loss_fn=loss_fn)
+        cm = confusion_matrix(y_test_true, y_test_pred)
+        plot_confusion_matrix(
+            cm, normalize=False, title="Confusion matrix (validation set)", savepath=FILEPATH_CONF_MATRIX)
 
-    # Log to MLflow:
-    mlflow.log_artifacts(DIR_ARTIFACTS)
-    mlflow.log_metrics(dict(
-        test_loss=test_loss,
-        test_acc=test_acc))
-    print("Test run completed")
+        # Log to MLflow:
+        mlflow.log_artifacts(DIR_ARTIFACTS)
+        mlflow.log_metrics(dict(
+            test_loss=test_loss,
+            test_acc=test_acc))
+        print("Test run completed")
 
 
 if __name__ == "__main__":
