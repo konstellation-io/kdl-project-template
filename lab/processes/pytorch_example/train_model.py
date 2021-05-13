@@ -23,7 +23,7 @@ from lib.viz import plot_confusion_matrix, plot_training_history
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT")
-MLFLOW_RUN_NAME = "pytorch_example"
+MLFLOW_RUN_NAME = "pytorch_example_train"
 
 DIR_ARTIFACTS = Path("artifacts")  # Path for temporarily hosting artifacts before logging to MLflow 
 FILEPATH_MODEL = DIR_ARTIFACTS / "convnet.pt"
