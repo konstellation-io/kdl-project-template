@@ -17,7 +17,7 @@ from processes.pytorch_example.train_model import load_data_splits, Net, val_loo
 from lib.viz import plot_confusion_matrix
 
 
-PATH_CONFIG = Path("processes") / "pytorch_example" / "config.ini"
+PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
 config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
