@@ -35,7 +35,7 @@ RUN_ID = config['testing']['run_id']
 FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_model']
 
-FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / RUN_ID / "artifacts" / FNAME_MODEL
+FILEPATH_MODEL = Path(DIR_MLFLOW_ARTIFACTS) / RUN_ID / "artifacts" / FNAME_MODEL
 FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
 
 
@@ -48,7 +48,7 @@ def main():
     - Logs test metrics to MLflow
     """
 
-    DIR_ARTIFACTS.mkdir(exist_ok=True)
+    Path(DIR_ARTIFACTS).mkdir(exist_ok=True)
 
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
