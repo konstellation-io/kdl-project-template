@@ -4,6 +4,7 @@ Demonstrating the usage of PyTorch within KDL, solving a simple digit image clas
 Part 3: Model testing
 """
 
+import configparser
 import os
 from pathlib import Path
 
@@ -16,19 +17,35 @@ from processes.pytorch_example.train_model import load_data_splits, Net, val_loo
 from lib.viz import plot_confusion_matrix
 
 
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT")
+
 MLFLOW_RUN_NAME = "pytorch_example_test"
 
-DIR_DATA = Path(os.getenv("MINIO_DATA_FOLDER"))
-DIR_DATA_PROCESSED = DIR_DATA / "processed"
-DIR_MLFLOW_ARTIFACTS = DIR_DATA.parent / "mlflow-artifacts"
-FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
-DIR_ARTIFACTS = Path("artifacts")  # Path for temporarily hosting artifacts before logging to MLflow
-FILEPATH_CONF_MATRIX = DIR_ARTIFACTS / "confusion_matrix.png"
+DIR_DATA_PROCESSED = config['paths']['dir_processed']
+DIR_MLFLOW_ARTIFACTS = config['paths']['artifacts_mlflow']
+DIR_ARTIFACTS = config['paths']['artifacts']  # Path for temporarily hosting artifacts before logging to MLflow
+RUN_ID = config['testing']['run_id']
+
+FNAME_MODEL = config['filenames']['fname_model']
+FNAME_CONF_MAT = config['filenames']['fname_model']
+
+FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / RUN_ID / "artifacts" / FNAME_MODEL
+FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
 
 
 def main():
+    """
+    The main function of the example Pytorch model testing script
+
+    - Loads a ConvNet model trained and saved by train_model.py
+    - Applies the trained model on test data loaded from Minio
+    - Logs test metrics to MLflow
+    """
 
     DIR_ARTIFACTS.mkdir(exist_ok=True)
 
