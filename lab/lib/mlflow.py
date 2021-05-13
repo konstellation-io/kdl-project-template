@@ -2,6 +2,7 @@
 Reusable functions using the MLflow API
 """
 
+import mlflow
 from mlflow.tracking import MlflowClient
 from mlflow.entities import ViewType
 
