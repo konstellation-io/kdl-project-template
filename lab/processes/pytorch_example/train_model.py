@@ -11,11 +11,13 @@ from typing import Tuple, Union
 import mlflow
 import numpy as np
 import pandas as pd
+from sklearn.metrics import confusion_matrix
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
 
+from lib.utils import flatten_list
 from lib.viz import plot_confusion_matrix, plot_training_history
 
 
@@ -31,7 +33,7 @@ FILEPATH_CONF_MATRIX = DIR_ARTIFACTS / "confusion_matrix.png"
 
 DIR_DATA = os.getenv("MINIO_DATA_FOLDER")  # From Drone
 DIR_DATA_PROCESSED = Path(DIR_DATA) / "processed"
-SAVEPATH_TENSORS = str(DIR_DATA_PROCESSED / "{}.pt")
+SAVEPATH_TENSORS = str(DIR_DATA_PROCESSED / "{}.pt")  # TODO: Replace with config to avoid duplication
 
 RANDOM_SEED = 0
 BATCH_SIZE = 16
@@ -154,7 +156,7 @@ class Net(nn.Module):
 def train_loop(
     dataloader: DataLoader,
     model: nn.Module,
-    loss_fn: torch.nn.modules.loss._Loss,
+    loss_fn: nn.modules.loss._Loss,
     optimizer: torch.optim.Optimizer
         ) -> tuple:
     """
@@ -195,7 +197,7 @@ def train_loop(
     return train_loss, correct
 
 
-def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: torch.nn.modules.loss._Loss) -> tuple:
+def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: nn.modules.loss._Loss) -> tuple:
     """
     Validation loop through the dataset.
 
@@ -237,17 +239,9 @@ def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: torch.nn.modules
     return val_loss, correct, (y_true, y_pred)
 
 
-def flatten_list(input_list: list) -> list:
-    """
-    Flattens a nested list that contains lists as its elements.
-    Only goes one level deep (i.e. works on lists of lists but not lists of lists of lists).
-    """
-    return [item for sublist in input_list for item in sublist]
-
-
 def train_and_validate(
-    model: torch.nn.Module,
-    loss_fn: torch.nn.modules.loss._Loss,
+    model: nn.Module,
+    loss_fn: nn.modules.loss._Loss,
     optimizer: torch.optim.Optimizer,
     train_loader: DataLoader,
     val_loader: DataLoader,
