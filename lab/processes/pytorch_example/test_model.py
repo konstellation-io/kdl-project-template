@@ -29,7 +29,7 @@ MLFLOW_RUN_NAME = "pytorch_example_test"
 
 DIR_DATA_PROCESSED = config['paths']['dir_processed']
 # DIR_MLFLOW_ARTIFACTS = config['paths']['artifacts_mlflow']
-DIR_MLFLOW_ARTIFACTS = Path(DIR_DATA_PROCESSED.parent.parent) / "mlflow-artifacts"
+DIR_MLFLOW_ARTIFACTS = Path(DIR_DATA_PROCESSED).parent.parent / "mlflow-artifacts"
 DIR_ARTIFACTS = config['paths']['artifacts_temp']  # Path for temporarily hosting artifacts before logging to MLflow
 
 # FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
