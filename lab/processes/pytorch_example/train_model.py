@@ -4,9 +4,10 @@ Demonstrating the usage of PyTorch within KDL, solving a simple digit image clas
 Part 2: Model training
 """
 
+import configparser
 import os
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Union
 
 import mlflow
 import numpy as np
@@ -21,19 +22,23 @@ from lib.utils import flatten_list
 from lib.viz import plot_confusion_matrix, plot_training_history
 
 
+PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
+config = configparser.ConfigParser()
+config.read(PATH_CONFIG)
+
+
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT")
 MLFLOW_RUN_NAME = "pytorch_example_train"
 
-DIR_ARTIFACTS = Path("artifacts")  # Path for temporarily hosting artifacts before logging to MLflow 
-FILEPATH_MODEL = DIR_ARTIFACTS / "convnet.pt"
+DIR_ARTIFACTS = Path(config['paths']['artifacts_temp'])  # Path for temporarily hosting artifacts before logging to MLflow
+FNAME_MODEL = config['filenames']['fname_model']
+FILEPATH_MODEL = DIR_ARTIFACTS / FNAME_MODEL
 FILEPATH_TRAINING_HISTORY = DIR_ARTIFACTS / "training_history.png"
 FILEPATH_TRAINING_HISTORY_CSV = DIR_ARTIFACTS / "training_history.csv"
 FILEPATH_CONF_MATRIX = DIR_ARTIFACTS / "confusion_matrix.png"
 
-DIR_DATA = os.getenv("MINIO_DATA_FOLDER")  # From Drone
-DIR_DATA_PROCESSED = Path(DIR_DATA) / "processed"
-SAVEPATH_TENSORS = str(DIR_DATA_PROCESSED / "{}.pt")  # TODO: Replace with config to avoid duplication
+DIR_DATA_PROCESSED = config['paths']['dir_processed']
 
 RANDOM_SEED = 0
 BATCH_SIZE = 16
@@ -68,7 +73,7 @@ def load_data_splits():
     # Load tensors from preprocessed data directory on Minio
     data = dict()
     for fname in ["X_train", "X_val", "X_test", "y_train", "y_val", "y_test"]:
-        fpath = SAVEPATH_TENSORS.format(fname)
+        fpath = f"{DIR_DATA_PROCESSED}/{fname}.pt"
         data[fname] = torch.load(fpath)
     
     # Convert tensors to dataloaders
