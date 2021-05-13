@@ -31,16 +31,20 @@ DIR_DATA_PROCESSED = config['paths']['dir_processed']
 DIR_MLFLOW_ARTIFACTS = Path(DIR_DATA_PROCESSED).parent.parent / "mlflow-artifacts"
 DIR_ARTIFACTS = config['paths']['artifacts_temp']  # Path for temporarily hosting artifacts before logging to MLflow
 
-FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
+# FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
 
 RUN_ID = config['testing']['run_id']
-
-# FNAME_MODEL = config['filenames']['fname_model']
+FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_conf_mat']
 
-# FILEPATH_MODEL = Path(DIR_MLFLOW_ARTIFACTS) / RUN_ID / "artifacts" / FNAME_MODEL
+FILEPATH_MODEL = Path(DIR_MLFLOW_ARTIFACTS) / RUN_ID / "artifacts" / FNAME_MODEL
 FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
 
+
+## Works:
+# /shared-storage/kdl-project-template/mlflow-artifacts/d8a35d1dfdb6407b89dc851ffac61b97/artifacts/convnet.pt
+
+## Doesn't work:
 
 def main():
     """
@@ -50,7 +54,6 @@ def main():
     - Applies the trained model on test data loaded from Minio
     - Logs test metrics to MLflow
     """
-
     Path(DIR_ARTIFACTS).mkdir(exist_ok=True)
 
     mlflow.set_tracking_uri(MLFLOW_URL)
