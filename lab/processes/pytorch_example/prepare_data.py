@@ -4,6 +4,7 @@ Demonstrating the usage of PyTorch within KDL, solving a simple digit image clas
 Part 1: Data preparation
 """
 
+import configparser
 import os
 from pathlib import Path
 from typing import Tuple
@@ -15,15 +16,11 @@ import torch
 import torchvision
 
 
-DIR_ARTIFACTS = Path("artifacts")
+PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
+config = configparser.ConfigParser()
+config.read(PATH_CONFIG)
 
-# From Drone:
-DIR_DATA = os.getenv("MINIO_DATA_FOLDER")  # From Drone
-DIR_DATA_PROCESSED = Path(DIR_DATA) / "processed"
-
-# From Vscode:
-# DIR_DATA_PROCESSED = Path("temp_processed")
-SAVEPATH_TENSORS = str(DIR_DATA_PROCESSED / "{}.pt")
+DIR_DATA_PROCESSED = config['paths']['dir_processed']
 
 RANDOM_STATE = 42
 
@@ -62,7 +59,7 @@ def transform_data(X: np.ndarray, y: np.ndarray, image_size: Tuple = (32, 32)) -
     return X, y
 
 
-def prepare_digit_data(savepath: str) -> None:
+def prepare_digit_data(dir_output: str) -> None:
     """
     Conducts a series of steps necessary to prepare the digit data for training and validation:
     - Loads digit image data from sklearn
@@ -88,15 +85,15 @@ def prepare_digit_data(savepath: str) -> None:
     X_test, y_test = transform_data(X_test, y_test)
 
     # Save processed data
-    torch.save(X_train, savepath.format("X_train"))
-    torch.save(y_train, savepath.format("y_train"))
-    torch.save(X_val, savepath.format("X_val"))
-    torch.save(y_val, savepath.format("y_val"))
-    torch.save(X_test, savepath.format("X_test"))
-    torch.save(y_test, savepath.format("y_test"))
+    torch.save(X_train, Path(dir_output) / "X_train.pt")
+    torch.save(y_train, Path(dir_output) / "y_train.pt")
+    torch.save(X_val, Path(dir_output) / "X_val.pt")
+    torch.save(y_val, Path(dir_output) / "y_val.pt")
+    torch.save(X_test, Path(dir_output) / "X_test.pt")
+    torch.save(y_test, Path(dir_output) / "y_test.pt")
 
 
 if __name__ == "__main__":
 
     DIR_DATA_PROCESSED.mkdir(exist_ok=True)
-    prepare_digit_data(savepath=SAVEPATH_TENSORS)
+    prepare_digit_data(dir_output=DIR_DATA_PROCESSED)
