@@ -22,19 +22,15 @@ PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
 config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
-
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT")
-
 MLFLOW_RUN_NAME = "pytorch_example_test"
 
 DIR_DATA_PROCESSED = config['paths']['dir_processed']
 DIR_MLFLOW_ARTIFACTS = config['paths']['artifacts_mlflow']
 DIR_ARTIFACTS = config['paths']['artifacts_temp']  # Path for temporarily hosting artifacts before logging to MLflow
-
 FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_conf_mat']
-
 FILEPATH_MODEL = f"{DIR_MLFLOW_ARTIFACTS}/RUN_ID/artifacts/{FNAME_MODEL}"  # format with actual {run_id} before using
 FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
 
