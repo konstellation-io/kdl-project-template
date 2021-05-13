@@ -35,9 +35,6 @@ def main():
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
 
-    # TODO: Get the best-performing model from MLflow tracking
-    # and register the model to MLflow registry
-
     with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
 
         # Load test data
@@ -52,7 +49,7 @@ def main():
         test_loss, test_acc, (y_test_true, y_test_pred) = val_loop(dataloader=test_loader, model=net, loss_fn=loss_fn)
         cm = confusion_matrix(y_test_true, y_test_pred)
         plot_confusion_matrix(
-            cm, normalize=False, title="Confusion matrix (validation set)", savepath=FILEPATH_CONF_MATRIX)
+            cm, normalize=False, title="Confusion matrix (test set)", savepath=FILEPATH_CONF_MATRIX)
 
         # Log to MLflow:
         mlflow.log_artifacts(DIR_ARTIFACTS)
