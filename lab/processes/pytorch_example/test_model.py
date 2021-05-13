@@ -39,7 +39,7 @@ FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "ar
 # FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_conf_mat']
 
-FILEPATH_MODEL = Path(DIR_MLFLOW_ARTIFACTS) / RUN_ID / "artifacts" / FNAME_MODEL
+# FILEPATH_MODEL = Path(DIR_MLFLOW_ARTIFACTS) / RUN_ID / "artifacts" / FNAME_MODEL
 FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
 
 # "kdl-project-template/mlflow-artifacts/d8a35d1dfdb6407b89dc851ffac61b97"
