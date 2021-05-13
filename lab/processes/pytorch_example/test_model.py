@@ -32,11 +32,11 @@ DIR_DATA_PROCESSED = config['paths']['dir_processed']
 DIR_MLFLOW_ARTIFACTS = Path(DIR_DATA_PROCESSED).parent.parent / "mlflow-artifacts"
 DIR_ARTIFACTS = config['paths']['artifacts_temp']  # Path for temporarily hosting artifacts before logging to MLflow
 
-# FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
+FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
 
-RUN_ID = config['testing']['run_id']
+# RUN_ID = config['testing']['run_id']
 
-FNAME_MODEL = config['filenames']['fname_model']
+# FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_conf_mat']
 
 FILEPATH_MODEL = Path(DIR_MLFLOW_ARTIFACTS) / RUN_ID / "artifacts" / FNAME_MODEL
@@ -44,7 +44,7 @@ FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
 
 # "kdl-project-template/mlflow-artifacts/d8a35d1dfdb6407b89dc851ffac61b97"
 # "kdl-project-template/mlflow-artifacts/d8a35d1dfdb6407b89dc851ffac61b97"
-
+# "kdl-project-template/mlflow-artifacts/b8caaa8a3ec24ebca12d7c6e22054c45/"
 
 def main():
     """
