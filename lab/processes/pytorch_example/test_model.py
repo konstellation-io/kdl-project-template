@@ -31,10 +31,11 @@ DIR_DATA_PROCESSED = config['paths']['dir_processed']
 DIR_MLFLOW_ARTIFACTS = Path(DIR_DATA_PROCESSED).parent.parent / "mlflow-artifacts"
 DIR_ARTIFACTS = config['paths']['artifacts_temp']  # Path for temporarily hosting artifacts before logging to MLflow
 
-RUN_ID = config['testing']['run_id']
-FNAME_MODEL = config['filenames']['fname_model']
-FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / RUN_ID / "artifacts" / FNAME_MODEL
+FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
 
+RUN_ID = config['testing']['run_id']
+
+# FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_conf_mat']
 
 # FILEPATH_MODEL = Path(DIR_MLFLOW_ARTIFACTS) / RUN_ID / "artifacts" / FNAME_MODEL
@@ -63,6 +64,7 @@ def main():
         # Load the saved model
         net = Net()
         net.load_state_dict(torch.load(FILEPATH_MODEL))
+        print("FILEPATH_MODEL:", FILEPATH_MODEL)
         loss_fn = nn.CrossEntropyLoss()
 
         # Make and score predictions on test data
