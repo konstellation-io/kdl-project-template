@@ -16,8 +16,8 @@ from processes.pytorch_example.train_model import (
 
 DIR_DATA = os.getenv("MINIO_DATA_FOLDER")  # From Drone
 DIR_DATA_PROCESSED = Path(DIR_DATA) / "processed"
-
-FILEPATH_MODEL = "s3://kdl-project-template/mlflow-artifacts/d8a35d1dfdb6407b89dc851ffac61b97/artifacts/convnet.pt"
+DIR_MLFLOW_ARTIFACTS = DIR_DATA.parent / "mlflow-artifacts"
+FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
 
 
 def main():
