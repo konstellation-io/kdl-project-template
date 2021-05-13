@@ -15,6 +15,7 @@ import torch.nn as nn
 
 from processes.pytorch_example.train_model import load_data_splits, Net, val_loop  # TODO: Move to shared directory
 from lib.viz import plot_confusion_matrix
+from lib.mlflow import get_best_run
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
@@ -31,11 +32,10 @@ DIR_DATA_PROCESSED = config['paths']['dir_processed']
 DIR_MLFLOW_ARTIFACTS = config['paths']['artifacts_mlflow']
 DIR_ARTIFACTS = config['paths']['artifacts_temp']  # Path for temporarily hosting artifacts before logging to MLflow
 
-RUN_ID = config['testing']['run_id']
 FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_conf_mat']
 
-FILEPATH_MODEL = Path(DIR_MLFLOW_ARTIFACTS) / RUN_ID / "artifacts" / FNAME_MODEL
+FILEPATH_MODEL = f"{DIR_MLFLOW_ARTIFACTS}/RUN_ID/artifacts/{FNAME_MODEL}"  # format with actual {run_id} before using
 FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
 
 
@@ -49,18 +49,28 @@ def main():
     """
     Path(DIR_ARTIFACTS).mkdir(exist_ok=True)
 
+    # Get best run logged in MLflow:
+    run = get_best_run(
+            mlflow_uri=MLFLOW_URL, 
+            exp_name=MLFLOW_EXPERIMENT, 
+            filter_string="metrics.val_acc > 0.9", 
+            metric="val_acc", 
+            highest=True
+        )
+    run_id = run.info.run_id
+
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
-
     with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
 
         # Load test data
         _, _, test_loader = load_data_splits()
 
-        # Load the saved model
+        # Load saved model from the best MLflow run
+        model_path = FILEPATH_MODEL.replace("RUN_ID", run_id)
+
         net = Net()
-        net.load_state_dict(torch.load(FILEPATH_MODEL))
-        print("FILEPATH_MODEL:", FILEPATH_MODEL)
+        net.load_state_dict(torch.load(model_path))
         loss_fn = nn.CrossEntropyLoss()
 
         # Make and score predictions on test data
