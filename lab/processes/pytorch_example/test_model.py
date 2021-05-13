@@ -13,9 +13,9 @@ from sklearn.metrics import confusion_matrix
 import torch
 import torch.nn as nn
 
-from processes.pytorch_example.train_model import load_data_splits, Net, val_loop  # TODO: Move to shared directory
-from lib.viz import plot_confusion_matrix
 from lib.mlflow import get_best_run
+from lib.viz import plot_confusion_matrix
+from processes.pytorch_example.train_model import load_data_splits, Net, val_loop  # TODO: Move to shared directory
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"

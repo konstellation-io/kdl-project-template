@@ -2,8 +2,8 @@
 Reusable functions using the MLflow API
 """
 
-from mlflow.tracking import MlflowClient
 from mlflow.entities import ViewType, Run
+from mlflow.tracking import MlflowClient
 
 
 def get_best_run(
@@ -48,15 +48,16 @@ def get_best_run(
             metric=METRIC_NAME, 
             highest=True
         )
-
+        run_id = run.info.run_id
+        run_metrics = run.data.metrics
     """
     client = MlflowClient(tracking_uri=mlflow_uri)
     exp_id = client.get_experiment_by_name(exp_name).experiment_id
 
-    runs = client.search_runs(exp_id, filter_string=filter_string)
+    runs = client.search_runs(exp_id, run_view_type=ViewType.ACTIVE_ONLY, filter_string=filter_string)
     runs_and_acc = [(r.data.metrics[metric], r.info.run_id) for r in runs]
     _, top_run_id = sorted(runs_and_acc, reverse=highest)[0]
-    
+
     best_run = client.get_run(run_id=top_run_id)
 
     return best_run
