@@ -17,8 +17,9 @@ from processes.pytorch_example.train_model import load_data_splits, Net, val_loo
 from lib.viz import plot_confusion_matrix
 
 
+PATH_CONFIG = Path("processes") / "pytorch_example" / "config.ini"
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read(PATH_CONFIG)
 
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
