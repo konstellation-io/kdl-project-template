@@ -14,8 +14,8 @@ from processes.pytorch_example.train_model import (
     load_data_splits, Net, val_loop)  # TODO: Move to a shared directory
 
 
-DIR_DATA = os.getenv("MINIO_DATA_FOLDER")  # From Drone
-DIR_DATA_PROCESSED = Path(DIR_DATA) / "processed"
+DIR_DATA = Path(os.getenv("MINIO_DATA_FOLDER"))  # From Drone
+DIR_DATA_PROCESSED = DIR_DATA / "processed"
 DIR_MLFLOW_ARTIFACTS = DIR_DATA.parent / "mlflow-artifacts"
 FILEPATH_MODEL = DIR_MLFLOW_ARTIFACTS / "d8a35d1dfdb6407b89dc851ffac61b97" / "artifacts" / "convnet.pt"
 
