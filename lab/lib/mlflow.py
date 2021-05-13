@@ -2,9 +2,8 @@
 Reusable functions using the MLflow API
 """
 
-import mlflow
 from mlflow.tracking import MlflowClient
-from mlflow.entities import ViewType
+from mlflow.entities import ViewType, Run
 
 
 def get_best_run(
@@ -13,7 +12,7 @@ def get_best_run(
     filter_string: str, 
     metric: str, 
     highest: bool
-        ) -> mlflow.entities.Run:
+        ) -> Run:
     """
     Given an MLflow tracking URI and experiment name, returns the best 
     run according to the metric specified, after filtering on runs as 
