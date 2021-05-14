@@ -15,7 +15,7 @@ import torch.nn as nn
 
 from lib.mlflow import get_best_run
 from lib.viz import plot_confusion_matrix
-from processes.pytorch_example.train_model.train_model import load_data_splits, Net, val_loop  # TODO: Move
+from processes.pytorch_example.train_model.train_model import load_data_splits, Net, val_loop
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
@@ -50,10 +50,10 @@ def main():
 
     # Get best run logged in MLflow:
     run = get_best_run(
-            mlflow_uri=MLFLOW_URL, 
-            exp_name=MLFLOW_EXPERIMENT, 
-            filter_string="metrics.val_acc > 0.9", 
-            metric="val_acc", 
+            mlflow_uri=MLFLOW_URL,
+            exp_name=MLFLOW_EXPERIMENT,
+            filter_string="metrics.val_acc > 0.9",
+            metric="val_acc",
             highest=True
         )
     run_id = run.info.run_id
