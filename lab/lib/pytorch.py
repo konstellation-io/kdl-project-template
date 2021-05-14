@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
+from lib.utils import flatten_list
+
 
 def train_loop(
     dataloader: DataLoader,
