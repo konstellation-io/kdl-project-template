@@ -14,8 +14,9 @@ import torch
 import torch.nn as nn
 
 from lib.mlflow import get_best_run
+from lib.pytorch import val_loop
 from lib.viz import plot_confusion_matrix
-from processes.pytorch_example.train_model.train_model import load_data_splits, Net, val_loop
+from processes.pytorch_example.train_model.convnet import Net, load_data_splits
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
