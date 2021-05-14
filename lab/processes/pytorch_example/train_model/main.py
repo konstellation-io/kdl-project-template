@@ -15,7 +15,7 @@ import torch
 import torch.nn as nn
 
 from lib.viz import plot_confusion_matrix, plot_training_history
-from processes.pytorch_example.train_model.train_model import (
+from processes.pytorch_example.train_model.convnet import (
     Net, load_data_splits, val_loop, train_and_validate)
 
 
