@@ -15,7 +15,7 @@ import torch.nn as nn
 
 from lib.mlflow import get_best_run
 from lib.viz import plot_confusion_matrix
-from processes.pytorch_example.train_model.main import load_data_splits, Net, val_loop  # TODO: Move
+from processes.pytorch_example.train_model.train_model import load_data_splits, Net, val_loop  # TODO: Move
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
@@ -33,6 +33,9 @@ FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_conf_mat']
 FILEPATH_MODEL = f"{DIR_MLFLOW_ARTIFACTS}/RUN_ID/artifacts/{FNAME_MODEL}"  # Format with actual {run_id} before using
 FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
+
+BATCH_SIZE = int(config['training']['batch_size'])
+N_WORKERS = int(config['training']['n_workers'])
 
 
 def main():
@@ -60,7 +63,7 @@ def main():
     with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
 
         # Load test data
-        _, _, test_loader = load_data_splits()
+        _, _, test_loader = load_data_splits(dir_processed=DIR_DATA_PROCESSED, batch_size=BATCH_SIZE, n_workers=N_WORKERS)
 
         # Load saved model from the best MLflow run
         model_path = FILEPATH_MODEL.replace("RUN_ID", run_id)
