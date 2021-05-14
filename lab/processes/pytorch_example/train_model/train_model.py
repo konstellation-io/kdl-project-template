@@ -1,11 +1,7 @@
-import os
 from pathlib import Path
 from typing import Union, Tuple
 
-import mlflow
-import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -33,7 +29,7 @@ def create_dataloader(X: torch.Tensor, y: torch.Tensor, dataloader_args: dict) -
     return dataloader
 
 
-def load_data_splits(dir_processed: str, batch_size: int, n_workers: int) -> Tuple(DataLoader):
+def load_data_splits(dir_processed: str, batch_size: int, n_workers: int) -> Tuple[DataLoader]:
     """
     Loads data tensors saved in processed data directory and returns as dataloaders.
     """
