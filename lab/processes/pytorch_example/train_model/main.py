@@ -14,9 +14,9 @@ from sklearn.metrics import confusion_matrix
 import torch
 import torch.nn as nn
 
+from lib.pytorch import val_loop, train_and_validate
 from lib.viz import plot_confusion_matrix, plot_training_history
-from processes.pytorch_example.train_model.convnet import (
-    Net, load_data_splits, val_loop, train_and_validate)
+from processes.pytorch_example.train_model.convnet import Net, load_data_splits
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
