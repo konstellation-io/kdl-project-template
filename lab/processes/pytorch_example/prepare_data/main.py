@@ -7,7 +7,7 @@ Part 1: Data preparation
 import configparser
 from pathlib import Path
 
-from processes.pytorch_example.prepare_data.prepare_data import prepare_digit_data
+from processes.pytorch_example.prepare_data.digits import prepare_digit_data
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
