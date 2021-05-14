@@ -15,7 +15,7 @@ import torch.nn as nn
 
 from lib.mlflow import get_best_run
 from lib.viz import plot_confusion_matrix
-from processes.pytorch_example.train_model import load_data_splits, Net, val_loop  # TODO: Move to shared directory
+from processes.pytorch_example.train_model.main import load_data_splits, Net, val_loop  # TODO: Move
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
@@ -31,7 +31,7 @@ DIR_MLFLOW_ARTIFACTS = config['paths']['artifacts_mlflow']
 DIR_ARTIFACTS = config['paths']['artifacts_temp']  # Path for temporarily hosting artifacts before logging to MLflow
 FNAME_MODEL = config['filenames']['fname_model']
 FNAME_CONF_MAT = config['filenames']['fname_conf_mat']
-FILEPATH_MODEL = f"{DIR_MLFLOW_ARTIFACTS}/RUN_ID/artifacts/{FNAME_MODEL}"  # format with actual {run_id} before using
+FILEPATH_MODEL = f"{DIR_MLFLOW_ARTIFACTS}/RUN_ID/artifacts/{FNAME_MODEL}"  # Format with actual {run_id} before using
 FILEPATH_CONF_MATRIX = Path(DIR_ARTIFACTS) / FNAME_CONF_MAT
 
 
