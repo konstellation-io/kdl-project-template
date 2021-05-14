@@ -15,21 +15,21 @@ The project repository has the following directory structure:
 │   │                (including unit tests)
 │   │
 │   └── processes           <- Source code for reproducible workflow steps. For example:
-│       ├── process_data   
+│       ├── prepare_data   
 │       │   ├── main.py      
-│       │   ├── process_data.py  
-|       │   └── test_process_data.py
+│       │   ├── image_data.py  
+|       │   └── test_image_data.py
 |       ├── train_model
 │       │   ├── main.py      
-│       │   ├── train_model.py  
-|       │   └── test_train_model.py
+│       │   ├── convnet.py  
+|       │   └── test_convnet.py
 │       └── ...
 │   
 ├── goals         <- Acceptance criteria (TBD)
 │   
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
 │   
-├── .drone.yml
+├── .drone.yml    <- Instructions for Drone runners
 ├── .flake8     
 ├── .gitignore
 |
@@ -83,8 +83,10 @@ To see the tracked experiments, visit the MLflow tool UI.
 
 The second example pipeline is based on an image classification problem, with the aim of classifying digits from the [Optical Recognition of Handwritten Digits](https://scikit-learn.org/stable/datasets/toy_dataset.html#digits-dataset) dataset. This is _not_ the standard MNIST dataset (over 20,000 images of 28x28 pixels), it is a considerably smaller dataset (1797 images of 8x8 pixels), with the advantage that it does not require downloading from the internet as it is already distributed with the scikit-learn library in the `sklearn.datasets` package.
 
-In this example pipeline, defined in [lab/processes/pytorch_example/main.py](lab/processes/pytorch_example/main.py), the dataset images are split into train, validation and test sets, and are classified as digits 0-9 with a simple convolutional neural network. The training history (accuracy and loss per epoch on both training and validation data) is stored as an artifact in MLflow (`training_history.csv` and visualized in `.png`). The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
-
+This example pipeline, defined by the code in [.drone.yml](.drone.yml) (pipeline `pytorch-example`) and in [lab/processes/pytorch_example](lab/processes/pytorch_example), contains of the following steps:
+- **prepare_data:** the dataset images are loaded (from sklearn), normalized and transformed; the transformed data are split into train, validation and test sets; and the processed data are stored on the shared volume.
+- **train_model:** a simple convolutional neural network is trained to classify digits 0-9 on the training data. The training history (accuracy and loss per epoch on both training and validation data) are stored as an artifact in MLflow (`training_history.csv` and visualized in `.png`). The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
+- **test_model:** finally, the trained model is validated against the withheld test dataset. For simplicity of the example, this step is placed in the same pipeline with data preparation and model training. However, in reality this would only be carried once in the project to avoid "test set leakage", so you will probably want to separate this step from the previous steps into a stand-alone Drone pipeline and only execute it once at the end of the development phase of the project.
 
 ## Importing library functions
 
@@ -142,7 +144,7 @@ trigger:
 
 With this trigger in place, the pipeline will be executed on Drone agents whenever a tag matching the pattern specified in the trigger is pushed to the remote repository, for example:
 
-```
+```bash
 git tag process-data-v0
 git push origin process-data-v0 
 ```
@@ -159,7 +161,7 @@ The environment variables for connecting to MLflow server are provided in .drone
 ```yaml
 environment:
   MLFLOW_URL: http://mlflow-server:5000
-  MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
+  MLFLOW_S3_ENDPOINT_URL: http://{{ ProjectID }}:9000
   MLFLOW_EXPERIMENT: {{ ProjectID }}
 ```
 
