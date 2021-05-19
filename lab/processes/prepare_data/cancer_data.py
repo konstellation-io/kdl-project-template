@@ -7,6 +7,7 @@ from pandas import DataFrame, Series
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import torch
 
 
 RANDOM_STATE = 42
@@ -56,9 +57,9 @@ def prepare_cancer_data(dir_output: str) -> None:
     X_test = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
 
     # Save processed data
-    X_train.to_csv(Path(dir_output) / "X_train.csv")
-    y_train.to_csv(Path(dir_output) / "y_train.csv")
-    X_val.to_csv(Path(dir_output) / "X_val.csv")
-    y_val.to_csv(Path(dir_output) / "y_val.csv")
-    X_test.to_csv(Path(dir_output) / "X_test.csv")
-    y_test.to_csv(Path(dir_output) / "y_test.csv")
+    torch.save(X_train.to_numpy(), Path(dir_output) / "X_train.pt")
+    torch.save(y_train.to_numpy(), Path(dir_output) / "y_train.pt")
+    torch.save(X_val.to_numpy(), Path(dir_output) / "X_val.pt")
+    torch.save(y_val.to_numpy(), Path(dir_output) / "y_val.pt")
+    torch.save(X_test.to_numpy(), Path(dir_output) / "X_test.pt")
+    torch.save(y_test.to_numpy(), Path(dir_output) / "y_test.pt")
