@@ -18,9 +18,9 @@ kind: pipeline
 type: kubernetes
 name: example-pipeline
 
-trigger:
-  ref:
-  - refs/tags/run-example-*
+# trigger:
+#   ref:
+#   - refs/tags/run-example-*
 
 environment:
   PYTHONPATH: /drone/src/lab
