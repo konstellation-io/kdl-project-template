@@ -16,10 +16,10 @@ import torch.nn as nn
 
 from lib.pytorch import val_loop, train_and_validate
 from lib.viz import plot_confusion_matrix, plot_training_history
-from processes.pytorch_example.train_model.convnet import Net, load_data_splits
+from processes.pytorch_example.train_model.convnet import DenseNN, load_data_splits
 
 
-PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
+PATH_CONFIG = "/drone/src/lab/processes/config.ini"
 config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
@@ -66,9 +66,9 @@ def main() -> None:
         # Load the data splits
         train_loader, val_loader, _ = load_data_splits(dir_processed=DIR_DATA_PROCESSED, batch_size=BATCH_SIZE, n_workers=N_WORKERS)
 
-        # Instantiate the ConvNet, loss function and optimizer
-        net = Net()
-        loss_fn = nn.CrossEntropyLoss()
+        # Instantiate the Dense NN, loss function and optimizer
+        net = DenseNN()
+        loss_fn = nn.BCELoss()
         optimizer = torch.optim.Adam(net.parameters(), lr=LR)
 
         # Train and validate
@@ -78,7 +78,7 @@ def main() -> None:
             epochs=EPOCHS, filepath_model=FILEPATH_MODEL)
 
         # Load best version:
-        net = Net()
+        net = DenseNN()
         net.load_state_dict(torch.load(FILEPATH_MODEL))
 
         # Get metrics on best model
