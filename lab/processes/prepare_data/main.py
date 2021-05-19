@@ -7,7 +7,7 @@ Part 1: Data preparation
 import configparser
 from pathlib import Path
 
-from processes.pytorch_example.prepare_data.cancer_data import prepare_cancer_data
+from processes.prepare_data.cancer_data import prepare_cancer_data
 
 
 PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
