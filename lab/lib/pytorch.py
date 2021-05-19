@@ -36,11 +36,15 @@ def train_loop(
     train_loss, correct = 0, 0
 
     for X, y in dataloader:
+        y = y.unsqueeze(1)
+        
         # Compute prediction and loss
-        pred = model(X)
-        loss = loss_fn(pred, y.long())
+        probs = model(X)
+        loss = loss_fn(probs, y)
         train_loss += loss.item()
-        correct += (pred.argmax(1) == y).type(torch.float).sum().item()
+        
+        preds = probs > 0.5
+        correct += (preds == y).sum().item()
 
         # Backpropagation
         optimizer.zero_grad()
@@ -77,12 +81,13 @@ def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: nn.modules.loss.
 
     with torch.no_grad():
         for X, y in dataloader:
-            logits = model(X)
-            val_loss += loss_fn(logits, y.long()).item()
-            correct += (logits.argmax(1) == y).type(torch.float).sum().item()
-
-            y_proba = nn.Softmax()(logits)
-            y_preds_batch = y_proba.argmax(axis=1)
+            y = y.unsqueeze(1)
+            y_proba = model(X)
+            val_loss += loss_fn(y_proba, y).item()
+            
+            y_preds_batch = (y_proba > 0.5).double()
+            correct += (y_preds_batch == y).sum().item()
+            
             y_pred.append(y_preds_batch.tolist())
             y_true.append(y.tolist())
 
