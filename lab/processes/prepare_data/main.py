@@ -10,7 +10,7 @@ from pathlib import Path
 from processes.prepare_data.cancer_data import prepare_cancer_data
 
 
-PATH_CONFIG = "/drone/src/lab/processes/pytorch_example/config.ini"
+PATH_CONFIG = "/drone/src/lab/processes/config.ini"
 config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
