@@ -25,8 +25,8 @@ def split_data(X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray]:
     """
     Splits the data into train/val/test sets
     """
-    X_trainval, X_test, y_trainval, y_test = train_test_split(X, y, test_size=0.15, random_state=RANDOM_STATE)
-    X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=0.2, random_state=RANDOM_STATE)
+    X_trainval, X_test, y_trainval, y_test = train_test_split(X, y, test_size=0.15, random_state=RANDOM_STATE, stratify=y)
+    X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=0.2, random_state=RANDOM_STATE, stratify=y_trainval)
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
