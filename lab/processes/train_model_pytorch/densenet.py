@@ -12,43 +12,6 @@ from lib.utils import flatten_list
 from lib.viz import plot_confusion_matrix, plot_training_history
 
 
-def create_dataloader(X: torch.Tensor, y: torch.Tensor, dataloader_args: dict) -> DataLoader:
-    """
-    Converts input torch tensors X and y into a DataLoader object.
-
-    Args:
-        X: (torch Tensor) a tensor containing input features
-        y: (torch Tensor) a tensor containing labels
-        dataloader_args: (dict) keyword arguments for torch DataLoader
-            (e.g. batch_size: int, num_workers: int, shuffle: bool)
-    
-    Returns:
-        (torch DataLoader)
-    """
-    dataset = TensorDataset(X, y)
-    dataloader = DataLoader(dataset, **dataloader_args)
-    return dataloader
-
-
-def load_data_splits(dir_processed: str, batch_size: int, n_workers: int) -> Tuple[DataLoader]:
-    """
-    Loads data tensors saved in processed data directory and returns as dataloaders.
-    """
-    # Load tensors from preprocessed data directory on Minio
-    data = dict()
-    for fname in ["X_train", "X_val", "X_test", "y_train", "y_val", "y_test"]:
-        fpath = f"{dir_processed}/{fname}.npy"
-        data[fname] = torch.tensor(np.load(fpath)).float()
-
-    # Convert tensors to dataloaders
-    dataloader_args = dict(batch_size=batch_size, num_workers=n_workers, shuffle=True)
-    train_loader = create_dataloader(data['X_train'], data['y_train'], dataloader_args)
-    val_loader = create_dataloader(data['X_val'], data['y_val'], dataloader_args)
-    test_loader = create_dataloader(data['X_test'], data['y_test'], dataloader_args)
-    
-    return train_loader, val_loader, test_loader
-
-
 class DenseNN(nn.Module):
     
     def __init__(self):

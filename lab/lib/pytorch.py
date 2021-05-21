@@ -9,6 +9,24 @@ from torch.utils.data import DataLoader
 from lib.utils import flatten_list
 
 
+def create_dataloader(X: torch.Tensor, y: torch.Tensor, dataloader_args: dict) -> DataLoader:
+    """
+    Converts input torch tensors X and y into a DataLoader object.
+
+    Args:
+        X: (torch Tensor) a tensor containing input features
+        y: (torch Tensor) a tensor containing labels
+        dataloader_args: (dict) keyword arguments for torch DataLoader
+            (e.g. batch_size: int, num_workers: int, shuffle: bool)
+    
+    Returns:
+        (torch DataLoader)
+    """
+    dataset = TensorDataset(X, y)
+    dataloader = DataLoader(dataset, **dataloader_args)
+    return dataloader
+
+
 def train_loop(
     dataloader: DataLoader,
     model: nn.Module,

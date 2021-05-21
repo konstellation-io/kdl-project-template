@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -8,6 +8,9 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import torch
+from torch.utils.data import TensorDataset, DataLoader
+
+from lib.pytorch import create_dataloader
 
 
 RANDOM_STATE = 42
@@ -63,3 +66,57 @@ def prepare_cancer_data(dir_output: str) -> None:
     np.save(str(Path(dir_output) / "y_val.npy"), y_val.to_numpy())
     np.save(str(Path(dir_output) / "X_test.npy"), X_test.to_numpy())
     np.save(str(Path(dir_output) / "y_test.npy"), y_test.to_numpy())
+
+
+def load_data_splits(dir_processed: Union[str, Path], as_type: str) -> Tuple[Union[np.ndarray, torch.Tensor]]:
+    """
+    Loads train/val/test files for X and y (named 'X_train.npy', 'y_train.npy', etc.)
+    from the location specified and returns as numpy arrays.
+
+    Args:
+        dir_processed: (str or Path) directory containing processed data files
+        as_type: (str) type of outputs; one of 'array' (returns as numpy ndarray) 
+            or 'tensor' (returns as pytorch tensor)
+
+    Returns:
+        (tuple) of numpy arrays or torch tensors for 
+            X_train, X_val, X_test, y_train, y_val, y_test
+    """
+    X_train = np.load(str(Path(dir_processed) / "X_train.npy"))
+    y_train = np.load(str(Path(dir_processed) / "y_train.npy"))
+    X_val = np.load(str(Path(dir_processed) / "X_val.npy"))
+    y_val = np.load(str(Path(dir_processed) / "y_val.npy"))
+    X_test = np.load(str(Path(dir_processed) / "X_test.npy"))
+    y_test = np.load(str(Path(dir_processed) / "y_test.npy"))
+
+    if as_type == "array":
+        return X_train, X_val, X_test, y_train, y_val, y_test
+
+    elif as_type == "tensor":
+        X_train = torch.tensor(X_train).float()
+        y_train = torch.tensor(y_train).float()
+        X_val = torch.tensor(X_val).float()
+        y_val = torch.tensor(y_val).float()
+        X_test = torch.tensor(X_test).float()
+        y_test = torch.tensor(y_test).float()
+
+        return X_train, X_val, X_test, y_train, y_val, y_test
+    
+    else:
+        raise ValueError("Please specify as_type argument as one of 'array' or 'tensor'")
+
+
+def load_data_splits_as_dataloader(dir_processed: str, batch_size: int, n_workers: int) -> Tuple[DataLoader]:
+    """
+    Loads data tensors saved in processed data directory and returns as dataloaders.
+    """
+    X_train, X_val, X_test, y_train, y_val, y_test = load_data_splits(dir_processed, as_type="tensor")
+
+    # Convert tensors to dataloaders
+    dataloader_args = dict(batch_size=batch_size, num_workers=n_workers, shuffle=True)
+
+    train_loader = create_dataloader(X_train, y_train, dataloader_args)
+    val_loader = create_dataloader(X_val, y_val, dataloader_args)
+    test_loader = create_dataloader(X_test, y_test, dataloader_args)
+    
+    return train_loader, val_loader, test_loader

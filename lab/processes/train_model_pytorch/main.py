@@ -16,7 +16,8 @@ import torch.nn as nn
 
 from lib.pytorch import val_loop, train_and_validate
 from lib.viz import plot_confusion_matrix, plot_training_history
-from processes.train_model_pytorch.densenet import DenseNN, load_data_splits
+from processes.prepare_data.cancer_data import load_data_splits_as_dataloader
+from processes.train_model_pytorch.densenet import DenseNN
 
 
 PATH_CONFIG = "/drone/src/lab/processes/config.ini"
@@ -64,7 +65,8 @@ def main() -> None:
     with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
 
         # Load the data splits
-        train_loader, val_loader, _ = load_data_splits(dir_processed=DIR_DATA_PROCESSED, batch_size=BATCH_SIZE, n_workers=N_WORKERS)
+        train_loader, val_loader, _ = load_data_splits_as_dataloader(
+            dir_processed=DIR_DATA_PROCESSED, batch_size=BATCH_SIZE, n_workers=N_WORKERS)
 
         # Instantiate the Dense NN, loss function and optimizer
         net = DenseNN()
