@@ -17,7 +17,7 @@ import torch.nn as nn
 from lib.pytorch import val_loop, train_and_validate
 from lib.viz import plot_confusion_matrix, plot_training_history
 from processes.prepare_data.cancer_data import load_data_splits_as_dataloader
-from processes.train_model_pytorch.densenet import DenseNN
+from processes.train_dnn_pytorch.densenet import DenseNN
 
 
 PATH_CONFIG = "/drone/src/lab/processes/config.ini"
