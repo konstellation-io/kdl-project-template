@@ -49,7 +49,7 @@ if __name__ == "__main__":
     with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
         
         # Load training and validation data
-        X_train, X_val, _, y_train, y_val, _ = load_data_splits(dir_processed=DIR_DATA_PROCESSED)
+        X_train, X_val, _, y_train, y_val, _ = load_data_splits(dir_processed=DIR_DATA_PROCESSED, as_type="array")
         
         # Define a number of classifiers
         models = {
