@@ -70,7 +70,7 @@ def plot_training_history(
     ax2.tick_params(axis='y', labelcolor='b')
 
     # Make space for legend above
-    ax.set_ylim(ax.get_ylim()[0], 1.1*ax.get_ylim()[1])
+    ax.set_ylim(min(0.5, ax.get_ylim()[0]), 1.1*ax.get_ylim()[1])
     ax2.set_ylim(ax2.get_ylim()[0], 1.2*ax2.get_ylim()[1])
     
     # Hide ticks on accuracy axis above 1.0
