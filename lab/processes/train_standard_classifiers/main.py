@@ -78,4 +78,4 @@ if __name__ == "__main__":
                 
                 mlflow.log_artifacts(DIR_ARTIFACTS)
                 mlflow.log_param("classifier", model_name)
-                mlflow.log_metric("validation_accuracy", val_accuracy)
+                mlflow.log_metric("val_acc", val_accuracy)
