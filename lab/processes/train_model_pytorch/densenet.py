@@ -37,8 +37,8 @@ def load_data_splits(dir_processed: str, batch_size: int, n_workers: int) -> Tup
     # Load tensors from preprocessed data directory on Minio
     data = dict()
     for fname in ["X_train", "X_val", "X_test", "y_train", "y_val", "y_test"]:
-        fpath = f"{dir_processed}/{fname}.pt"
-        data[fname] = torch.tensor(torch.load(fpath)).float()
+        fpath = f"{dir_processed}/{fname}.npy"
+        data[fname] = torch.tensor(np.load(fpath)).float()
 
     # Convert tensors to dataloaders
     dataloader_args = dict(batch_size=batch_size, num_workers=n_workers, shuffle=True)

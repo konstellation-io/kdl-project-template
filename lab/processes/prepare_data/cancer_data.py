@@ -57,9 +57,9 @@ def prepare_cancer_data(dir_output: str) -> None:
     X_test = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
 
     # Save processed data
-    torch.save(X_train.to_numpy(), Path(dir_output) / "X_train.pt")
-    torch.save(y_train.to_numpy(), Path(dir_output) / "y_train.pt")
-    torch.save(X_val.to_numpy(), Path(dir_output) / "X_val.pt")
-    torch.save(y_val.to_numpy(), Path(dir_output) / "y_val.pt")
-    torch.save(X_test.to_numpy(), Path(dir_output) / "X_test.pt")
-    torch.save(y_test.to_numpy(), Path(dir_output) / "y_test.pt")
+    np.save(str(Path(dir_output) / "X_train.npy"), X_train.to_numpy())
+    np.save(str(Path(dir_output) / "y_train.npy"), y_train.to_numpy())
+    np.save(str(Path(dir_output) / "X_val.npy"), X_val.to_numpy())
+    np.save(str(Path(dir_output) / "y_val.npy"), y_val.to_numpy())
+    np.save(str(Path(dir_output) / "X_test.npy"), X_test.to_numpy())
+    np.save(str(Path(dir_output) / "y_test.npy"), y_test.to_numpy())
