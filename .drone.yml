@@ -51,7 +51,7 @@ steps:
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - python3 lab/processes/pytorch_example/train_standard_classifiers/main.py
+      - python3 lab/processes/train_standard_classifiers/main.py
     volumes:
         - name: shared-storage
           path: /shared-storage
