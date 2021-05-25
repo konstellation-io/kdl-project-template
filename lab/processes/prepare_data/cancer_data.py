@@ -1,3 +1,7 @@
+"""
+Functions for preparing the breast cancer dataset for training and validating ML algorithms
+"""
+
 from pathlib import Path
 from typing import Tuple, Union
 
