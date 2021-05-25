@@ -1,6 +1,8 @@
 """
-This script demonstrates the usage of sklearn within KDL using a simple wine-classification challenge
+ML pipeline for breast cancer classification
+Part 2: Training traditional ML models
 """
+
 import configparser
 from pathlib import Path
 import os

@@ -1,7 +1,6 @@
 """
-PyTorch usage example in KDL:
-Demonstrating the usage of PyTorch within KDL, solving a simple cancer classification problem.
-Part 2: Model training
+ML pipeline for breast cancer classification
+Part 3: Training NN models in PyTroch
 """
 
 import configparser
