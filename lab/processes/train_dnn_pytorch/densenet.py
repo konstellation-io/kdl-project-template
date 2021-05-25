@@ -1,15 +1,10 @@
-from typing import Tuple
+"""
+A class defining a densely connected neural network for binary classification
+"""
 
-import numpy as np
-import pandas as pd
-from pandas import Series, DataFrame
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import TensorDataset, DataLoader
-
-from lib.utils import flatten_list
-from lib.viz import plot_confusion_matrix, plot_training_history
 
 
 class DenseNN(nn.Module):
