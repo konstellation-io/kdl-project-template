@@ -1,6 +1,6 @@
 """
-PyTorch usage example in KDL, 2/3 
-Demonstrating the usage of PyTorch within KDL, solving a simple digit image classification problem.
+PyTorch usage example in KDL:
+Demonstrating the usage of PyTorch within KDL, solving a simple cancer classification problem.
 Part 2: Model training
 """
 
@@ -48,8 +48,8 @@ def main() -> None:
     """
     The main function of the example Pytorch model training script
 
-    - Loads and prepares MNIST data for training (as defined in prepare_mnist_data)
-    - Instantiates the ConvNet model, optimizer and loss function objects for model training
+    - Loads and prepares breast cancer data for training (as defined in prepare_data.cancer_data)
+    - Instantiates the densely connected neural network, optimizer and loss function for model training
     - Trains and validates a neural network (as defined in train_and_validate)
     - Keeps the best version of the model for final evaluation (not necessarily after final epoch)
     - Saves the model, its training and validation metrics and associated validation artifacts in MLflow
