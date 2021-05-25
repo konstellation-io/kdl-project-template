@@ -37,56 +37,64 @@ The project repository has the following directory structure:
 ```
 
 
-## Example project pipelines
+## Example project pipeline
 
 KDL contains various components that need to be correctly orchestrated and connected. 
-To illustrate their intended usage, we provide two example machine learning pipelines already implemented in KDL. 
-The first example pipeline is a simple classification problem with standard ML models from scikit-learn.
-The second example pipeline is an image classification problem addressed with convolutional networks implemented in PyTorch.
+To illustrate their intended usage, we provide an example machine learning pipeline already implemented in KDL. 
 
-### Scikit-learn example: Wine classification
+The example pipeline is a simple classification problem based on the [Breast Cancer Wisconsin Dataset](https://scikit-learn.org/stable/datasets/toy_dataset.html#breast-cancer-dataset). 
+The dataset contains 30 numeric features and the binary target class (benign/malignant).
 
-The first example pipeline is a simple classification task. 
-Based on the [Wine Recognition Dataset](https://scikit-learn.org/stable/datasets/toy_dataset.html#wine-dataset), the aim is to classify three different types of wines based on their physicochemical characteristics (alcohol content, malic acid, etc.).
+The code illustrating the implementation of a machine learning pipeline in KDL is composed of three parts:
+- Data preparation
+- Traditional ML models (in scikit-learn)
+- Neural network models (in PyTorch)
 
-The code for wine classification is in [lab/processes/sklearn_example/main.py](lab/processes/sklearn_example/main.py).
+More information on each of these steps:
+- **Data preparation** 
+(code in [lab/processes/prepare_data/main.py](lab/processes/prepare_data/main.py)):
+ the dataset is loaded from sklearn datasets and normalized; 
+ the transformed data are split into train, validation and test sets; 
+ and the processed data are stored on the shared volume. 
+- **Traditional ML models (in scikit-learn)** 
+(code in [lab/processes/train_standard_classifiers/main.py](lab/processes/train_standard_classifiers/main.py)): 
+the processed datasets are loaded from the shared volume as arrays; 
+the script iterates through a number of classification algorithms,
+including logistic regression, naïve Bayes, random forest, gradient boosting, etc.;
+validation accuracy is computed and logged to MLflow.
+- **Neural network models (in PyTorch)** 
+(code in [lab/processes/train_dnn_pytorch/main.py](lab/processes/train_dnn_pytorch/main.py)): 
+the processed datasets are loaded from the shared volume as torch DataLoaders; 
+the script initiates a densely connected neural network for binary classification 
+and launches its training and validation;
+the training history (accuracy and loss per epoch on both training and validation data) are stored as an artifact in MLflow (`training_history.csv` and visualized in `.png`). 
+The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
 
-The execution of the wine classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml) (for simplicity, we are omitting various additional components, such as the environment variables and the AWS secrets):
+
+The execution of the example classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml) (for simplicity, we are omitting various additional components here, such as the environment variables and the AWS secrets):
 
 ```yaml
+---
+
 kind: pipeline
 type: kubernetes
-name: application-examples
+name: example-pipeline
 
 trigger:
   ref:
-  - refs/tags/run-examples-*
-
-steps:
-  - name: sklearn-example
-    image: terminus7/sci-toolkit-runner:1.1.2
-    commands:
-      - python3 lab/processes/sklearn_example/main.py
+  - refs/tags/run-example-*
 ```
 
-To trigger the execution of this pipeline on Drone runners, push a tag containing the name matching the trigger (e.g. in this case, `run-examples-v1`) to the remote repository.
+To **launch the execution** of this pipeline on Drone runners, push a tag containing the name matching the defined trigger (e.g. in this case, `run-example-v1`) to the remote repository.
 For more information, see the section Launching experiment runs (Drone) below.
 
-The results of executions are stored in MLflow: 
-in the simplified example of wine classification, we are only tracking one parameter (name of the classifier), and one metric (the obtained validation accuracy). 
-In a real-world project, you are likely to be tracking many parameters and metrics of interest.
-The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/sklearn_example/main.py) and with the environment variables in [.drone.yml](.drone.yml). For more information, see the section "Logging experiment results (MLflow)" below.
+The **results of executions** are stored in MLflow. 
+In the example of training traditional ML models, we are only tracking one parameter (the name of the classifier)and one metric (the obtained validation accuracy). In the PyTorch neural network training example, we are tracking the same metric (validation accuracy) for comparisons, but a different set of hyperparameters, such as learning rate, batch size, number of epochs etc. 
+In a real-world project, you are likely to be tracking many more parameters and metrics of interest.
+The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/train_standard_classifiers/main.py) and with the environment variables in [.drone.yml](.drone.yml). 
+For more information on MLflow tracking, see the section "Logging experiment results (MLflow)" below.
 To see the tracked experiments, visit the MLflow tool UI.
 
-
-### PyTorch example: digit classification
-
-The second example pipeline is based on an image classification problem, with the aim of classifying digits from the [Optical Recognition of Handwritten Digits](https://scikit-learn.org/stable/datasets/toy_dataset.html#digits-dataset) dataset. This is _not_ the standard MNIST dataset (over 20,000 images of 28x28 pixels), it is a considerably smaller dataset (1797 images of 8x8 pixels), with the advantage that it does not require downloading from the internet as it is already distributed with the scikit-learn library in the `sklearn.datasets` package.
-
-This example pipeline, defined by the code in [.drone.yml](.drone.yml) (pipeline `pytorch-example`) and in [lab/processes/pytorch_example](lab/processes/pytorch_example), contains of the following steps:
-- **prepare_data:** the dataset images are loaded (from sklearn), normalized and transformed; the transformed data are split into train, validation and test sets; and the processed data are stored on the shared volume.
-- **train_model:** a simple convolutional neural network is trained to classify digits 0-9 on the training data. The training history (accuracy and loss per epoch on both training and validation data) are stored as an artifact in MLflow (`training_history.csv` and visualized in `.png`). The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
-- **test_model:** finally, the trained model is validated against the withheld test dataset. For simplicity of the example, this step is placed in the same pipeline with data preparation and model training. However, in reality this would only be carried once in the project to avoid "test set leakage", so you will probably want to separate this step from the previous steps into a stand-alone Drone pipeline and only execute it once at the end of the development phase of the project.
 
 ## Importing library functions
 
@@ -165,7 +173,7 @@ environment:
   MLFLOW_EXPERIMENT: {{ ProjectID }}
 ```
 
-The usage of MLflow for experiment tracking is illustrated by the scikit-learn example pipeline in [lab/processes/sklearn_example/main.py](lab/processes/sklearn_example/main.py).
+The usage of MLflow for experiment tracking is illustrated by the scikit-learn example pipeline in [lab/processes/train_standard_classifiers/main.py](lab/processes/train_standard_classifiers/main.py).
 
 ```python
 import mlflow
