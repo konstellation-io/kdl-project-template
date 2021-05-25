@@ -12,7 +12,7 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import torch
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import DataLoader
 
 from lib.pytorch import create_dataloader
 
@@ -32,8 +32,10 @@ def split_data(X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray]:
     """
     Splits the data into train/val/test sets
     """
-    X_trainval, X_test, y_trainval, y_test = train_test_split(X, y, test_size=0.15, random_state=RANDOM_STATE, stratify=y)
-    X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=0.2, random_state=RANDOM_STATE, stratify=y_trainval)
+    X_trainval, X_test, y_trainval, y_test = train_test_split(
+        X, y, test_size=0.15, random_state=RANDOM_STATE, stratify=y)
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_trainval, y_trainval, test_size=0.2, random_state=RANDOM_STATE, stratify=y_trainval)
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
@@ -79,11 +81,11 @@ def load_data_splits(dir_processed: Union[str, Path], as_type: str) -> Tuple[Uni
 
     Args:
         dir_processed: (str or Path) directory containing processed data files
-        as_type: (str) type of outputs; one of 'array' (returns as numpy ndarray) 
+        as_type: (str) type of outputs; one of 'array' (returns as numpy ndarray)
             or 'tensor' (returns as pytorch tensor)
 
     Returns:
-        (tuple) of numpy arrays or torch tensors for 
+        (tuple) of numpy arrays or torch tensors for
             X_train, X_val, X_test, y_train, y_val, y_test
     """
     X_train = np.load(str(Path(dir_processed) / "X_train.npy"))
@@ -105,7 +107,7 @@ def load_data_splits(dir_processed: Union[str, Path], as_type: str) -> Tuple[Uni
         y_test = torch.tensor(y_test).float()
 
         return X_train, X_val, X_test, y_train, y_val, y_test
-    
+
     else:
         raise ValueError("Please specify as_type argument as one of 'array' or 'tensor'")
 
@@ -122,5 +124,5 @@ def load_data_splits_as_dataloader(dir_processed: str, batch_size: int, n_worker
     train_loader = create_dataloader(X_train, y_train, dataloader_args)
     val_loader = create_dataloader(X_val, y_val, dataloader_args)
     test_loader = create_dataloader(X_test, y_test, dataloader_args)
-    
+
     return train_loader, val_loader, test_loader

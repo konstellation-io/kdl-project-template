@@ -58,7 +58,7 @@ def plot_training_history(
 
     xticks = MaxNLocator(nbins=11, steps=[1, 2, 5, 10])
     ax.xaxis.set_major_locator(xticks)
-    
+
     ax.set_ylabel('Accuracy', color='r')
     ax.tick_params(axis='y', labelcolor='r')
 
@@ -72,12 +72,12 @@ def plot_training_history(
     # Make space for legend above
     ax.set_ylim(min(0.5, ax.get_ylim()[0]), 1.1*ax.get_ylim()[1])
     ax2.set_ylim(ax2.get_ylim()[0], 1.2*ax2.get_ylim()[1])
-    
+
     # Hide ticks on accuracy axis above 1.0
     yticks = ax.yaxis.get_major_ticks()
     yticks[-1].set_visible(False)
     yticks[-2].set_visible(False)
-        
+
     ax.legend(loc=2, frameon=False)
     ax2.legend(loc=1, frameon=False)
     plt.title(title)

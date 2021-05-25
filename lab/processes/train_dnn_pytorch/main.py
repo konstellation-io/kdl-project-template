@@ -27,7 +27,7 @@ MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT")
 MLFLOW_RUN_NAME = "pytorch_example_train"
 
-DIR_ARTIFACTS = Path(config['paths']['artifacts_temp'])  # Path for temporarily hosting artifacts before logging to MLflow
+DIR_ARTIFACTS = Path(config['paths']['artifacts_temp'])  # Temporary hosting artifacts before logging to MLflow
 FNAME_MODEL = config['filenames']['fname_model']
 FILEPATH_MODEL = DIR_ARTIFACTS / FNAME_MODEL
 FILEPATH_TRAINING_HISTORY = DIR_ARTIFACTS / "training_history.png"
