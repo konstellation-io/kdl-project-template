@@ -1,6 +1,5 @@
 """
-PyTorch usage example in KDL, 1/3 
-Demonstrating the usage of PyTorch within KDL, solving a standard classification problem.
+ML pipeline for breast cancer classification
 Part 1: Data preparation
 """
 
