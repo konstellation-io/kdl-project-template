@@ -7,12 +7,8 @@ import configparser
 from pathlib import Path
 import os
 
-from matplotlib import pyplot as plt
 import mlflow
 import numpy as np
-import pandas as pd
-import seaborn as sns
-from sklearn.datasets import load_wine
 from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -33,26 +29,26 @@ MLFLOW_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT")
 MLFLOW_RUN_NAME = "sklearn_example_train"
 
 DIR_DATA_PROCESSED = config['paths']['dir_processed']
-DIR_ARTIFACTS = Path(config['paths']['artifacts_temp'])  # Path for temporarily hosting artifacts before logging to MLflow
+DIR_ARTIFACTS = Path(config['paths']['artifacts_temp'])  # Temporarily host artifacts before logging to MLflow
 FILEPATH_CONF_MATRIX = DIR_ARTIFACTS / "confusion_matrix.png"
 
 RANDOM_SEED = int(config['training']['random_seed'])
 
 
 if __name__ == "__main__":
-    
+
     np.random.seed(RANDOM_SEED)
 
     DIR_ARTIFACTS.mkdir(exist_ok=True)
 
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
-    
+
     with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
-        
+
         # Load training and validation data
         X_train, X_val, _, y_train, y_val, _ = load_data_splits(dir_processed=DIR_DATA_PROCESSED, as_type="array")
-        
+
         # Define a number of classifiers
         models = {
             "Logistic regression": LogisticRegression(),
@@ -74,10 +70,10 @@ if __name__ == "__main__":
                 val_accuracy = accuracy_score(y_pred, y_val)
                 cm = confusion_matrix(y_val, y_pred)
                 plot_confusion_matrix(
-                    cm, normalize=False, 
-                    title="Confusion matrix (validation set)", 
+                    cm, normalize=False,
+                    title="Confusion matrix (validation set)",
                     savepath=FILEPATH_CONF_MATRIX)
-                
+
                 mlflow.log_artifacts(DIR_ARTIFACTS)
                 mlflow.log_param("classifier", model_name)
                 mlflow.log_metric("val_acc", val_accuracy)

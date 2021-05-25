@@ -18,7 +18,7 @@ def create_dataloader(X: torch.Tensor, y: torch.Tensor, dataloader_args: dict) -
         y: (torch Tensor) a tensor containing labels
         dataloader_args: (dict) keyword arguments for torch DataLoader
             (e.g. batch_size: int, num_workers: int, shuffle: bool)
-    
+
     Returns:
         (torch DataLoader)
     """
@@ -55,12 +55,12 @@ def train_loop(
 
     for X, y in dataloader:
         y = y.unsqueeze(1)
-        
+
         # Compute prediction and loss
         probs = model(X)
         loss = loss_fn(probs, y)
         train_loss += loss.item()
-        
+
         preds = probs > 0.5
         correct += (preds == y).sum().item()
 
@@ -102,10 +102,10 @@ def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: nn.modules.loss.
             y = y.unsqueeze(1)
             y_proba = model(X)
             val_loss += loss_fn(y_proba, y).item()
-            
+
             y_preds_batch = (y_proba > 0.5).double()
             correct += (y_preds_batch == y).sum().item()
-            
+
             y_pred.append(y_preds_batch.tolist())
             y_true.append(y.tolist())
 
