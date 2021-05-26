@@ -109,8 +109,11 @@ trigger:
   - refs/tags/run-example-*
 ```
 
-To **launch the execution** of this pipeline on Drone runners, push a tag containing the name matching the defined trigger (e.g. in this case, `run-example-v1`) to the remote repository.
-For more information, see the section Launching experiment runs (Drone) below.
+To **launch the execution** of this pipeline on Drone runners, push a tag containing the name matching the defined trigger to the remote repository.
+In this case, the tag pattern is `run-example-*`, 
+therefore to launch the execution run the following commands in the Terminal: 
+`git tag run-example-v0 && git push origin run-example-v0`.
+For more information and examples, see the section Launching experiment runs (Drone) below.
 
 The **results of executions** are stored in MLflow. 
 In the example of training traditional ML models, we are only tracking one parameter (the name of the classifier)and one metric (the obtained validation accuracy). In the PyTorch neural network training example, we are tracking the same metric (validation accuracy) for comparisons, but a different set of hyperparameters, such as learning rate, batch size, number of epochs etc. 
