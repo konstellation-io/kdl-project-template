@@ -104,7 +104,7 @@ def main() -> None:
             epochs=EPOCHS,
             batch_size=BATCH_SIZE,
             learning_rate=LR,
-            classifier="densenet"))
+            classifier="DenseNN"))
 
         print("Done!")
 
