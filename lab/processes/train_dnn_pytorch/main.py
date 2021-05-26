@@ -103,8 +103,8 @@ def main() -> None:
         mlflow.log_params(dict(
             epochs=EPOCHS,
             batch_size=BATCH_SIZE,
-            learning_rate=LR
-        ))
+            learning_rate=LR,
+            classifier="densenet"))
 
         print("Done!")
 
