@@ -11,30 +11,54 @@ The project repository has the following directory structure:
 │   │
 │   ├── docs      <- High-level reports, executive summaries at each milestone (typically .md)
 │   │
-│   ├── lib       <- Importable functions shared between analysis notebooks and processes scripts
+│   ├── lib       <- Importable functions used by analysis notebooks and processes scripts
 │   │                (including unit tests)
 │   │
-│   └── processes           <- Source code for reproducible workflow steps. For example:
+│   └── processes           <- Source code for reproducible workflow steps.
 │       ├── prepare_data   
 │       │   ├── main.py      
-│       │   ├── image_data.py  
-|       │   └── test_image_data.py
-|       ├── train_model
+│       │   └── cancer_data.py  
+|       ├── train_dnn_pytorch
 │       │   ├── main.py      
-│       │   ├── convnet.py  
-|       │   └── test_convnet.py
-│       └── ...
-│   
-├── goals         <- Acceptance criteria (TBD)
+│       │   └── densenet.py  
+│       └── train_standard_classifiers
+│           ├── main.py      
+│           └── densenet.py  
+|
+├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
 │   
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
 │   
 ├── .drone.yml    <- Instructions for Drone runners
-├── .flake8     
+├── .flake8       <- Configuration for style guide enforcement
 ├── .gitignore
 |
 └── README.md
 ```
+
+The `processes` subdirectory contains as its subdirectories the various separate processes (`prepare_data`, etc.), 
+which can be tought of as nodes of the analysis graph. 
+Each of these processes has a clearly identifiable main script, 
+and another file containing importable functions and classes specific to that step. 
+
+The process names from the template are not likely to generalize to other projects, so here is another example for clarity:
+
+```
+└── processes
+    ├── prepare_data   
+    │   ├── main.py      
+    │   ├── (image_data.py)
+    │   └── test_(image_data.py)
+    ├── train_model
+    │   ├── main.py      
+    │   ├── (convnet.py)
+    │   └── test_(convnet.py)
+    └── ...
+```
+
+In the examples shown, all processes files are Python `.py` files. 
+However, the idea of modularizing the analysis into separate processes facilitates changing any of those processes to a different language as may be required, for example R or Julia.
+
 
 
 ## Example project pipeline
