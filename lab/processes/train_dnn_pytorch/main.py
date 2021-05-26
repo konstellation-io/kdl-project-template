@@ -19,7 +19,7 @@ from processes.prepare_data.cancer_data import load_data_splits_as_dataloader
 from processes.train_dnn_pytorch.densenet import DenseNN
 
 
-PATH_CONFIG = "/drone/src/lab/processes/config.ini"
+PATH_CONFIG = os.getenv("PATH_CONFIG")
 config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
