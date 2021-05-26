@@ -47,12 +47,12 @@ The process names from the template are not likely to generalize to other projec
 └── processes
     ├── prepare_data   
     │   ├── main.py      
-    │   ├── (image_data.py)
-    │   └── test_(image_data.py)
+    │   ├── (image_data).py
+    │   └── (image_data)_test.py
     ├── train_model
     │   ├── main.py      
-    │   ├── (convnet.py)
-    │   └── test_(convnet.py)
+    │   ├── (convnet).py
+    │   └── (convnet)_test.py
     └── ...
 ```
 
