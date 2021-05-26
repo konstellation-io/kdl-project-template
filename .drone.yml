@@ -24,11 +24,12 @@ trigger:
 
 environment:
   PYTHONPATH: /drone/src/lab
+  PATH_CONFIG: /drone/src/lab/processes/config.ini
   MINIO_DATA_FOLDER: /shared-storage/kdl-project-template/data
   MLFLOW_URL: http://mlflow-server:5000
   MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
   MLFLOW_EXPERIMENT: kdl-project-template
-     
+
 steps:
   - name: prepare-data
     image: terminus7/sci-toolkit-runner:1.1.2

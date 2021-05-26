@@ -5,11 +5,12 @@ Part 1: Data preparation
 
 import configparser
 from pathlib import Path
+import os
 
 from processes.prepare_data.cancer_data import prepare_cancer_data
 
 
-PATH_CONFIG = "/drone/src/lab/processes/config.ini"
+PATH_CONFIG = os.getenv("PATH_CONFIG")
 config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
