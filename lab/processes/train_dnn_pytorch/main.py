@@ -26,6 +26,7 @@ config.read(PATH_CONFIG)
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_EXPERIMENT = config["mlflow"]["mlflow_experiment"]
 MLFLOW_RUN_NAME = "pytorch_example_train"
+MLFLOW_TAGS = {"git_tag": os.getenv('DRONE_TAG')}
 
 DIR_ARTIFACTS = Path(config['paths']['artifacts_temp'])  # Temporary hosting artifacts before logging to MLflow
 FNAME_MODEL = config['filenames']['fname_model']
@@ -61,7 +62,7 @@ def main() -> None:
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
 
-    with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
+    with mlflow.start_run(run_name=MLFLOW_RUN_NAME, tags=MLFLOW_TAGS):
 
         # Load the data splits
         train_loader, val_loader, _ = load_data_splits_as_dataloader(
