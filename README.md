@@ -22,8 +22,7 @@ The project repository has the following directory structure:
 │       │   ├── main.py      
 │       │   └── densenet.py  
 │       └── train_standard_classifiers
-│           ├── main.py      
-│           └── densenet.py  
+│           └── main.py       
 |
 ├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
 │   
