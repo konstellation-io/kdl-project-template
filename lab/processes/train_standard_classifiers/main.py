@@ -27,6 +27,7 @@ config.read(PATH_CONFIG)
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_EXPERIMENT = config["mlflow"]["mlflow_experiment"]
 MLFLOW_RUN_NAME = "sklearn_example_train"
+MLFLOW_TAGS = {"git_tag": os.getenv('DRONE_TAG')}
 
 DIR_DATA_PROCESSED = config['paths']['dir_processed']
 DIR_ARTIFACTS = Path(config['paths']['artifacts_temp'])  # Temporarily host artifacts before logging to MLflow
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     mlflow.set_tracking_uri(MLFLOW_URL)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
 
-    with mlflow.start_run(run_name=MLFLOW_RUN_NAME):
+    with mlflow.start_run(run_name=MLFLOW_RUN_NAME, tags=MLFLOW_TAGS):
 
         # Load training and validation data
         X_train, X_val, _, y_train, y_val, _ = load_data_splits(dir_processed=DIR_DATA_PROCESSED, as_type="array")
@@ -63,7 +64,7 @@ if __name__ == "__main__":
         # Iterate fitting and validation through all model types, logging results to MLflow:
         for model_name, model in models.items():
 
-            with mlflow.start_run(run_name=model_name, nested=True):
+            with mlflow.start_run(run_name=model_name, nested=True, tags=MLFLOW_TAGS):
 
                 model.fit(X_train, y_train)
                 y_pred = model.predict(X_val)
