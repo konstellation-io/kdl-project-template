@@ -25,7 +25,7 @@ config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
-MLFLOW_EXPERIMENT = config["mlflow_experiment"]
+MLFLOW_EXPERIMENT = config["mlflow"]["mlflow_experiment"]
 MLFLOW_RUN_NAME = "sklearn_example_train"
 
 DIR_DATA_PROCESSED = config['paths']['dir_processed']

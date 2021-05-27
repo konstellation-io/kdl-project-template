@@ -24,7 +24,7 @@ config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
-MLFLOW_EXPERIMENT = config["mlflow_experiment"]
+MLFLOW_EXPERIMENT = config["mlflow"]["mlflow_experiment"]
 MLFLOW_RUN_NAME = "pytorch_example_train"
 
 DIR_ARTIFACTS = Path(config['paths']['artifacts_temp'])  # Temporary hosting artifacts before logging to MLflow
