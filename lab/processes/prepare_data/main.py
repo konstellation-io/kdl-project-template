@@ -5,7 +5,6 @@ Part 1: Data preparation
 
 import configparser
 import os
-from pathlib import Path
 
 from processes.prepare_data.cancer_data import prepare_cancer_data
 
