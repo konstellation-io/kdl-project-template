@@ -7,15 +7,13 @@ from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
+import torch
+from lib.pytorch import create_dataloader
 from pandas import DataFrame, Series
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-import torch
 from torch.utils.data import DataLoader
-
-from lib.pytorch import create_dataloader
-
 
 RANDOM_STATE = 42
 
@@ -53,6 +51,8 @@ def prepare_cancer_data(dir_output: str) -> None:
     Returns:
         (None)
     """
+    Path(dir_output).mkdir(exist_ok=True)
+
     # Load digit data
     imgs, y = load_cancer_data()
 
