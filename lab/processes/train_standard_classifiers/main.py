@@ -36,7 +36,7 @@ FILEPATH_CONF_MATRIX = DIR_ARTIFACTS / "confusion_matrix.png"
 RANDOM_SEED = int(config['training']['random_seed'])
 
 
-if __name__ == "__main__":
+def main(mlflow=mlflow):
 
     np.random.seed(RANDOM_SEED)
 
@@ -78,3 +78,8 @@ if __name__ == "__main__":
                 mlflow.log_artifacts(DIR_ARTIFACTS)
                 mlflow.log_param("classifier", model_name)
                 mlflow.log_metric("val_acc", val_accuracy)
+
+
+if __name__ == "__main__":
+
+    main()
