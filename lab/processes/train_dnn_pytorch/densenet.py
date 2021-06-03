@@ -15,6 +15,10 @@ from sklearn.metrics import confusion_matrix
 
 
 class DenseNN(nn.Module):
+    """
+    A fully connected neural network for binary classification, containing three densely connected layers and
+    a binary output node.
+    """
 
     def __init__(self):
         super(DenseNN, self).__init__()
