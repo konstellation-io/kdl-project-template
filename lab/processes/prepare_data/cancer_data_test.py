@@ -30,8 +30,8 @@ class TestCancerDataPreparation:
         """Tests the loading of cancer data (directly from sklearn) in correct format
         """
         X, y = load_cancer_data()
-        assert type(X) == DataFrame
-        assert type(y) == Series
+        assert isinstance(X, DataFrame)
+        assert isinstance(y, Series)
 
     def test_split_data_returns_expected_objects(self):
         """Tests that split_data returns the correct number of objects, each with dimensions as expected
@@ -108,7 +108,7 @@ class TestCancerDataLoading:
         """
         result = load_data_splits(dir_processed=temp_data_dir, as_type="array")
         for array in result:
-            assert type(array) == np.ndarray
+            assert isinstance(array, np.ndarray)
 
     def test_load_data_splits_as_torch_tensors(self, temp_data_dir):
         """
@@ -118,7 +118,7 @@ class TestCancerDataLoading:
         """
         result = load_data_splits(dir_processed=temp_data_dir, as_type="tensor")
         for tensor in result:
-            assert type(tensor) == torch.Tensor
+            assert isinstance(tensor, torch.Tensor)
 
     def test_load_data_splits_as_dataloader(self, temp_data_dir):
         """
@@ -128,4 +128,4 @@ class TestCancerDataLoading:
         """
         result = load_data_splits_as_dataloader(dir_processed=temp_data_dir, batch_size=4, n_workers=1)
         for loader in result:
-            assert type(loader) == torch.utils.data.DataLoader
+            assert isinstance(loader, torch.utils.data.DataLoader)
