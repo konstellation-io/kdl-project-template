@@ -30,7 +30,7 @@ def create_classifiers():
     return models
 
 
-def train_classifiers(mlflow, config):
+def train_classifiers(mlflow, config, mlflow_url, mlflow_tags):
 
     # Unpack config:
     random_seed = int(config["training"]["random_seed"])
@@ -38,8 +38,6 @@ def train_classifiers(mlflow, config):
     dir_artifacts = Path(config["paths"]["artifacts_temp"])  # Temporarily host artifacts before logging to MLflow
     filepath_conf_matrix = dir_artifacts / "confusion_matrix.png"
     mlflow_experiment = config["mlflow"]["mlflow_experiment"]
-    mlflow_tags = config["mlflow"]["mlflow_tags"]
-    mlflow_url = config["mlflow"]["mlflow_url"]
 
     # Prepare before run
     np.random.seed(random_seed)
