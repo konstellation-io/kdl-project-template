@@ -1,24 +1,23 @@
 """
-Tests for training standard classifiers
+Setup for local execution and debugging of the sklearn classifiers training
 """
-
-from mock import MagicMock
 
 from lib.testing import get_mlflow_stub
 from processes.prepare_data.cancer_data import prepare_cancer_data
 from processes.train_standard_classifiers.classifiers import train_classifiers
 
 
-vscode_config = {  # TODO Move: to config_vscode.ini
-    "training": {
-        "random_seed": 42
-    },
+# TODO Move to separate config for VScode executions
+vscode_config = {
     "paths": {
         "artifacts_temp": "temp_artifacts",
         "dir_processed": "temp_data"
     },
     "mlflow": {
         "mlflow_experiment": "",
+    },
+    "training": {
+        "random_seed": 42
     }
 }
 
