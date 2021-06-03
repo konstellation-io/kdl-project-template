@@ -1,11 +1,14 @@
 """
 Functions for instantiating and training traditional ML classifiers
 """
-
+from configparser import ConfigParser
 from pathlib import Path
+from types import ModuleType
+from typing import Union
 
 import numpy as np
 from lib.viz import plot_confusion_matrix
+from mock import MagicMock
 from processes.prepare_data.cancer_data import load_data_splits
 from sklearn.ensemble import (AdaBoostClassifier, GradientBoostingClassifier,
                               RandomForestClassifier)
@@ -16,7 +19,13 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 
 
-def create_classifiers():
+def create_classifiers() -> dict:
+    """
+    Instantiates a number of different sklearn classifiers and returns them in a dictionary.
+
+    Returns:
+        (dict of sklearn model objects)
+    """
 
     models = {
         "Logistic regression": LogisticRegression(),
@@ -30,8 +39,23 @@ def create_classifiers():
     return models
 
 
-def train_classifiers(mlflow, config, mlflow_url, mlflow_tags):
+def train_classifiers(mlflow: Union[ModuleType, MagicMock],
+                      config: Union[ConfigParser, dict],
+                      mlflow_url: str,
+                      mlflow_tags: dict
+                      ) -> None:
+    """
+    Trains a number of classifiers on the data that is found in the directory specified as dir_processed in config.
 
+    Arguments:
+        mlflow {Union[ModuleType, MagicMock]} --  MLflow module or its mock replacement
+        config {Union[ConfigParser, dict]} -- configuration for the training, with the required sections:
+            - "training": containing "random_seed";
+            - "paths": containing "artifacts_temp" and "dir_processed";
+            - "mlflow": containing "mlflow_experiment"
+        mlflow_url {str} -- MLflow URL (empty if replacing mlflow with a mock)
+        mlflow_tags {dict} -- MLflow tags (empty if replacing mlflow with a mock)
+    """
     # Unpack config:
     random_seed = int(config["training"]["random_seed"])
     dir_processed = config["paths"]["dir_processed"]
