@@ -17,32 +17,43 @@ The project repository has the following directory structure:
 │   └── processes           <- Source code for reproducible workflow steps.
 │       ├── prepare_data
 │       │   ├── main.py
-│       │   └── cancer_data.py
+│       │   ├── cancer_data.py
 │       │   └── cancer_data_test.py
 |       ├── train_dnn_pytorch
 │       │   ├── main.py
-│       │   └── densenet.py
+│       │   ├── densenet.py
+│       │   ├── densenet_local.py
 │       │   └── densenet_test.py
 │       └── train_standard_classifiers
-│           └── classifiers.py
-│           └── classifiers_test.py
-│           └── main.py
+│       │   ├── main.py
+│       │   ├── classifiers.py
+│       │   ├── classifiers_local.py
+│       │   └── classifiers_test.py
+│       │
+│       ├── config.ini         <- Config for Drone runs
+│       ├── config_local.ini   <- Config for local (VScode) runs
+│       └── conftest.py        <- Pytest fixtures
 |
 ├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
 │
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
 │
 ├── .drone.yml    <- Instructions for Drone runners
+├── .env          <- Local environment variables for VScode IDE
 ├── .flake8       <- Configuration for style guide enforcement
-├── .gitignore
+├── .gitignore    
+├── pytest.ini    <- Pytest configuration
 |
 └── README.md
 ```
 
 The `processes` subdirectory contains as its subdirectories the various separate processes (`prepare_data`, etc.),
-which can be tought of as nodes of the analysis graph.
-Each of these processes has a clearly identifiable main script,
-and another file containing importable functions and classes specific to that step.
+which can be tought of as nodes of an analysis graph.
+Each of these processes contains:
+- `main.py`, a clearly identifiable main script for running on CI/CD (Drone)
+- `{process}.py`, containing importable functions and classes specific to that process,
+- `_local.py`, for local development/debugging inside VSCode (similar to main), and
+- `_test.py`, containing automated unit or integration tests for this process, and
 
 The process names from the template are not likely to generalize to other projects, so here is another example for clarity:
 
@@ -50,11 +61,13 @@ The process names from the template are not likely to generalize to other projec
 └── processes
     ├── prepare_data
     │   ├── main.py
-    │   ├── (image_data).py
-    │   └── (image_data)_test.py
+    │   ├── (image_data).py         <- importable functions
+    │   └── (image_data)_local.py   <- similar to main but for local running and debugging (in VScode)
+    │   └── (image_data)_test.py    <- for automated testing
     ├── train_model
     │   ├── main.py
     │   ├── (convnet).py
+    │   ├── (convnet)_local.py
     │   └── (convnet)_test.py
     └── ...
 ```
@@ -190,6 +203,8 @@ This delay can be overcome by manually forcing a synchronization of the reposito
 
 To compare various experiments, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking. Experiment tracking with MLflow enables logging the parameters with which every run was executed and the metrics of interest, as well as any artifacts produced by the run.
 
+The experiments are only tracked from the executions on Drone. In local runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code). 
+
 The environment variables for connecting to MLflow server are provided in .drone.yml:
 
 ```yaml
@@ -198,7 +213,7 @@ environment:
   MLFLOW_S3_ENDPOINT_URL: http://{{ ProjectID }}:9000
 ```
 
-The usage of MLflow for experiment tracking is illustrated by the scikit-learn example pipeline in [lab/processes/train_standard_classifiers/main.py](lab/processes/train_standard_classifiers/main.py).
+The use of MLflow for experiment tracking is illustrated by the scikit-learn example pipeline in [lab/processes/train_standard_classifiers/main.py](lab/processes/train_standard_classifiers/main.py).
 
 ```python
 import mlflow
@@ -239,12 +254,19 @@ you can select the runs you wish to compare in the MLflow UI, select "Compare" a
 Alternatively, the results can also be queried with the MLflow API. For more information on the latter, see [MLflow documentation on querying runs](https://www.mlflow.org/docs/latest/tracking.html#querying-runs-programmatically).
 
 
-## Unit tests
+## Testing
 
-To run all unit tests: there are two options:
-- using the VSCode interface: select `Ctrl+Shift+P`, then search for `Python: Run All Tests` 
-- using the command line, which also allows verbose output and selecting a subset of tests to run: 
+To run automated tests, you can use the command line `pytest`, which allows verbose output and selecting subsets of tests to run: 
    ```
-   PYTHONPATH=lab pytest -v                             # Run all tests
-   PYTHONPATH=lab pytest -v lab/processes/prepare_data  # Run only tests in prepare_data
+   PYTHONPATH=lab pytest -v                              # Run all tests (verbose)
+   PYTHONPATH=lab pytest -v lab/processes/prepare_data   # Run only tests in prepare_data
+   PYTHONPATH=lab pytest -v -m unittest                  # Run only unit tests
+   PYTHONPATH=lab pytest -v -m integration               # Run only integration tests
    ```
+
+It is also possible to run the tests using the VSCode interface. Select `Ctrl+Shift+P`, then search for `Python: Run All Tests`.
+
+Integration tests (and some unit tests in prepare_data) require the existence of a dataset to be able to run. 
+This temporary dataset is provided to such tests through the use of a test fixture defined in `conftest.py`, 
+and is eliminated by the same fixture after the test is executed.
+
