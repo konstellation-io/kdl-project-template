@@ -5,12 +5,9 @@ Part 3: Training NN models in PyTroch
 
 import configparser
 import os
-from pathlib import Path
 
 import mlflow
-
 from processes.train_dnn_pytorch.densenet import train_densenet
-
 
 PATH_CONFIG = os.getenv("PATH_CONFIG")
 config = configparser.ConfigParser()
