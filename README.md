@@ -18,10 +18,14 @@ The project repository has the following directory structure:
 │       ├── prepare_data
 │       │   ├── main.py
 │       │   └── cancer_data.py
+│       │   └── cancer_data_test.py
 |       ├── train_dnn_pytorch
 │       │   ├── main.py
 │       │   └── densenet.py
+│       │   └── densenet_test.py
 │       └── train_standard_classifiers
+│           └── classifiers.py
+│           └── classifiers_test.py
 │           └── main.py
 |
 ├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
