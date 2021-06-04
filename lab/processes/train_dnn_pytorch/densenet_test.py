@@ -8,8 +8,8 @@ from processes.train_dnn_pytorch.densenet import train_densenet
 
 vscode_config = {
     "paths": {
-        "artifacts_temp": "temp_artifacts",
-        "dir_processed": "temp_data"
+        "artifacts_temp": "temp_artifacts",  # where artifacts are saved locally for inspection
+        "dir_processed": "temp_data"         # where processed data are created locally
     },
     "filenames": {
         "fname_model": "dnn.pt",
@@ -18,7 +18,7 @@ vscode_config = {
         "fname_training_history_csv": "history.csv"
     },
     "mlflow": {
-        "mlflow_experiment": "",
+        "mlflow_experiment": "",            # this can be empty for local runs as we bypass using mlflow
     },
     "training": {
         "random_seed": 42,
