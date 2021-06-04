@@ -2,32 +2,14 @@
 Setup for local execution and debugging of pytorch densenet training.
 """
 
+import configparser
+
 from lib.testing import get_mlflow_stub
 from processes.prepare_data.cancer_data import prepare_cancer_data
 from processes.train_dnn_pytorch.densenet import train_densenet
 
-vscode_config = {
-    "paths": {
-        "artifacts_temp": "temp_artifacts",  # where artifacts are saved locally for inspection
-        "dir_processed": "temp_data"         # where processed data are created locally
-    },
-    "filenames": {
-        "fname_model": "dnn.pt",
-        "fname_conf_mat": "confusion_matrix.png",
-        "fname_training_history": "history.png",
-        "fname_training_history_csv": "history.csv"
-    },
-    "mlflow": {
-        "mlflow_experiment": "",            # this can be empty for local runs as we bypass using mlflow
-    },
-    "training": {
-        "random_seed": 42,
-        "batch_size": 30,
-        "n_workers": 1,
-        "epochs": 5,
-        "lr": 0.001
-    }
-}
+vscode_config = configparser.ConfigParser()
+vscode_config.read("lab/processes/config_local.ini")
 
 
 if __name__ == "__main__":

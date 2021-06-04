@@ -1,25 +1,15 @@
 """
-Setup for local execution and debugging of the sklearn classifiers training
+Setup for local execution and debugging of scikit-learn classifiers training
 """
+
+import configparser
 
 from lib.testing import get_mlflow_stub
 from processes.prepare_data.cancer_data import prepare_cancer_data
 from processes.train_standard_classifiers.classifiers import train_classifiers
 
-
-# TODO Move to separate config for VScode executions
-vscode_config = {
-    "paths": {
-        "artifacts_temp": "temp_artifacts",
-        "dir_processed": "temp_data"
-    },
-    "mlflow": {
-        "mlflow_experiment": "",
-    },
-    "training": {
-        "random_seed": 42
-    }
-}
+vscode_config = configparser.ConfigParser()
+vscode_config.read("lab/processes/config_local.ini")
 
 
 if __name__ == "__main__":
