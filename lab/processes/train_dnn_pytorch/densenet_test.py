@@ -1,5 +1,5 @@
 """
-Integration test for process train_dnn_pytorch
+Integration test for train_dnn_pytorch
 """
 
 import configparser
