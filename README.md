@@ -237,3 +237,14 @@ with mlflow.start_run(run_name=MLFLOW_RUN_NAME, tags=MLFLOW_TAGS):
 To compare the executions and vizualise the effect of logged parameters on the logged metrics,
 you can select the runs you wish to compare in the MLflow UI, select "Compare" and add the desired parameters and metrics to the visualizations provided through the UI.
 Alternatively, the results can also be queried with the MLflow API. For more information on the latter, see [MLflow documentation on querying runs](https://www.mlflow.org/docs/latest/tracking.html#querying-runs-programmatically).
+
+
+## Unit tests
+
+To run all unit tests: there are two options:
+- using the VSCode interface: select `Ctrl+Shift+P`, then search for `Python: Run All Tests` 
+- using the command line, which also allows verbose output and selecting a subset of tests to run: 
+   ```
+   PYTHONPATH=lab pytest -v                             # Run all tests
+   PYTHONPATH=lab pytest -v lab/processes/prepare_data  # Run only tests in prepare_data
+   ```
