@@ -1,5 +1,5 @@
 """
-A class defining a densely connected neural network for binary classification
+A densely connected neural network for binary classification and its usage on the example dataset
 """
 
 from pathlib import Path
@@ -63,7 +63,7 @@ def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:
     - Keeps the best version of the model for final evaluation (not necessarily after final epoch)
     - Saves the model, its training and validation metrics and associated validation artifacts in MLflow
     """
-    # Unpack config:
+    # Unpack config
     mlflow_experiment = config["mlflow"]["mlflow_experiment"]
     random_seed = int(config["training"]["random_seed"])
     batch_size = int(config["training"]["batch_size"])
@@ -101,7 +101,7 @@ def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:
             train_loader=train_loader, val_loader=val_loader,
             epochs=epochs, filepath_model=filepath_model)
 
-        # Load best version:
+        # Load best version
         net = DenseNN()
         net.load_state_dict(torch.load(filepath_model))
 
@@ -116,7 +116,7 @@ def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:
         plot_training_history(df_history, title="Training history", savepath=filepath_training_history)
         df_history.to_csv(filepath_training_history_csv)
 
-        # Log to MLflow:
+        # Log to MLflow
         mlflow.log_artifacts(dir_artifacts)
         mlflow.log_metrics(dict(
             val_loss=val_loss,
