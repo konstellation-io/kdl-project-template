@@ -1,5 +1,5 @@
 """
-Integration test for step train_standard_classifiers
+Integration test for train_standard_classifiers
 """
 
 import configparser
