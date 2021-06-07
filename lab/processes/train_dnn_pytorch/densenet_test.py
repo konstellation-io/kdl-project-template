@@ -5,11 +5,12 @@ Integration test for train_dnn_pytorch
 import configparser
 
 import pytest
+
 from lib.testing import get_mlflow_stub
 from processes.train_dnn_pytorch.densenet import train_densenet
 
 vscode_config = configparser.ConfigParser()
-vscode_config.read("lab/processes/config_local.ini")
+vscode_config.read("lab/processes/config_test.ini")
 
 
 @pytest.mark.integration
