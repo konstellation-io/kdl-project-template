@@ -140,6 +140,7 @@ To see the tracked experiments, visit the MLflow tool UI.
 
 Reusable functions can be imported from the library (`lib` subdirectory) to avoid code duplication and to permit a more organized structuring of the repository.
 
+**In Jupyter:** 
 To import library code in notebooks, you may need to add the `lab` directory to PYTHONPATH, for example as follows:
 
 ```python
@@ -154,6 +155,15 @@ sys.path.append(str(DIR_LAB))
 from lib.viz import plot_confusion_matrix
 ```
 
+**In Vscode**: 
+Imports from `lab` directory subdirectories are recognized correctly by code linters 
+thanks to the defined `PYTHONPATH=lab` in the .env environment file. 
+However, they are not recognized by the terminal, 
+so in order to run code with imports from Vscode terminal, 
+prepend your calls to Python scripts with `PYTHONPATH=lab` as follows: 
+`PYTHONPATH=lab python {filename.py}`.
+
+**On Drone:** 
 To be able to run imports from the `lib` directory on Drone, you may add it to PYTHONPATH in .drone.yml as indicated:
 
 ```yaml
