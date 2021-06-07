@@ -10,8 +10,11 @@ import numpy as np
 from lib.viz import plot_confusion_matrix
 from mock import MagicMock
 from processes.prepare_data.cancer_data import load_data_splits
-from sklearn.ensemble import (AdaBoostClassifier, GradientBoostingClassifier,
-                              RandomForestClassifier)
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.naive_bayes import GaussianNB
@@ -34,16 +37,17 @@ def create_classifiers() -> dict:
         "Random forest": RandomForestClassifier(),
         "Linear SVM": SVC(kernel="linear"),
         "GradientBoost": GradientBoostingClassifier(),
-        "AdaBoost": AdaBoostClassifier()
+        "AdaBoost": AdaBoostClassifier(),
     }
     return models
 
 
-def train_classifiers(mlflow: Union[ModuleType, MagicMock],
-                      config: Union[ConfigParser, dict],
-                      mlflow_url: str,
-                      mlflow_tags: dict
-                      ) -> None:
+def train_classifiers(
+    mlflow: Union[ModuleType, MagicMock],
+    config: Union[ConfigParser, dict],
+    mlflow_url: str,
+    mlflow_tags: dict,
+) -> None:
     """
     Trains a number of classifiers on the data that is found in the directory specified as dir_processed in config.
 
@@ -59,7 +63,9 @@ def train_classifiers(mlflow: Union[ModuleType, MagicMock],
     # Unpack config:
     random_seed = int(config["training"]["random_seed"])
     dir_processed = config["paths"]["dir_processed"]
-    dir_artifacts = Path(config["paths"]["artifacts_temp"])  # Temporarily host artifacts before logging to MLflow
+    dir_artifacts = Path(
+        config["paths"]["artifacts_temp"]
+    )  # Temporarily host artifacts before logging to MLflow
     filepath_conf_matrix = dir_artifacts / "confusion_matrix.png"
     mlflow_experiment = config["mlflow"]["mlflow_experiment"]
 
@@ -72,7 +78,9 @@ def train_classifiers(mlflow: Union[ModuleType, MagicMock],
     with mlflow.start_run(run_name="sklearn_example_train", tags=mlflow_tags):
 
         # Load training and validation data
-        X_train, X_val, _, y_train, y_val, _ = load_data_splits(dir_processed=dir_processed, as_type="array")
+        X_train, X_val, _, y_train, y_val, _ = load_data_splits(
+            dir_processed=dir_processed, as_type="array"
+        )
 
         # Define a number of classifiers
         models = create_classifiers()
@@ -87,9 +95,11 @@ def train_classifiers(mlflow: Union[ModuleType, MagicMock],
                 val_accuracy = accuracy_score(y_pred, y_val)
                 cm = confusion_matrix(y_val, y_pred)
                 plot_confusion_matrix(
-                    cm, normalize=False,
+                    cm,
+                    normalize=False,
                     title="Confusion matrix (validation set)",
-                    savepath=filepath_conf_matrix)
+                    savepath=filepath_conf_matrix,
+                )
 
                 mlflow.log_artifacts(dir_artifacts)
                 mlflow.log_param("classifier", model_name)

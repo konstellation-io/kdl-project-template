@@ -12,7 +12,7 @@ PATH_CONFIG = os.getenv("PATH_CONFIG")
 config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
-DIR_DATA_PROCESSED = config['paths']['dir_processed']
+DIR_DATA_PROCESSED = config["paths"]["dir_processed"]
 
 
 if __name__ == "__main__":

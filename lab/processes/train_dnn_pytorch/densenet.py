@@ -8,10 +8,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from sklearn.metrics import confusion_matrix
+
 from lib.pytorch import train_and_validate, val_loop
 from lib.viz import plot_confusion_matrix, plot_training_history
 from processes.prepare_data.cancer_data import load_data_splits_as_dataloader
-from sklearn.metrics import confusion_matrix
 
 
 class DenseNN(nn.Module):
@@ -33,7 +34,7 @@ class DenseNN(nn.Module):
 
         self.output_layer = nn.Linear(100, 1)
 
-    def forward(self, x):
+    def forward(self, x):  # TODO: x type
 
         x = self.dense1(x)
         x = self.bn1(x)
@@ -53,7 +54,7 @@ class DenseNN(nn.Module):
         return x
 
 
-def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:
+def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:  # TODO Arg types
     """
     The main function of the example Pytorch model training script
 
@@ -74,8 +75,12 @@ def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:
     dir_artifacts = Path(config["paths"]["artifacts_temp"])
     filepath_conf_matrix = dir_artifacts / config["filenames"]["fname_conf_mat"]
     filepath_model = dir_artifacts / config["filenames"]["fname_model"]
-    filepath_training_history = dir_artifacts / config["filenames"]["fname_training_history"]
-    filepath_training_history_csv = dir_artifacts / config["filenames"]["fname_training_history_csv"]
+    filepath_training_history = (
+        dir_artifacts / config["filenames"]["fname_training_history"]
+    )
+    filepath_training_history_csv = (
+        dir_artifacts / config["filenames"]["fname_training_history_csv"]
+    )
 
     # Prepare before run
     np.random.seed(random_seed)
@@ -88,7 +93,8 @@ def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:
 
         # Load the data splits
         train_loader, val_loader, _ = load_data_splits_as_dataloader(
-            dir_processed=dir_processed, batch_size=batch_size, n_workers=n_workers)
+            dir_processed=dir_processed, batch_size=batch_size, n_workers=n_workers
+        )
 
         # Instantiate the Dense NN, loss function and optimizer
         net = DenseNN()
@@ -97,36 +103,57 @@ def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:
 
         # Train and validate
         net, df_history, _ = train_and_validate(
-            model=net, loss_fn=loss_fn, optimizer=optimizer,
-            train_loader=train_loader, val_loader=val_loader,
-            epochs=epochs, filepath_model=filepath_model)
+            model=net,
+            loss_fn=loss_fn,
+            optimizer=optimizer,
+            train_loader=train_loader,
+            val_loader=val_loader,
+            epochs=epochs,
+            filepath_model=filepath_model,
+        )
 
         # Load best version
         net = DenseNN()
         net.load_state_dict(torch.load(filepath_model))
 
         # Get metrics on best model
-        train_loss, train_acc, _ = val_loop(dataloader=train_loader, model=net, loss_fn=loss_fn)
-        val_loss, val_acc, (y_val_true, y_val_pred) = val_loop(dataloader=val_loader, model=net, loss_fn=loss_fn)
+        train_loss, train_acc, _ = val_loop(
+            dataloader=train_loader, model=net, loss_fn=loss_fn
+        )
+        val_loss, val_acc, (y_val_true, y_val_pred) = val_loop(
+            dataloader=val_loader, model=net, loss_fn=loss_fn
+        )
         cm = confusion_matrix(y_val_true, y_val_pred)
 
         # Save artifacts
         plot_confusion_matrix(
-            cm, normalize=False, title="Confusion matrix (validation set)", savepath=filepath_conf_matrix)
-        plot_training_history(df_history, title="Training history", savepath=filepath_training_history)
+            cm,
+            normalize=False,
+            title="Confusion matrix (validation set)",
+            savepath=filepath_conf_matrix,
+        )
+        plot_training_history(
+            df_history, title="Training history", savepath=filepath_training_history
+        )
         df_history.to_csv(filepath_training_history_csv)
 
         # Log to MLflow
         mlflow.log_artifacts(dir_artifacts)
-        mlflow.log_metrics(dict(
-            val_loss=val_loss,
-            val_acc=val_acc,
-            train_loss=train_loss,
-            train_acc=train_acc))
-        mlflow.log_params(dict(
-            epochs=epochs,
-            batch_size=batch_size,
-            learning_rate=learning_rate,
-            classifier="DenseNN"))
+        mlflow.log_metrics(
+            dict(
+                val_loss=val_loss,
+                val_acc=val_acc,
+                train_loss=train_loss,
+                train_acc=train_acc,
+            )
+        )
+        mlflow.log_params(
+            dict(
+                epochs=epochs,
+                batch_size=batch_size,
+                learning_rate=learning_rate,
+                classifier="DenseNN",
+            )
+        )
 
         print("Done!")
