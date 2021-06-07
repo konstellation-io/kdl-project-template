@@ -27,16 +27,14 @@ The project repository has the following directory structure:
 |       ├── train_dnn_pytorch
 │       │   ├── main.py
 │       │   ├── densenet.py
-│       │   ├── densenet_local.py
 │       │   └── densenet_test.py
 │       └── train_standard_classifiers
 │       │   ├── main.py
 │       │   ├── classifiers.py
-│       │   ├── classifiers_local.py
 │       │   └── classifiers_test.py
 │       │
 │       ├── config.ini         <- Config for Drone runs
-│       ├── config_local.ini   <- Config for local (VScode) runs
+│       ├── config_test.ini   <- Config for local test runs
 │       └── conftest.py        <- Pytest fixtures
 |
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
@@ -53,8 +51,7 @@ which can be tought of as nodes of an analysis graph.
 Each of these processes contains:
 - `main.py`, a clearly identifiable main script for running on CI/CD (Drone)
 - `{process}.py`, containing importable functions and classes specific to that process,
-- `_local.py`, for local development/debugging inside VSCode (similar to main), and
-- `_test.py`, containing automated unit or integration tests for this process, and
+- `{process}_test.py`, containing automated unit or integration tests for this process, and
 
 The process names from the template are not likely to generalize to other projects, so here is another example for clarity:
 
@@ -63,12 +60,10 @@ The process names from the template are not likely to generalize to other projec
     ├── prepare_data
     │   ├── main.py
     │   ├── (image_data).py         <- importable functions
-    │   └── (image_data)_local.py   <- similar to main but for local running and debugging (in VScode)
     │   └── (image_data)_test.py    <- for automated testing
     ├── train_model
     │   ├── main.py
     │   ├── (convnet).py
-    │   ├── (convnet)_local.py
     │   └── (convnet)_test.py
     └── ...
 ```
@@ -111,7 +106,8 @@ More information on each of these steps:
   the training history (accuracy and loss per epoch on both training and validation data) are stored as an artifact in MLflow (`training_history.csv` and visualized in `.png`).
   The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
 
-The execution of the example classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml) (for simplicity, we are omitting various additional components here, such as the environment variables and the AWS secrets):
+The execution of the example classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml) 
+(for simplicity, we are omitting various additional components here, such as the environment variables and the AWS secrets):
 
 ```yaml
 ---
@@ -212,9 +208,11 @@ This delay can be overcome by manually forcing a synchronization of the reposito
 
 ## Logging experiment results (MLflow)
 
-To compare various experiments, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking. Experiment tracking with MLflow enables logging the parameters with which every run was executed and the metrics of interest, as well as any artifacts produced by the run.
+To compare various experiments, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking. 
+Experiment tracking with MLflow enables logging the parameters with which every run was executed and the metrics of interest, as well as any artifacts produced by the run.
 
-The experiments are only tracked from the executions on Drone. In local runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code). 
+The experiments are only tracked from the executions on Drone. 
+In local test runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code). 
 
 The environment variables for connecting to MLflow server are provided in .drone.yml:
 
