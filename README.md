@@ -40,7 +40,6 @@ The project repository has the following directory structure:
 │
 ├── .drone.yml    <- Instructions for Drone runners
 ├── .env          <- Local environment variables for VScode IDE
-├── .flake8       <- Configuration for style guide enforcement
 ├── .gitignore    
 ├── pytest.ini    <- Pytest configuration
 |
@@ -354,6 +353,6 @@ If we drop the `temp_data_dir` parameter from this test function,
 the test will run without the fixture, 
 and will fail because the required data directory does not exist.
 
-To learn more about pytest fixtures, see the documentation on [pytest fixtures](https://docs.pytest.org/en/6.2.x/fixture.html).
+To learn more, see the documentation on [pytest fixtures](https://docs.pytest.org/en/6.2.x/fixture.html).
 
 
