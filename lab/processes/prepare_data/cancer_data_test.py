@@ -1,8 +1,5 @@
 """
 Unit tests for the functions in lab/processes/prepare_data/cancer_data.py
-
-Returns:
-    (None)
 """
 
 import os
