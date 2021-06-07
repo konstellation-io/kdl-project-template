@@ -14,9 +14,11 @@ config = configparser.ConfigParser()
 config.read(PATH_CONFIG)
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
-MLFLOW_TAGS = {"git_tag": os.getenv('DRONE_TAG')}
+MLFLOW_TAGS = {"git_tag": os.getenv("DRONE_TAG")}
 
 
 if __name__ == "__main__":
 
-    train_densenet(mlflow=mlflow, config=config, mlflow_url=MLFLOW_URL, mlflow_tags=MLFLOW_TAGS)
+    train_densenet(
+        mlflow=mlflow, config=config, mlflow_url=MLFLOW_URL, mlflow_tags=MLFLOW_TAGS
+    )
