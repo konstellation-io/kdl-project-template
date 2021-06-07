@@ -5,6 +5,7 @@ Integration test for train_standard_classifiers
 import configparser
 
 import pytest
+
 from lib.testing import get_mlflow_stub
 from processes.train_standard_classifiers.classifiers import train_classifiers
 
