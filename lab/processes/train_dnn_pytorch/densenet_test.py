@@ -25,8 +25,7 @@ def test_train_densenet_without_errors(temp_data_dir):
         mlflow=get_mlflow_stub(),
         config=vscode_config,
         mlflow_url=None,
-        mlflow_tags=None,
-    )
-    # TODO Created the temporary files (.csv y .png)
-    # TODO Assert the mlflow mock has been called a number of times
-    # 
+        mlflow_tags=None
+        )
+    # TODO Check the resulting artifact files (.csv y .png) have been created
+    # TODO Assert that mlflow mock has been called a number of times
