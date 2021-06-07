@@ -5,6 +5,11 @@
 The project repository has the following directory structure:
 
 ```
+├── .vscode
+│   └── launch.json <- Configuration for test executions in Vscode
+│
+├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
+│
 ├── lab
 │   │
 │   ├── analysis  <- Analyses of data, models etc. (typically notebooks)
@@ -34,16 +39,13 @@ The project repository has the following directory structure:
 │       ├── config_local.ini   <- Config for local (VScode) runs
 │       └── conftest.py        <- Pytest fixtures
 |
-├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
-│
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
 │
 ├── .drone.yml    <- Instructions for Drone runners
 ├── .env          <- Local environment variables for VScode IDE
 ├── .gitignore    
-├── pytest.ini    <- Pytest configuration
-|
-└── README.md
+├── README.md     <- Main README
+└── pytest.ini    <- Pytest configuration
 ```
 
 The `processes` subdirectory contains as its subdirectories the various separate processes (`prepare_data`, etc.),
