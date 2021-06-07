@@ -2,12 +2,16 @@
 A densely connected neural network for binary classification and its usage on the example dataset
 """
 
+from configparser import ConfigParser
 from pathlib import Path
+from types import ModuleType
+from typing import Union
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from mock import MagicMock
 from sklearn.metrics import confusion_matrix
 
 from lib.pytorch import train_and_validate, val_loop
@@ -34,7 +38,7 @@ class DenseNN(nn.Module):
 
         self.output_layer = nn.Linear(100, 1)
 
-    def forward(self, x):  # TODO: x type
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
 
         x = self.dense1(x)
         x = self.bn1(x)
@@ -49,12 +53,14 @@ class DenseNN(nn.Module):
         x = F.relu(x)
 
         x = self.output_layer(x)
-        x = torch.sigmoid(x)
+        x = nn.Sigmoid()(x)
 
         return x
 
 
-def train_densenet(mlflow, config, mlflow_url, mlflow_tags) -> None:  # TODO Arg types
+def train_densenet(
+    mlflow: Union[ModuleType, MagicMock], config: ConfigParser, mlflow_url: str, mlflow_tags: dict
+    ) -> None:
     """
     The main function of the example Pytorch model training script
 
