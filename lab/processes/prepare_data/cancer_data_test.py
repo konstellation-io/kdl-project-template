@@ -14,13 +14,11 @@ import pytest
 import torch
 from pandas import DataFrame, Series
 
-from processes.prepare_data.cancer_data import (
-    load_cancer_data,
-    load_data_splits,
-    load_data_splits_as_dataloader,
-    prepare_cancer_data,
-    split_data,
-)
+from processes.prepare_data.cancer_data import (load_cancer_data,
+                                                load_data_splits,
+                                                load_data_splits_as_dataloader,
+                                                prepare_cancer_data,
+                                                split_data)
 
 
 @pytest.mark.unittest
@@ -37,7 +35,6 @@ class TestCancerDataPreparation:
         X, y = load_cancer_data()
         assert isinstance(X, DataFrame)
         assert isinstance(y, Series)
-        assert 1 == 2
 
     def test_split_data_returns_expected_objects(self):
         """
