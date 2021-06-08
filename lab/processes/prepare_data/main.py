@@ -10,7 +10,7 @@ from processes.prepare_data.cancer_data import prepare_cancer_data
 
 PATH_CONFIG = os.getenv("PATH_CONFIG")
 config = configparser.ConfigParser()
-config.read(PATH_CONFIG)
+config.read(str(PATH_CONFIG))
 
 DIR_DATA_PROCESSED = config["paths"]["dir_processed"]
 

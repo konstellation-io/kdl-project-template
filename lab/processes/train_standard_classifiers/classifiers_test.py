@@ -22,7 +22,7 @@ def test_train_classifiers_runs_without_errors(temp_data_dir):
     - train_classifiers runs without any errors
     - artifacts are created in the temporary artifacts directory (provided with config)
     - the mlflow provided to the function is called to log the metrics, params and artifacts
-    
+
     Uses test fixture temp_data_dir to create a temporary dataset required by train_classifiers (see conftest.py)
     """
     vscode_config["paths"]["dir_processed"] = temp_data_dir
