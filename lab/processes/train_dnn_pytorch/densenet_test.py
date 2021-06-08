@@ -3,6 +3,7 @@ Integration test for train_dnn_pytorch
 """
 
 import configparser
+import os
 
 import pytest
 
@@ -27,5 +28,16 @@ def test_train_densenet_without_errors(temp_data_dir):
         mlflow_url=None,
         mlflow_tags=None
         )
-    # TODO Check the resulting artifact files (.csv y .png) have been created
+
+    # Check the resulting artifact files (.csv y .png) have been created
+    dir_artifacts = vscode_config["paths"]["artifacts_temp"]
+    artifacts_contents = os.listdir(dir_artifacts)
+    fname_model = vscode_config["filenames"]["fname_model"]
+    fname_conf_matrix = vscode_config["filenames"]["fname_conf_mat"]
+    fname_training_history = vscode_config["filenames"]["fname_training_history"]
+    fname_training_history_csv = vscode_config["filenames"]["fname_training_history_csv"]
+
+    for fname in [fname_model, fname_conf_matrix, fname_training_history, fname_training_history_csv]:
+        assert fname in artifacts_contents
+
     # TODO Assert that mlflow mock has been called a number of times
