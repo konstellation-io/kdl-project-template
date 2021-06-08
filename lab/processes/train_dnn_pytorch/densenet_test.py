@@ -4,6 +4,7 @@ Integration test for train_dnn_pytorch
 
 import configparser
 import os
+from pathlib import Path
 
 import pytest
 
@@ -17,13 +18,21 @@ vscode_config.read("lab/processes/config_test.ini")
 @pytest.mark.integration
 def test_train_densenet_without_errors(temp_data_dir):
     """
-    Runs train_densenet with a mock mlflow instance and fails the test if the run raises any exceptions
+    Runs train_densenet with a mock mlflow instance. 
+    
+    Verifies that:
+    - train_densenet runs without any errors
+    - artifacts are created in the temporary artifacts directory (provided with config)
+    - the mlflow provided to the function is called to log the metrics, params and artifacts
+    
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
     """
     vscode_config["paths"]["dir_processed"] = temp_data_dir
-    vscode_config["training"]["epochs"] = "1"
+
+    mlflow_stub = get_mlflow_stub()
+
     train_densenet(
-        mlflow=get_mlflow_stub(),
+        mlflow=mlflow_stub,
         config=vscode_config,
         mlflow_url=None,
         mlflow_tags=None
@@ -40,4 +49,8 @@ def test_train_densenet_without_errors(temp_data_dir):
     for fname in [fname_model, fname_conf_matrix, fname_training_history, fname_training_history_csv]:
         assert fname in artifacts_contents
 
-    # TODO Assert that mlflow mock has been called a number of times
+    # Assert that mlflow has been called to log artifacts, metrics, and params
+    mlflow_stub.start_run.assert_called()
+    mlflow_stub.log_artifacts.assert_called_with(Path(dir_artifacts))
+    mlflow_stub.log_params.assert_called()
+    mlflow_stub.log_metrics.assert_called()
