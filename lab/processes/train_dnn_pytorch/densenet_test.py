@@ -18,13 +18,13 @@ vscode_config.read("lab/processes/config_test.ini")
 @pytest.mark.integration
 def test_train_densenet_without_errors(temp_data_dir):
     """
-    Runs train_densenet with a mock mlflow instance. 
-    
+    Runs train_densenet with a mock mlflow instance.
+
     Verifies that:
     - train_densenet runs without any errors
     - artifacts are created in the temporary artifacts directory (provided with config)
     - the mlflow provided to the function is called to log the metrics, params and artifacts
-    
+
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
     """
     vscode_config["paths"]["dir_processed"] = temp_data_dir
