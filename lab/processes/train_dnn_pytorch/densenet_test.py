@@ -16,6 +16,7 @@ vscode_config.read("lab/processes/config_test.ini")
 
 
 @pytest.mark.integration
+@pytest.mark.filterwarnings("ignore:CUDA initialization")
 def test_train_densenet_without_errors(temp_data_dir):
     """
     Runs train_densenet with a mock mlflow instance.
