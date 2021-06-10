@@ -3,21 +3,21 @@ description: Cancer classification pipeline
 
 entrypoint:
   proto: public_input.proto
-  image: konstellation/kre-entrypoint:1.6.0
+  image: konstellation/kre-entrypoint:1.7.0
 
 nodes:
   - name: etl
-    image: konstellation/kre-py.1:23.1
+    image: konstellation/kre-py.1:25.1
     src: processes/etl/main.py
   - name: model
-    image: konstellation/kre-py.1:23.1
+    image: konstellation/kre-py.1:25.1
     src: processes/model/main.py
   - name: output
-    image: konstellation/kre-py.1:23.1
+    image: konstellation/kre-py.1:25.1
     src: processes/output/main.py
-  - name: save-metric
-    image: konstellation/kre-py.1:23.1
-    src: processes/save-metric/main.py
+  # - name: save-metric
+  #   image: konstellation/kre-py.1:25.1
+  #   src: processes/save-metric/main.py
 
 workflows:
   - name: example-classification-pipeline
@@ -26,7 +26,7 @@ workflows:
       - etl
       - model
       - output
-  - name: save-metric
-    entrypoint: SavePredictionMetric
-    sequential:
-      - save-metric
+  # - name: save-metric
+  #   entrypoint: SavePredictionMetric
+  #   sequential:
+  #     - save-metric

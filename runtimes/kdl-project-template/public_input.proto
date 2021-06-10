@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 package entrypoint;
-option go_package = "main";
 
 message InputFeatures {
   float mean_radius = 1;
@@ -39,7 +38,7 @@ message InputFeatures {
 message Prediction {
   bool success = 1;
   string message = 2;
-  bool category = 3
+  bool category = 3;
 }
 
 service EntryPoint {
