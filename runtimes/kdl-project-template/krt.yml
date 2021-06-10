@@ -1,0 +1,32 @@
+version: example-pipeline-v0
+description: Cancer classification pipeline
+
+entrypoint:
+  proto: public_input.proto
+  image: konstellation/kre-entrypoint:1.6.0
+
+nodes:
+  - name: etl
+    image: konstellation/kre-py.1:23.1
+    src: processes/etl/main.py
+  - name: model
+    image: konstellation/kre-py.1:23.1
+    src: processes/model/main.py
+  - name: output
+    image: konstellation/kre-py.1:23.1
+    src: processes/output/main.py
+  - name: save-metric
+    image: konstellation/kre-py.1:23.1
+    src: processes/save-metric/main.py
+
+workflows:
+  - name: example-classification-pipeline
+    entrypoint: MakePrediction
+    sequential:
+      - etl
+      - model
+      - output
+  - name: save-metric
+    entrypoint: SavePredictionMetric
+    sequential:
+      - save-metric
