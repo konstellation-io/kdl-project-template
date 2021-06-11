@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "pytest",
             "args": [
-                "-v"
+                "-vv"
             ]
         },
         {
@@ -19,7 +19,7 @@
             "request": "launch",
             "module": "pytest",
             "args": [
-                "-v",
+                "-vv",
                 "-m unittest"
             ]
         },
@@ -29,7 +29,7 @@
             "request": "launch",
             "module": "pytest",
             "args": [
-                "-v",
+                "-vv",
                 "-m integration"
             ]
         }
