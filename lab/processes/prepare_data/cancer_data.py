@@ -2,6 +2,7 @@
 Functions for preparing the breast cancer dataset for training and validating ML algorithms
 """
 
+import joblib
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -79,6 +80,9 @@ def prepare_cancer_data(dir_output: str) -> None:
     np.save(str(Path(dir_output) / "y_val.npy"), y_val.to_numpy())
     np.save(str(Path(dir_output) / "X_test.npy"), X_test.to_numpy())
     np.save(str(Path(dir_output) / "y_test.npy"), y_test.to_numpy())
+
+    # Save scaler
+    joblib.dump(scaler, str(Path(dir_output) / "scaler.joblib"))
 
 
 def load_data_splits(
