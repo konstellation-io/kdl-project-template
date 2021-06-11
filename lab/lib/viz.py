@@ -104,7 +104,7 @@ def plot_confusion_matrix(
     cm: np.ndarray,
     normalize: bool = True,
     title: str = "Confusion matrix",
-    cmap: Colormap = plt.cm.Blues,
+    cmap: Colormap = plt.cm.Blues,  # pylint: disable=no-member
     show: bool = True,
     class_names: Union[None, list] = None,
     savepath: Union[None, str, Path] = None,
