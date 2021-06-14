@@ -2,6 +2,7 @@
 Functions for instantiating and training traditional ML classifiers
 """
 from configparser import ConfigParser
+import joblib
 from pathlib import Path
 from types import ModuleType
 from typing import Union
@@ -96,7 +97,7 @@ def train_classifiers(
                     title="Confusion matrix (validation set)",
                     savepath=filepath_conf_matrix,
                 )
-
+                joblib.dump(model, Path(dir_artifacts) / "model.joblib")
                 mlflow.log_artifacts(dir_artifacts)
                 mlflow.log_params({"classifier": model_name})
                 mlflow.log_metrics({"val_acc": val_accuracy})
