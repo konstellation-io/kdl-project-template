@@ -1,0 +1,8 @@
+{
+    "python.sortImports.args": [
+        "--src=${workspaceFolder}/lab",
+        "--src=${workspaceFolder}/runtimes/krt/processes/output",
+        "--src=${workspaceFolder}/runtimes/krt/processes/etl",
+        "--src=${workspaceFolder}/runtimes/krt/processes/model",
+    ]
+}
