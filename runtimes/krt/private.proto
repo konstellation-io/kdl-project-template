@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "public_input.proto";
+
+
+message EtlOutput {
+  entrypoint.InputFeatures input_features = 1;
+  entrypoint.InputFeatures scaled_features = 2;
+}
+  
+message ModelOutput {
+  bool category = 1;
+  float probability = 2;
+}
