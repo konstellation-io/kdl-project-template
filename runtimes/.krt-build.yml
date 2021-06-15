@@ -1,0 +1,5 @@
+assets:
+  - name: scaler
+    path: /shared-storage/project-template/data/processed/scaler.joblib
+  - name: model
+    path: /shared-storage/project-template/mlflow-artifacts/1/fd892fe0e4024c49a0caa0ae66341ece/artifacts/model.joblib
