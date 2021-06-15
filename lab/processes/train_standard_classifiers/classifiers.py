@@ -2,11 +2,11 @@
 Functions for instantiating and training traditional ML classifiers
 """
 from configparser import ConfigParser
-import joblib
 from pathlib import Path
 from types import ModuleType
 from typing import Union
 
+import joblib
 import numpy as np
 from mock import MagicMock
 from sklearn.ensemble import (AdaBoostClassifier, GradientBoostingClassifier,
