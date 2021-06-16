@@ -2,10 +2,10 @@
 Functions for preparing the breast cancer dataset for training and validating ML algorithms
 """
 
-import joblib
 from pathlib import Path
 from typing import Tuple, Union
 
+import joblib
 import numpy as np
 import pandas as pd
 import torch
