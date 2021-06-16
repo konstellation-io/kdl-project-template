@@ -112,6 +112,7 @@ def load_data_splits(
         return X_train, X_val, X_test, y_train, y_val, y_test
 
     elif as_type == "tensor":
+        # pylint: disable=not-callable
         X_train = torch.tensor(X_train).float()
         y_train = torch.tensor(y_train).float()
         X_val = torch.tensor(X_val).float()
