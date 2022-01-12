@@ -16,9 +16,6 @@ The project repository has the following directory structure:
 │   │
 │   ├── docs      <- High-level reports, executive summaries at each milestone (typically .md)
 │   │
-│   ├── lib       <- Importable functions used by analysis notebooks and processes scripts
-│   │                (including unit tests)
-│   │
 │   └── processes           <- Source code for reproducible workflow steps.
 │       ├── prepare_data
 │       │   ├── main.py
@@ -36,6 +33,8 @@ The project repository has the following directory structure:
 │       ├── config.ini         <- Config for Drone runs
 │       ├── config_test.ini   <- Config for local test runs
 │       └── conftest.py        <- Pytest fixtures
+|
+├── lib           <- Importable functions used by analysis notebooks and processes scripts
 |
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
 │
@@ -135,7 +134,7 @@ To see the tracked experiments, visit the MLflow tool UI.
 
 ## Importing library functions
 
-Reusable functions can be imported from the library (`lib` subdirectory) to avoid code duplication and to permit a more organized structuring of the repository.
+Reusable functions can be imported from the library (`lib` directory) to avoid code duplication and to permit a more organized structuring of the repository.
 
 **In Jupyter:** 
 To import library code in notebooks, you may need to add the `lab` directory to PYTHONPATH, for example as follows:
