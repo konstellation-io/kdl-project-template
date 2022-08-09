@@ -216,10 +216,10 @@ steps:
   ...
 ```
 
-There are two recomendations regarding which image to use:
+There are two recommendations regarding which image to use:
 
-1. Using an oficial runtime image. These images are used for runing the KDL Usertools and have everything you need to run your code. If using one of these images take in account that the first thing you would need to do in the drone pipeline is to install your custom dependencies (`pipenv install`). You can fin info about runtimes and their docker images inside KDL in the Usertools Settings section.
-2. Using a custom image. In this case the recomendation is to build a new layer inside the official runtime images adding whatever you need to run your expirents/trainings.
+1. Using an official runtime image. These images are used for running the KDL Usertools and have everything you need to run your code. If using one of these images take into account that the first thing you would need to do in the drone pipeline is to install your custom dependencies (`pipenv install`). You can find info about runtimes and their docker images inside KDL in the Usertools Settings section.
+2. Using a custom image. For this case it is recommended to build a new layer on top of the official runtime images adding whatever you need to run your experiments/trainings.
 
 ## Logging experiment results (MLflow)
 
