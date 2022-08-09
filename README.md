@@ -205,6 +205,22 @@ git push origin process-data-v0
 Note: If using an external repository (e.g. hosted on Github), a delay in synchronization between Gitea and the mirrored external repo may cause a delay in launching the pipeline on the Drone runners.
 This delay can be overcome by manually forcing a synchronization of the repository in the Gitea UI Settings.
 
+### Docker images for experiments & trainings
+
+In the `drone.yml` file you can specify the image that is going to be used for each pipeline step.
+
+```yml
+steps:
+  - name: prepare-data
+    image: konstellation/kdl-py:3.9-1.1.0
+  ...
+```
+
+There are two recomendations regarding which image to use:
+
+1. Using an oficial runtime image. These images are used for runing the KDL Usertools and have everything you need to run your code. If using one of these images take in account that the first thing you would need to do in the drone pipeline is to install your custom dependencies (`pipenv install`). You can fin info about runtimes and their docker images inside KDL in the Usertools Settings section.
+2. Using a custom image. In this case the recomendation is to build a new layer inside the official runtime images adding whatever you need to run your expirents/trainings.
+
 ## Logging experiment results (MLflow)
 
 To compare various experiments, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking. 
