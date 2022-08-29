@@ -9,7 +9,7 @@ import os
 
 import mlflow
 
-from processes.train_standard_classifiers.classifiers import train_classifiers
+from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 
 PATH_CONFIG = os.getenv("PATH_CONFIG")
 config = configparser.ConfigParser()

@@ -13,7 +13,7 @@ from sklearn.metrics import confusion_matrix
 
 from lib.pytorch import train_and_validate, val_loop
 from lib.viz import plot_confusion_matrix, plot_training_history
-from processes.prepare_data.cancer_data import load_data_splits_as_dataloader
+from lab.processes.prepare_data.cancer_data import load_data_splits_as_dataloader
 
 
 class DenseNN(nn.Module):

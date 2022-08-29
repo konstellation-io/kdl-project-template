@@ -17,7 +17,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 
 from lib.viz import plot_confusion_matrix
-from processes.prepare_data.cancer_data import load_data_splits
+from lab.processes.prepare_data.cancer_data import load_data_splits
 
 
 def create_classifiers() -> dict:
