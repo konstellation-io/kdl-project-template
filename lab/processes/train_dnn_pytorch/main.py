@@ -8,7 +8,7 @@ import os
 
 import mlflow
 
-from processes.train_dnn_pytorch.densenet import train_densenet
+from lab.processes.train_dnn_pytorch.densenet import train_densenet
 
 PATH_CONFIG = os.getenv("PATH_CONFIG")
 config = configparser.ConfigParser()

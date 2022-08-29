@@ -6,7 +6,7 @@ Part 1: Data preparation
 import configparser
 import os
 
-from processes.prepare_data.cancer_data import prepare_cancer_data
+from lab.processes.prepare_data.cancer_data import prepare_cancer_data
 
 PATH_CONFIG = os.getenv("PATH_CONFIG")
 config = configparser.ConfigParser()
