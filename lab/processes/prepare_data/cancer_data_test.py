@@ -11,7 +11,7 @@ import pytest
 import torch
 from pandas import DataFrame, Series
 
-from processes.prepare_data.cancer_data import (load_cancer_data,
+from lab.processes.prepare_data.cancer_data import (load_cancer_data,
                                                 load_data_splits,
                                                 load_data_splits_as_dataloader,
                                                 prepare_cancer_data,

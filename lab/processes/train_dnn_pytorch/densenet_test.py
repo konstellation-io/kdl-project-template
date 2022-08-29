@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from lib.testing import get_mlflow_stub
-from processes.train_dnn_pytorch.densenet import train_densenet
+from lab.processes.train_dnn_pytorch.densenet import train_densenet
 
 vscode_config = configparser.ConfigParser()
 vscode_config.read("lab/processes/config_test.ini")
