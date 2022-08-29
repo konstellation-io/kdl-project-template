@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
+from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 from lib.testing import get_mlflow_stub
-from processes.train_standard_classifiers.classifiers import train_classifiers
 
 vscode_config = configparser.ConfigParser()
 vscode_config.read("lab/processes/config_test.ini")

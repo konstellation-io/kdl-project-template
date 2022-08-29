@@ -1,7 +1,8 @@
-.ipynb_checkpoints
+# Python
 __pycache__
-.idea/
-.vscode/
+
+# file patterns
+*.ipynb_checkpoints
 *.bundle
 *.csv
 *.joblib
@@ -12,3 +13,6 @@ __pycache__
 *.png
 *.tgz
 
+# Ignore .vscode contents but allow the shared project settings
+.vscode/*
+!.vscode/settings.json
