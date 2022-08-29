@@ -8,16 +8,19 @@ from typing import Union
 
 import numpy as np
 from mock import MagicMock
-from sklearn.ensemble import (AdaBoostClassifier, GradientBoostingClassifier,
-                              RandomForestClassifier)
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 
-from lib.viz import plot_confusion_matrix
 from lab.processes.prepare_data.cancer_data import load_data_splits
+from lib.viz import plot_confusion_matrix
 
 
 def create_classifiers() -> dict:

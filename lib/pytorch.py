@@ -81,9 +81,7 @@ def train_loop(
     return train_loss, correct
 
 
-def val_loop(
-    dataloader: DataLoader, model: nn.Module, loss_fn: nn.BCELoss
-) -> tuple:
+def val_loop(dataloader: DataLoader, model: nn.Module, loss_fn: nn.BCELoss) -> tuple:
     """
     Validation loop through the dataset.
 
