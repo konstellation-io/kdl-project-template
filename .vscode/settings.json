@@ -13,6 +13,7 @@
         "editor.insertSpaces": true,
     },
     "python.languageServer": "Jedi",
+    "python.defaultInterpreterPath": ".venv/bin/python",
     "python.formatting.provider": "black",
     "python.linting.pylintEnabled": true,
     "python.linting.flake8Enabled": true,
