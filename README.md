@@ -7,47 +7,48 @@ The project repository has the following directory structure:
 ```
 ├── .vscode
 │   └── launch.json <- Configuration for test executions in Vscode
-│
+│   └── config.json <- Base configuration for VSCode
 ├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
-│
 ├── lab
-│   │
 │   ├── analysis  <- Analyses of data, models etc. (typically notebooks)
-│   │
 │   ├── docs      <- High-level reports, executive summaries at each milestone (typically .md)
-│   │
 │   └── processes           <- Source code for reproducible workflow steps.
 │       ├── prepare_data
 │       │   ├── main.py
 │       │   ├── cancer_data.py
 │       │   └── cancer_data_test.py
+│       │   └── Pipfile                 <- Custom dependencies for prepare_data process
+│       │   └── Pipfile.lock
 |       ├── train_dnn_pytorch
 │       │   ├── main.py
 │       │   ├── densenet.py
 │       │   └── densenet_test.py
+│       │   └── Pipfile                 <- Custom dependencies for train_dnn_pytorch process
+│       │   └── Pipfile.lock
 │       └── train_standard_classifiers
 │       │   ├── main.py
 │       │   ├── classifiers.py
 │       │   └── classifiers_test.py
-│       │
+│       │   └── Pipfile                 <- Custom dependencies for train_standard_classifiers process
+│       │   └── Pipfile.lock
 │       ├── config.ini         <- Config for Drone runs
 │       ├── config_test.ini   <- Config for local test runs
 │       └── conftest.py        <- Pytest fixtures
-|
 ├── lib           <- Importable functions used by analysis notebooks and processes scripts
-|
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
-│
 ├── .drone.yml    <- Instructions for Drone runners
 ├── .env          <- Local environment variables for VScode IDE
-├── .gitignore    
+├── .gitignore
 ├── README.md     <- Main README
 └── pytest.ini    <- Pytest configuration
+└── Pipfile       <- Global dependencies
+└── Pipfile.lock
 ```
 
 The `processes` subdirectory contains as its subdirectories the various separate processes (`prepare_data`, etc.),
 which can be tought of as nodes of an analysis graph.
 Each of these processes contains:
+
 - `main.py`, a clearly identifiable main script for running on CI/CD (Drone)
 - `{process}.py`, containing importable functions and classes specific to that process,
 - `{process}_test.py`, containing automated unit or integration tests for this process, and
@@ -105,7 +106,7 @@ More information on each of these steps:
   the training history (accuracy and loss per epoch on both training and validation data) are stored as an artifact in MLflow (`training_history.csv` and visualized in `.png`).
   The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
 
-The execution of the example classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml) 
+The execution of the example classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml)
 (for simplicity, we are omitting various additional components here, such as the environment variables and the AWS secrets):
 
 ```yaml
@@ -132,11 +133,26 @@ The connection to MLflow to log these parameters and metrics is established via 
 For more information on MLflow tracking, see the section "Logging experiment results (MLflow)" below.
 To see the tracked experiments, visit the MLflow tool UI.
 
+### Handling Process Dependencies
+
+The recommended way to handle specific dependencies and versions across different processes is to have a custom `Pipfile`
+inside each process folder. Only the necessary dependencies for each process need to be specified in each `Pipfile`. In this way the time of execution and preparation of the environment for each process is limited as much as possible, avoiding installing dependencies that are not necessary.
+
+In the pipeline, dependencies can be installed as follow:
+
+```yaml
+---
+commands:
+  - cd lab/processes/prepare_data/
+  - pipenv install --system
+  - python main.py
+```
+
 ## Importing library functions
 
 Reusable functions can be imported from the library (`lib` directory) to avoid code duplication and to permit a more organized structuring of the repository.
 
-**In Jupyter:** 
+**In Jupyter:**
 To import library code in notebooks, you may need to add the `lab` directory to PYTHONPATH, for example as follows:
 
 ```python
@@ -151,15 +167,15 @@ sys.path.append(str(DIR_LAB))
 from lib.viz import plot_confusion_matrix
 ```
 
-**In Vscode**: 
-Imports from `lab` directory subdirectories are recognized correctly by code linters 
-thanks to the defined `PYTHONPATH=lab` in the .env environment file. 
-However, they are not recognized by the terminal, 
-so in order to run code with imports from Vscode terminal, 
-prepend your calls to Python scripts with `PYTHONPATH=lab` as follows: 
+**In Vscode**:
+Imports from `lab` directory subdirectories are recognized correctly by code linters
+thanks to the defined `PYTHONPATH=lab` in the .env environment file.
+However, they are not recognized by the terminal,
+so in order to run code with imports from Vscode terminal,
+prepend your calls to Python scripts with `PYTHONPATH=lab` as follows:
 `PYTHONPATH=lab python {filename.py}`.
 
-**On Drone:** 
+**On Drone:**
 To be able to run imports from the `lib` directory on Drone, you may add it to PYTHONPATH in .drone.yml as indicated:
 
 ```yaml
@@ -223,11 +239,11 @@ There are two recommendations regarding which image to use:
 
 ## Logging experiment results (MLflow)
 
-To compare various experiments, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking. 
+To compare various experiments, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking.
 Experiment tracking with MLflow enables logging the parameters with which every run was executed and the metrics of interest, as well as any artifacts produced by the run.
 
-The experiments are only tracked from the executions on Drone. 
-In local test runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code). 
+The experiments are only tracked from the executions on Drone.
+In local test runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code).
 
 The environment variables for connecting to MLflow server are provided in .drone.yml:
 
@@ -277,47 +293,50 @@ To compare the executions and vizualise the effect of logged parameters on the l
 you can select the runs you wish to compare in the MLflow UI, select "Compare" and add the desired parameters and metrics to the visualizations provided through the UI.
 Alternatively, the results can also be queried with the MLflow API. For more information on the latter, see [MLflow documentation on querying runs](https://www.mlflow.org/docs/latest/tracking.html#querying-runs-programmatically).
 
-
 ## Testing
 
 To run the automated tests, you have two options: via command line or via the Vscode UI.
 
 ### Running tests from command line
-You can use the command `pytest` directly from the terminal line as follows: 
-   ```
-   PYTHONPATH=lab pytest -v                              # Run all tests (verbose)
-   PYTHONPATH=lab pytest -v lab/processes/prepare_data   # Run only tests in prepare_data
-   PYTHONPATH=lab pytest -v -m unittest                  # Run only unit tests
-   PYTHONPATH=lab pytest -v -m integration               # Run only integration tests
-   ```
+
+You can use the command `pytest` directly from the terminal line as follows:
+
+```
+PYTHONPATH=lab pytest -v                              # Run all tests (verbose)
+PYTHONPATH=lab pytest -v lab/processes/prepare_data   # Run only tests in prepare_data
+PYTHONPATH=lab pytest -v -m unittest                  # Run only unit tests
+PYTHONPATH=lab pytest -v -m integration               # Run only integration tests
+```
 
 You may add other optional pytest arguments as needed
 (see [pytest usage documentation](https://docs.pytest.org/en/6.2.x/usage.html)).
 
-### Running tests from Vscode UI 
-It is also possible to run the tests using the Vscode user interface. 
-To run all tests, select `Ctrl+Shift+P`, then search for `Python: Run All Tests`. 
+### Running tests from Vscode UI
 
-You may **run tests individually** 
+It is also possible to run the tests using the Vscode user interface.
+To run all tests, select `Ctrl+Shift+P`, then search for `Python: Run All Tests`.
+
+You may **run tests individually**
 by clicking on the `Run Test` option next to the name of the test in the editor.
-If this option does not appear next to the test, 
-check that your file name and test name both include the string "test_" or "_test", 
+If this option does not appear next to the test,
+check that your file name and test name both include the string "test\_" or "\_test",
 then run `Ctrl+Shift+P` and search for `Python: Discover Tests`.
 
-**Interactive debugging:** 
+**Interactive debugging:**
 Unlike the command line option, the UI option also permits the use of the interactive debugging tool in Vscode.
-- First, place breakpoints in your code (by placing a marker, clicking to the left of the code line number). 
+
+- First, place breakpoints in your code (by placing a marker, clicking to the left of the code line number).
 - Next, select `Debug Test` next to the test (if launching individually), or `Ctrl+Shift+D` (`Python: Debug All Tests`).
 - Select your test configuration "All tests" / "Integration tests" / "Unit tests" and click on the Run icon (these configurations can be edited in `.vscode/launch.json`)
 - Use the Debug Console to explore the variables at the breakpoints, and the debug controls to pass between breakpoints
 
 ### Data for testing
 
-Integration tests (and some unit tests) require the existence of a dataset to be able to run. 
-This temporary dataset is provided to such tests 
-through the use of a test fixture defined in `conftest.py`, 
+Integration tests (and some unit tests) require the existence of a dataset to be able to run.
+This temporary dataset is provided to such tests
+through the use of a test fixture defined in `conftest.py`,
 and is eliminated by the same fixture after the test is executed.
-The fixture is passed to any test as a function argument, 
+The fixture is passed to any test as a function argument,
 as seen in the following example (from KDL Project Template):
 
 ```python
@@ -357,17 +376,16 @@ def test_load_data_splits_as_npy_array(self, temp_data_dir):
 
 ```
 
-In the example above, the fixture `temporary_cancer_data_directory` (abbreviated with the name `temp_data_dir`) 
+In the example above, the fixture `temporary_cancer_data_directory` (abbreviated with the name `temp_data_dir`)
 defines what happens before and after executing a test that uses that fixture:
+
 - Before running the test, this fixture runs through the setup code,
-creating our dataset locally using `prepare_cancer_data`. 
-- Next, the fixture yields the location of that directory to the test function. 
+  creating our dataset locally using `prepare_cancer_data`.
+- Next, the fixture yields the location of that directory to the test function.
 - After the test function has terminated running, the fixture executes the teardown code.
 
-If we drop the `temp_data_dir` parameter from this test function, 
-the test will run without the fixture, 
+If we drop the `temp_data_dir` parameter from this test function,
+the test will run without the fixture,
 and will fail because the required data directory does not exist.
 
 To learn more, see the documentation on [pytest fixtures](https://docs.pytest.org/en/6.2.x/fixture.html).
-
-
