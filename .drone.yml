@@ -37,7 +37,9 @@ steps:
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - python3 lab/processes/prepare_data/main.py
+      - cd lab/processes/prepare_data/
+      - pipenv install --system
+      - python main.py
     volumes:
       - name: shared-storage
         path: /shared-storage
@@ -50,7 +52,9 @@ steps:
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - python3 lab/processes/train_standard_classifiers/main.py
+      - cd lab/processes/train_standard_classifiers/
+      - pipenv install --system
+      - python main.py
     volumes:
       - name: shared-storage
         path: /shared-storage
@@ -63,7 +67,9 @@ steps:
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - python3 lab/processes/train_dnn_pytorch/main.py
+      - cd lab/processes/train_dnn_pytorch/
+      - pipenv install --system
+      - python main.py
     volumes:
       - name: shared-storage
         path: /shared-storage
