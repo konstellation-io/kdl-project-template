@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+sklearn = "==0.0"
+mlflow = "==1.28.0"
+
+[dev-packages]
+pylint = "==2.15.0"
+flake8 = "==5.0.4"
+black = "==22.6.0"
+mock = "==4.0.3"
+pytest = "==7.1.2"
+
+[requires]
+python_version = "3.9"
+
+[pipenv]
+allow_prereleases = false
