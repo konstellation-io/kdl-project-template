@@ -45,4 +45,7 @@
             "overrideName": true
         }
     },
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}"
+    }
 }
