@@ -1,0 +1,31 @@
+dir_processed: &dir_processed "lab/data/processed"
+mlflow_experiment: &mlflow_experiment "kdl-project-template"
+random_seed: &random_seed 0
+
+fname_conf_mat: &fname_conf_mat "confusion_matrix.png"
+
+train_standard_classifiers:
+  dir_processed: *dir_processed
+  # Temporary artifact storage (before logging to MLflow)
+  # By default this gets created on the Drone runner filesystem. If you are handling
+  # very large files, consult with your KDL admin to avoid running out of disk space
+  dir_artifacts: "lab/artifacts/standard_classifier"
+  mlflow_experiment: *mlflow_experiment
+  fname_conf_mat: *fname_conf_mat
+  random_seed: *random_seed
+
+train_dnn_pytorch:
+  dir_processed: *dir_processed
+  dir_artifacts: "lab/artifacts/dnn"
+  random_seed: 0
+  n_workers: 2
+  batch_size: 30
+  epochs: 80
+  lr: 0.0001
+  # Location of MLflow artifacts (to access saved models from previous runs etc.)
+  artifacts_mlflow: "mlflow-artifacts"
+  mlflow_experiment: *mlflow_experiment
+  fname_model: "densenet.pt"
+  fname_training_history: "training_history.png"
+  fname_training_history_csv: "training_history.csv"
+  fname_conf_mat: *fname_conf_mat

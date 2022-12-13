@@ -3,16 +3,14 @@ ML pipeline for breast cancer classification
 Part 1: Data preparation
 """
 
-import configparser
 import os
 
-from lab.processes.prepare_data.cancer_data import prepare_cancer_data
+import dvc.api
 
-PATH_CONFIG = os.getenv("PATH_CONFIG")
-config = configparser.ConfigParser()
-config.read(str(PATH_CONFIG))
+from cancer_data import prepare_cancer_data
 
-DIR_DATA_PROCESSED = config["paths"]["dir_processed"]
+
+DIR_DATA_PROCESSED = dvc.api.params_show()["prepare_data"]["dir_processed"]
 
 
 if __name__ == "__main__":

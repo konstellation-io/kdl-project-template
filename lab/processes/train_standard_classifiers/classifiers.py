@@ -62,24 +62,22 @@ def train_classifiers(
         mlflow_tags {dict} -- MLflow tags (empty if replacing mlflow with a mock)
     """
     # Unpack config:
-    random_seed = int(config["training"]["random_seed"])
-    dir_processed = config["paths"]["dir_processed"]
-    dir_artifacts = Path(config["paths"]["artifacts_temp"])
-    filepath_conf_matrix = dir_artifacts / "confusion_matrix.png"
-    mlflow_experiment = config["mlflow"]["mlflow_experiment"]
+    random_seed = int(config["random_seed"])
+    dir_processed = config["dir_processed"]
+    dir_artifacts = Path(config["dir_artifacts"])
+    filepath_conf_matrix = dir_artifacts / config["fname_conf_mat"]
+    mlflow_experiment = config["mlflow_experiment"]
 
     # Prepare before run
     np.random.seed(random_seed)
-    dir_artifacts.mkdir(exist_ok=True)
+    dir_artifacts.mkdir(exist_ok=True, parents=True)
     mlflow.set_tracking_uri(mlflow_url)
     mlflow.set_experiment(mlflow_experiment)
 
     with mlflow.start_run(run_name="sklearn_example_train", tags=mlflow_tags):
 
         # Load training and validation data
-        X_train, X_val, _, y_train, y_val, _ = load_data_splits(
-            dir_processed=dir_processed, as_type="array"
-        )
+        X_train, X_val, _, y_train, y_val, _ = load_data_splits(dir_processed=dir_processed, as_type="array")
 
         # Define a number of classifiers
         models = create_classifiers()

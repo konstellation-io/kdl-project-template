@@ -2,17 +2,14 @@
 Integration test for train_dnn_pytorch
 """
 
-import configparser
 import os
 from pathlib import Path
 
+import dvc.api
 import pytest
 
 from lab.processes.train_dnn_pytorch.densenet import train_densenet
 from lib.testing import get_mlflow_stub
-
-vscode_config = configparser.ConfigParser()
-vscode_config.read("lab/processes/config_test.ini")
 
 
 @pytest.mark.integration
@@ -28,23 +25,23 @@ def test_train_densenet_without_errors(temp_data_dir):
 
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
     """
-    vscode_config["paths"]["dir_processed"] = temp_data_dir
+    config = dvc.api.params_show()
+    config["training"]["n_workers"] = 1
+    config["training"]["epochs"] = 1
+
+    config["paths"]["dir_processed"] = temp_data_dir
 
     mlflow_stub = get_mlflow_stub()
 
-    train_densenet(
-        mlflow=mlflow_stub, config=vscode_config, mlflow_url=None, mlflow_tags=None
-    )
+    train_densenet(mlflow=mlflow_stub, config=config, mlflow_url=None, mlflow_tags=None)
 
     # Check the resulting artifact files (.csv y .png) have been created
-    dir_artifacts = vscode_config["paths"]["artifacts_temp"]
+    dir_artifacts = config["paths"]["dir_dnn_artifacts"]
     artifacts_contents = os.listdir(dir_artifacts)
-    fname_model = vscode_config["filenames"]["fname_model"]
-    fname_conf_matrix = vscode_config["filenames"]["fname_conf_mat"]
-    fname_training_history = vscode_config["filenames"]["fname_training_history"]
-    fname_training_history_csv = vscode_config["filenames"][
-        "fname_training_history_csv"
-    ]
+    fname_model = config["filenames"]["fname_model"]
+    fname_conf_matrix = config["filenames"]["fname_conf_mat"]
+    fname_training_history = config["filenames"]["fname_training_history"]
+    fname_training_history_csv = config["filenames"]["fname_training_history_csv"]
 
     for fname in [
         fname_model,

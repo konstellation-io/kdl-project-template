@@ -1,9 +1,9 @@
 """
 A densely connected neural network for binary classification and its usage on the example dataset
 """
-
 from configparser import ConfigParser
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import torch
@@ -63,9 +63,7 @@ class DenseNN(nn.Module):
         return x
 
 
-def train_densenet(
-    mlflow, config: ConfigParser, mlflow_url: str, mlflow_tags: dict
-) -> None:
+def train_densenet(mlflow, config: Union[dict, ConfigParser], mlflow_url: str, mlflow_tags: dict) -> None:
     """
     The main function of the example Pytorch model training script
 
@@ -76,27 +74,23 @@ def train_densenet(
     - Saves the model, its training and validation metrics and associated validation artifacts in MLflow
     """
     # Unpack config
-    mlflow_experiment = config["mlflow"]["mlflow_experiment"]
-    random_seed = int(config["training"]["random_seed"])
-    batch_size = int(config["training"]["batch_size"])
-    n_workers = int(config["training"]["n_workers"])
-    epochs = int(config["training"]["epochs"])
-    learning_rate = float(config["training"]["lr"])
-    dir_processed = config["paths"]["dir_processed"]
-    dir_artifacts = Path(config["paths"]["artifacts_temp"])
-    filepath_conf_matrix = dir_artifacts / config["filenames"]["fname_conf_mat"]
-    filepath_model = dir_artifacts / config["filenames"]["fname_model"]
-    filepath_training_history = (
-        dir_artifacts / config["filenames"]["fname_training_history"]
-    )
-    filepath_training_history_csv = (
-        dir_artifacts / config["filenames"]["fname_training_history_csv"]
-    )
+    mlflow_experiment = config["mlflow_experiment"]
+    random_seed = config["random_seed"]
+    batch_size = config["batch_size"]
+    n_workers = config["n_workers"]
+    epochs = config["epochs"]
+    learning_rate = config["lr"]
+    dir_processed = config["dir_processed"]
+    dir_artifacts = Path(config["dir_artifacts"])
+    filepath_conf_matrix = dir_artifacts / config["fname_conf_mat"]
+    filepath_model = dir_artifacts / config["fname_model"]
+    filepath_training_history = dir_artifacts / config["fname_training_history"]
+    filepath_training_history_csv = dir_artifacts / config["fname_training_history_csv"]
 
     # Prepare before run
     np.random.seed(random_seed)
     torch.manual_seed(random_seed)
-    dir_artifacts.mkdir(exist_ok=True)
+    dir_artifacts.mkdir(exist_ok=True, parents=True)
     mlflow.set_tracking_uri(mlflow_url)
     mlflow.set_experiment(mlflow_experiment)
 
@@ -128,12 +122,8 @@ def train_densenet(
         net.load_state_dict(torch.load(filepath_model))
 
         # Get metrics on best model
-        train_loss, train_acc, _ = val_loop(
-            dataloader=train_loader, model=net, loss_fn=loss_fn
-        )
-        val_loss, val_acc, (y_val_true, y_val_pred) = val_loop(
-            dataloader=val_loader, model=net, loss_fn=loss_fn
-        )
+        train_loss, train_acc, _ = val_loop(dataloader=train_loader, model=net, loss_fn=loss_fn)
+        val_loss, val_acc, (y_val_true, y_val_pred) = val_loop(dataloader=val_loader, model=net, loss_fn=loss_fn)
         cm = confusion_matrix(y_val_true, y_val_pred)
 
         # Save artifacts
@@ -143,9 +133,7 @@ def train_densenet(
             title="Confusion matrix (validation set)",
             savepath=filepath_conf_matrix,
         )
-        plot_training_history(
-            df_history, title="Training history", savepath=filepath_training_history
-        )
+        plot_training_history(df_history, title="Training history", savepath=filepath_training_history)
         df_history.to_csv(filepath_training_history_csv)
 
         # Log to MLflow

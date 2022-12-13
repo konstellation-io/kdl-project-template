@@ -2,7 +2,7 @@
 Integration test for train_standard_classifiers
 """
 
-import configparser
+import dvc.api
 import os
 from pathlib import Path
 
@@ -11,8 +11,7 @@ import pytest
 from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 from lib.testing import get_mlflow_stub
 
-vscode_config = configparser.ConfigParser()
-vscode_config.read("lab/processes/config_test.ini")
+vscode_config = dvc.api.params_show()
 
 
 @pytest.mark.integration
@@ -37,7 +36,7 @@ def test_train_classifiers_runs_without_errors(temp_data_dir):
     )
 
     # Verify that the resulting files have been created in the temporary artifacts directory:
-    dir_artifacts = vscode_config["paths"]["artifacts_temp"]
+    dir_artifacts = vscode_config["paths"]["dir_standard_artifacts"]
     filename_conf_matrix = vscode_config["filenames"]["fname_conf_mat"]
     assert filename_conf_matrix in os.listdir(dir_artifacts)
 
