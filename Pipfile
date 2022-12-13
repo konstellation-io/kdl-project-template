@@ -4,18 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-torch = "==1.12.1"
-pandas = "==1.4.3"
+dvc = {extras = ["s3"], version = "==2.37.0"}
 matplotlib = "==3.5.3"
-sklearn = "==0.0"
 mlflow = "==1.28.0"
+pandas = "==1.4.3"
+sklearn = "==0.0"
+torch = "==1.12.1"
 
 [dev-packages]
-pylint = "==2.15.0"
-flake8 = "==5.0.4"
 black = "==22.6.0"
+flake8 = "==5.0.4"
 mock = "==4.0.3"
-pytest = "==7.1.2"
+pylint = "==2.15.0"
+pytest = "==7.2.0"
 
 [requires]
 python_version = "3.9"
