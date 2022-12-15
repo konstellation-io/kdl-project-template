@@ -42,8 +42,8 @@ steps:
         from_secret: minio-secret
     commands:
       - pipenv install --system
-      - dvc repro --pull
-      - dvc push --run-cache
+      - pipenv run dvc repro --pull
+      - pipenv run dvc push --run-cache
 
     volumes:
       - name: shared-storage
