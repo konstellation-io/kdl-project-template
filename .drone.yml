@@ -48,7 +48,8 @@ steps:
       - git commit -m 'response'
       - git config user.name "pablo.fernandez"
       - git config user.email "pablo.fernandez@intelygenz.com"
-      - git push origin HEAD:dvc/individual_track
+      - git push origin HEAD:feat/dvc
+
     volumes:
       - name: shared-storage
         path: /shared-storage
