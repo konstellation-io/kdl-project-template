@@ -21,8 +21,8 @@ trigger:
     - refs/tags/run-example-*
 
 environment:
-  PYTHONPATH: /drone/src/lab
-  PATH_CONFIG: /drone/src/lab/processes/config.ini
+  PYTHONPATH: /drone/src
+  # PATH_CONFIG: /drone/src/lab/processes/config.ini
   MINIO_DATA_FOLDER: /shared-storage/project-template/data
   MLFLOW_URL: http://project-template-mlflow:5000
   MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
