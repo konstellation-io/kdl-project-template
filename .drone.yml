@@ -29,7 +29,11 @@ environment:
   USER: ${DRONE_COMMIT_AUTHOR}
 
 steps:
-  - name: prepare-data
+  - name: chown emptydir
+    image: alpine
+    commands:
+      - chown 1000 -R .
+  - name: repro
     image: konstellation/kdl-py:3.9-1.1.0
     environment:
       AWS_ACCESS_KEY_ID:
@@ -37,43 +41,13 @@ steps:
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - cd lab/processes/prepare_data/
-      - pipenv install --system
-      - python main.py
+      - pipenv sync --system
+      - run dvc repro --pull
+      - run dvc push --run-cache
+
     volumes:
       - name: shared-storage
         path: /shared-storage
-
-  - name: train-standard-classifiers
-    image: konstellation/kdl-py:3.9-1.1.0
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: minio-key-id
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: minio-secret
-    commands:
-      - cd lab/processes/train_standard_classifiers/
-      - pipenv install --system
-      - python main.py
-    volumes:
-      - name: shared-storage
-        path: /shared-storage
-
-  - name: train-pytorch-neural-net
-    image: konstellation/kdl-py:3.9-1.1.0
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: minio-key-id
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: minio-secret
-    commands:
-      - cd lab/processes/train_dnn_pytorch/
-      - pipenv install --system
-      - python main.py
-    volumes:
-      - name: shared-storage
-        path: /shared-storage
-
 volumes:
   - name: shared-storage
     claim:
