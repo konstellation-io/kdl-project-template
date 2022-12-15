@@ -51,4 +51,4 @@ steps:
 volumes:
   - name: shared-storage
     claim:
-      name: received-data-claim
+      name: kdl-received-data-claim
