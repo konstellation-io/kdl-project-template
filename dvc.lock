@@ -9,6 +9,9 @@ stages:
     - path: lab/processes/prepare_data/main.py
       md5: 2b09a3cf88d2c1260200a81995287047
       size: 304
+    - path: lib/pytorch.py
+      md5: 11efc44c252d49de8f5ecf79971f7364
+      size: 6032
     outs:
     - path: lab/data/processed
       md5: acf8e37789cd3991ab60577afcc83c29.dir
@@ -25,6 +28,9 @@ stages:
       md5: bc1535cecd929bba979fe61058a1713e.dir
       size: 67336
       nfiles: 7
+    - path: lib/viz.py
+      md5: e627741bc71aea17c1c7a7133fbc0607
+      size: 4939
     params:
       params.yaml:
         training.random_seed: 0
@@ -60,6 +66,12 @@ stages:
       md5: 84a6f395b3c85bb2feb5636a434c4860.dir
       size: 72139
       nfiles: 9
+    - path: lib/pytorch.py
+      md5: 11efc44c252d49de8f5ecf79971f7364
+      size: 6032
+    - path: lib/viz.py
+      md5: e627741bc71aea17c1c7a7133fbc0607
+      size: 4939
     params:
       params.yaml:
         training.batch_size: 30

@@ -13,9 +13,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from lib.utils import flatten_list
 
 
-def create_dataloader(
-    X: torch.Tensor, y: torch.Tensor, dataloader_args: dict
-) -> DataLoader:
+def create_dataloader(X: torch.Tensor, y: torch.Tensor, dataloader_args: dict) -> DataLoader:
     """
     Converts input torch tensors X and y into a DataLoader object.
 
@@ -153,9 +151,7 @@ def train_and_validate(
             (tuple[list]): (y_true, y_pred): lists containing true labels and the labels as predicted by
                 the model for the validation set in last iteration
     """
-    df_history = pd.DataFrame(
-        [], columns=["epoch", "loss", "val_loss", "acc", "val_acc"]
-    )
+    df_history = pd.DataFrame([], columns=["epoch", "loss", "val_loss", "acc", "val_acc"])
 
     best_acc = 0
 
@@ -163,30 +159,22 @@ def train_and_validate(
     for epoch in range(1, epochs + 1):
         print(f"Epoch {epoch}\n-------------------------------")
 
-        train_loss, train_acc = train_loop(
-            dataloader=train_loader, model=model, loss_fn=loss_fn, optimizer=optimizer
-        )
-        print(
-            f"Training set: Accuracy: {(100*train_acc):>0.1f}%, Avg loss: {train_loss:>7f}"
-        )
+        train_loss, train_acc = train_loop(dataloader=train_loader, model=model, loss_fn=loss_fn, optimizer=optimizer)
+        print(f"Training set: Accuracy: {(100*train_acc):>0.1f}%, Avg loss: {train_loss:>7f}")
 
-        val_loss, val_acc, (y_true, y_pred) = val_loop(
-            dataloader=val_loader, model=model, loss_fn=loss_fn
-        )
-        print(
-            f"Validation set: Accuracy: {(100*val_acc):>0.1f}%, Avg loss: {val_loss:>7f} \n"
-        )
+        val_loss, val_acc, (y_true, y_pred) = val_loop(dataloader=val_loader, model=model, loss_fn=loss_fn)
+        print(f"Validation set: Accuracy: {(100*val_acc):>0.1f}%, Avg loss: {val_loss:>7f} \n")
 
-        df_history = df_history.append(
+        new_row = pd.Series(
             dict(
                 epoch=epoch,
                 loss=train_loss,
                 val_loss=val_loss,
                 acc=train_acc,
                 val_acc=val_acc,
-            ),
-            ignore_index=True,
+            )
         )
+        df_history = pd.concat([df_history, new_row.to_frame().T], ignore_index=True)
 
         if val_acc > best_acc:
             torch.save(model.state_dict(), filepath_model)

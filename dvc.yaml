@@ -4,6 +4,7 @@ stages:
     deps:
       - lab/processes/prepare_data/main.py
       - lab/processes/prepare_data/cancer_data.py
+      - lib/pytorch.py
     outs:
       - ${paths.dir_processed}
     always_changed: true
@@ -12,6 +13,7 @@ stages:
     cmd: python3 lab/processes/train_standard_classifiers/main.py
     deps:
       - lab/processes/train_standard_classifiers
+      - lib/viz.py
       - ${paths.dir_processed}
     outs:
       - ${paths.dir_artifacts_standard}
@@ -22,6 +24,8 @@ stages:
     cmd: python3 lab/processes/train_dnn_pytorch/main.py
     deps:
       - lab/processes/train_dnn_pytorch
+      - lib/pytorch.py
+      - lib/viz.py
       - ${paths.dir_processed}
     params:
       - training.random_seed
