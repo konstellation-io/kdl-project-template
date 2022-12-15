@@ -43,7 +43,7 @@ steps:
     commands:
       - pipenv sync --system
       - dvc repro --pull
-      - dvc push --run-cache
+      - dvc push
 
     volumes:
       - name: shared-storage
