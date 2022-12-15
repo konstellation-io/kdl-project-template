@@ -1,0 +1,32 @@
+stages:
+  prepare_data:
+    cmd: python3 lab/processes/prepare_data/main.py
+    deps:
+      - lab/processes/prepare_data/main.py
+      - lab/processes/prepare_data/cancer_data.py
+    outs:
+      - ${paths.dir_processed}
+    always_changed: true
+
+  train_standard_classifiers:
+    cmd: python3 lab/processes/train_standard_classifiers/main.py
+    deps:
+      - lab/processes/train_standard_classifiers
+      - ${paths.dir_processed}
+    outs:
+      - ${paths.dir_artifacts_standard}
+    params:
+      - training.random_seed
+
+  train_dnn_pytorch:
+    cmd: python3 lab/processes/train_dnn_pytorch/main.py
+    deps:
+      - lab/processes/train_dnn_pytorch
+      - ${paths.dir_processed}
+    params:
+      - training.random_seed
+      - training.batch_size
+      - training.lr
+      - training.epochs
+    outs:
+      - ${paths.dir_artifacts_dnn}

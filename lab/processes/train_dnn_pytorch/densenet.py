@@ -75,17 +75,17 @@ def train_densenet(mlflow, config: Union[dict, ConfigParser], mlflow_url: str, m
     """
     # Unpack config
     mlflow_experiment = config["mlflow_experiment"]
-    random_seed = config["random_seed"]
-    batch_size = config["batch_size"]
-    n_workers = config["n_workers"]
-    epochs = config["epochs"]
-    learning_rate = config["lr"]
-    dir_processed = config["dir_processed"]
-    dir_artifacts = Path(config["dir_artifacts"])
-    filepath_conf_matrix = dir_artifacts / config["fname_conf_mat"]
-    filepath_model = dir_artifacts / config["fname_model"]
-    filepath_training_history = dir_artifacts / config["fname_training_history"]
-    filepath_training_history_csv = dir_artifacts / config["fname_training_history_csv"]
+    random_seed = config["training"]["random_seed"]
+    batch_size = config["training"]["batch_size"]
+    n_workers = config["training"]["n_workers"]
+    epochs = config["training"]["epochs"]
+    learning_rate = config["training"]["lr"]
+    dir_processed = config["paths"]["dir_processed"]
+    dir_artifacts = Path(config["paths"]["dir_artifacts_dnn"])
+    filepath_conf_matrix = dir_artifacts / "confusion_matrix.png"
+    filepath_model = dir_artifacts / "densenet.pt"
+    filepath_training_history = dir_artifacts / "training_history.png"
+    filepath_training_history_csv = dir_artifacts / "training_history.csv"
 
     # Prepare before run
     np.random.seed(random_seed)

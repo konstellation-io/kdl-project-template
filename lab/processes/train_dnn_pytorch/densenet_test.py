@@ -26,22 +26,19 @@ def test_train_densenet_without_errors(temp_data_dir):
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
     """
     config = dvc.api.params_show()
-    config["training"]["n_workers"] = 1
-    config["training"]["epochs"] = 1
-
-    config["paths"]["dir_processed"] = temp_data_dir
+    config = config["test"]
 
     mlflow_stub = get_mlflow_stub()
 
     train_densenet(mlflow=mlflow_stub, config=config, mlflow_url=None, mlflow_tags=None)
 
     # Check the resulting artifact files (.csv y .png) have been created
-    dir_artifacts = config["paths"]["dir_dnn_artifacts"]
+    dir_artifacts = config["paths"]["dir_artifacts_dnn"]
     artifacts_contents = os.listdir(dir_artifacts)
-    fname_model = config["filenames"]["fname_model"]
-    fname_conf_matrix = config["filenames"]["fname_conf_mat"]
-    fname_training_history = config["filenames"]["fname_training_history"]
-    fname_training_history_csv = config["filenames"]["fname_training_history_csv"]
+    fname_model = "densenet.pt"
+    fname_conf_matrix = "confusion_matrix.png"
+    fname_training_history = "training_history.png"
+    fname_training_history_csv = "training_history.csv"
 
     for fname in [
         fname_model,

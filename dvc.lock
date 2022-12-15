@@ -1,0 +1,73 @@
+schema: '2.0'
+stages:
+  prepare_data:
+    cmd: python3 lab/processes/prepare_data/main.py
+    deps:
+    - path: lab/processes/prepare_data/cancer_data.py
+      md5: 0cb76b171d7d59e84c387909f896c75e
+      size: 5022
+    - path: lab/processes/prepare_data/main.py
+      md5: 2b09a3cf88d2c1260200a81995287047
+      size: 304
+    outs:
+    - path: lab/data/processed
+      md5: acf8e37789cd3991ab60577afcc83c29.dir
+      size: 141880
+      nfiles: 6
+  train_standard_classifiers:
+    cmd: python3 lab/processes/train_standard_classifiers/main.py
+    deps:
+    - path: lab/data/processed
+      md5: acf8e37789cd3991ab60577afcc83c29.dir
+      size: 141880
+      nfiles: 6
+    - path: lab/processes/train_standard_classifiers
+      md5: bc1535cecd929bba979fe61058a1713e.dir
+      size: 67336
+      nfiles: 7
+    params:
+      params.yaml:
+        training.random_seed: 0
+    outs:
+    - path: lab/artifacts/standard_classifier
+      md5: 876a5ee39db917c3513a9cfecf04aaa7.dir
+      size: 14109
+      nfiles: 1
+  train_dnn_classifiers:
+    cmd: python3 lab/processes/train_dnn_pytorch/main.py
+    deps:
+    - path: lab/data/processed
+      md5: acf8e37789cd3991ab60577afcc83c29.dir
+      size: 141880
+      nfiles: 6
+    - path: lab/processes/train_dnn_pytorch
+      md5: 911d93e26fc5dc766171a364f2658ae9.dir
+      size: 72589
+      nfiles: 9
+    outs:
+    - path: lab/artifacts/dnn
+      md5: 9a40945229172d4ecaa8f0b6820960b3.dir
+      size: 220019
+      nfiles: 4
+  train_dnn_pytorch:
+    cmd: python3 lab/processes/train_dnn_pytorch/main.py
+    deps:
+    - path: lab/data/processed
+      md5: acf8e37789cd3991ab60577afcc83c29.dir
+      size: 141880
+      nfiles: 6
+    - path: lab/processes/train_dnn_pytorch
+      md5: 84a6f395b3c85bb2feb5636a434c4860.dir
+      size: 72139
+      nfiles: 9
+    params:
+      params.yaml:
+        training.batch_size: 30
+        training.epochs: 15
+        training.lr: 0.0001
+        training.random_seed: 0
+    outs:
+    - path: lab/artifacts/dnn
+      md5: 3c99d33b567db7afa7481518522984b8.dir
+      size: 211018
+      nfiles: 4

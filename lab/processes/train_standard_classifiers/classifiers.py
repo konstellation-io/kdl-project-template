@@ -62,10 +62,10 @@ def train_classifiers(
         mlflow_tags {dict} -- MLflow tags (empty if replacing mlflow with a mock)
     """
     # Unpack config:
-    random_seed = int(config["random_seed"])
-    dir_processed = config["dir_processed"]
-    dir_artifacts = Path(config["dir_artifacts"])
-    filepath_conf_matrix = dir_artifacts / config["fname_conf_mat"]
+    random_seed = config["training"]["random_seed"]
+    dir_processed = config["paths"]["dir_processed"]
+    dir_artifacts = Path(config["paths"]["dir_artifacts_standard"])
+    filepath_conf_matrix = dir_artifacts / "confusion_matrix.png"
     mlflow_experiment = config["mlflow_experiment"]
 
     # Prepare before run

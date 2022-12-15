@@ -11,7 +11,7 @@ import mlflow
 
 from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 
-config = dvc.api.params_show()["train_standard_classifiers"]
+config = dvc.api.params_show()
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_TAGS = {"git_tag": os.getenv("DRONE_TAG")}

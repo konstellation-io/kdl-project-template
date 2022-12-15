@@ -10,9 +10,7 @@ import mlflow
 
 from lab.processes.train_dnn_pytorch.densenet import train_densenet
 
-PATH_CONFIG = "params.yaml"
-config = dvc.api.params_show(PATH_CONFIG)
-config = config["train_dnn_pytorch"]
+config = dvc.api.params_show()
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_TAGS = {"git_tag": os.getenv("DRONE_TAG")}
