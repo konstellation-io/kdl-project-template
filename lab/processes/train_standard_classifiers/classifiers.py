@@ -7,7 +7,6 @@ from types import ModuleType
 from typing import Union
 
 import numpy as np
-from mock import MagicMock
 from sklearn.ensemble import (
     AdaBoostClassifier,
     GradientBoostingClassifier,
@@ -44,7 +43,7 @@ def create_classifiers() -> dict:
 
 
 def train_classifiers(
-    mlflow: Union[ModuleType, MagicMock],
+    mlflow: ModuleType,
     config: Union[ConfigParser, dict],
     mlflow_url: str,
     mlflow_tags: dict,
@@ -53,7 +52,7 @@ def train_classifiers(
     Trains a number of classifiers on the data that is found in the directory specified as dir_processed in config.
 
     Arguments:
-        mlflow {Union[ModuleType, MagicMock]} --  MLflow module or its mock replacement
+        mlflow {ModuleType} --  MLflow module or its mock replacement
         config {Union[ConfigParser, dict]} -- configuration for the training, with the required sections:
             - "training": containing "random_seed";
             - "paths": containing "artifacts_temp" and "dir_processed";
