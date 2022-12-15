@@ -41,7 +41,7 @@ steps:
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - pipenv install --system
+      - pipenv install
       - pipenv run dvc repro --pull
       - pipenv run dvc push --run-cache
 
