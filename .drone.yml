@@ -45,7 +45,7 @@ steps:
       - pipenv sync --system
       - dvc repro --pull
       - dvc push --run-cache
-      - git remote add test https://pablo.fernandez:xxxxxxxx@github.com/intelygenz/github-repo-template.git
+      - git remote add test https://pablo.fernandez:xxxxxxxx@github.com/konstellation-io/kdl-project-template.git
       - git add dvc.lock
       - git commit -m 'response'
       - git config user.name "pablo.fernandez"
