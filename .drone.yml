@@ -44,7 +44,11 @@ steps:
       - pipenv sync --system
       - dvc repro --pull
       - dvc push
-
+      - git add dvc.lock
+      - git commit -m 'response'
+      - git config user.name "pablo.fernandez"
+      - git config user.email "pablo.fernandez@intelygenz.com"
+      - git push origin HEAD:dvc/individual_track
     volumes:
       - name: shared-storage
         path: /shared-storage
