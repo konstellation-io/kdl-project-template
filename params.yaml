@@ -3,7 +3,7 @@ paths:
   dir_artifacts_standard: "lab/artifacts/standard_classifier"
   dir_artifacts_dnn: "lab/artifacts/dnn"
 
-mlflow_experiment: "kdl-project-template" #
+mlflow_experiment: "kdl-project-template"
 
 training:
   random_seed: 0

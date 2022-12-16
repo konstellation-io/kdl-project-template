@@ -16,9 +16,6 @@ kind: pipeline
 type: kubernetes
 name: example-pipeline
 
-clone:
-  disable: true
-
 trigger:
   ref:
     - refs/tags/run-example-*
@@ -34,9 +31,7 @@ steps:
   - name: clone
     image: alpine/git
     commands:
-      - git clone https://oauth2:${GITHUB_AUTH_TOKEN}@github.com/konstellation-io/kdl-project-template.git .
       - git remote add remote_repo https://oauth2:${GITHUB_AUTH_TOKEN}@github.com/konstellation-io/kdl-project-template.git
-      - git checkout $DRONE_COMMIT
       - git config user.name "${GIT_COMMITTER_NAME}"
       - git config user.email ${CI_COMMIT_AUTHOR_EMAIL}
 
