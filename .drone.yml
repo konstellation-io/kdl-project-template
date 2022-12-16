@@ -28,7 +28,7 @@ environment:
   USER: ${DRONE_COMMIT_AUTHOR}
 
 steps:
-  - name: clone
+  - name: add remote
     image: alpine/git
     commands:
       - git remote add remote_repo https://oauth2:${GITHUB_AUTH_TOKEN}@github.com/konstellation-io/kdl-project-template.git
