@@ -1,11 +1,11 @@
 paths:
-  dir_processed: "lab/data/processed" # move to env
-  dir_artifacts_standard: "lab/artifacts/standard_classifier" # move lab/artifacts to env and in config the specific directory
+  dir_processed: "lab/data/processed"
+  dir_artifacts_standard: "lab/artifacts/standard_classifier"
   dir_artifacts_dnn: "lab/artifacts/dnn"
 
-mlflow_experiment: "kdl-project-template" # move to env
+mlflow_experiment: "kdl-project-template" #
 
-training: # move to in script constant
+training:
   random_seed: 0
   n_workers: 2
   batch_size: 30
@@ -14,8 +14,8 @@ training: # move to in script constant
 
 test:
   paths:
-    dir_processed: "lab/data/processed" # move to env
-    dir_artifacts_standard: "lab/artifacts/standard_classifier" # move lab/artifacts to env and in config the specific directory
+    dir_processed: "lab/data/processed"
+    dir_artifacts_standard: "lab/artifacts/standard_classifier"
     dir_artifacts_dnn: "lab/artifacts/dnn"
 
   mlflow_experiment:

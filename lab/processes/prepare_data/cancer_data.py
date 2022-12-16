@@ -7,6 +7,8 @@ from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
+import pyarrow as pa
+from pyarrow import parquet
 import torch
 from pandas import DataFrame, Series
 from sklearn.datasets import load_breast_cancer
@@ -73,17 +75,17 @@ def prepare_cancer_data(dir_output: str) -> None:
     X_test = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
 
     # Save processed data
-    np.save(str(Path(dir_output) / "X_train.npy"), X_train.to_numpy())
-    np.save(str(Path(dir_output) / "y_train.npy"), y_train.to_numpy())
-    np.save(str(Path(dir_output) / "X_val.npy"), X_val.to_numpy())
-    np.save(str(Path(dir_output) / "y_val.npy"), y_val.to_numpy())
-    np.save(str(Path(dir_output) / "X_test.npy"), X_test.to_numpy())
-    np.save(str(Path(dir_output) / "y_test.npy"), y_test.to_numpy())
+    X_train.to_parquet(Path(dir_output) / "X_train.gzip", compression="gzip")
+    y_train.to_frame().to_parquet(Path(dir_output) / "y_train.gzip", compression="gzip")
+
+    X_val.to_parquet(Path(dir_output) / "X_val.gzip", compression="gzip")
+    y_val.to_frame().to_parquet(Path(dir_output) / "y_val.gzip", compression="gzip")
+
+    X_test.to_parquet(Path(dir_output) / "X_test.gzip", compression="gzip")
+    y_test.to_frame().to_parquet(Path(dir_output) / "y_test.gzip", compression="gzip")
 
 
-def load_data_splits(
-    dir_processed: Union[str, Path], as_type: str
-) -> Tuple[Union[np.ndarray, torch.Tensor]]:
+def load_data_splits(dir_processed: Union[str, Path], as_type: str) -> Tuple[Union[np.ndarray, torch.Tensor]]:
     """
     Loads train/val/test files for X and y (named 'X_train.npy', 'y_train.npy', etc.)
     from the location specified and returns as numpy arrays.
@@ -97,12 +99,12 @@ def load_data_splits(
         (tuple) of numpy arrays or torch tensors for
             X_train, X_val, X_test, y_train, y_val, y_test
     """
-    X_train = np.load(str(Path(dir_processed) / "X_train.npy"))
-    y_train = np.load(str(Path(dir_processed) / "y_train.npy"))
-    X_val = np.load(str(Path(dir_processed) / "X_val.npy"))
-    y_val = np.load(str(Path(dir_processed) / "y_val.npy"))
-    X_test = np.load(str(Path(dir_processed) / "X_test.npy"))
-    y_test = np.load(str(Path(dir_processed) / "y_test.npy"))
+    X_train = pd.read_parquet(Path(dir_processed) / "X_train.gzip").to_numpy()
+    y_train = pd.read_parquet(Path(dir_processed) / "y_train.gzip").squeeze().to_numpy()
+    X_val = pd.read_parquet(Path(dir_processed) / "X_val.gzip").to_numpy()
+    y_val = pd.read_parquet(Path(dir_processed) / "y_val.gzip").squeeze().to_numpy()
+    X_test = pd.read_parquet(Path(dir_processed) / "X_test.gzip").to_numpy()
+    y_test = pd.read_parquet(Path(dir_processed) / "y_test.gzip").squeeze().to_numpy()
 
     if as_type == "array":
         return X_train, X_val, X_test, y_train, y_val, y_test
@@ -119,20 +121,14 @@ def load_data_splits(
         return X_train, X_val, X_test, y_train, y_val, y_test
 
     else:
-        raise ValueError(
-            "Please specify as_type argument as one of 'array' or 'tensor'"
-        )
+        raise ValueError("Please specify as_type argument as one of 'array' or 'tensor'")
 
 
-def load_data_splits_as_dataloader(
-    dir_processed: str, batch_size: int, n_workers: int
-) -> Tuple[DataLoader]:
+def load_data_splits_as_dataloader(dir_processed: str, batch_size: int, n_workers: int) -> Tuple[DataLoader]:
     """
     Loads data tensors saved in processed data directory and returns as dataloaders.
     """
-    X_train, X_val, X_test, y_train, y_val, y_test = load_data_splits(
-        dir_processed, as_type="tensor"
-    )
+    X_train, X_val, X_test, y_train, y_val, y_test = load_data_splits(dir_processed, as_type="tensor")
 
     # Convert tensors to dataloaders
     dataloader_args = dict(batch_size=batch_size, num_workers=n_workers, shuffle=True)

@@ -4,8 +4,8 @@ stages:
     cmd: python3 lab/processes/prepare_data/main.py
     deps:
     - path: lab/processes/prepare_data/cancer_data.py
-      md5: 0cb76b171d7d59e84c387909f896c75e
-      size: 5022
+      md5: 86f18271323dc0530010caea6df33444
+      size: 5220
     - path: lab/processes/prepare_data/main.py
       md5: 2b09a3cf88d2c1260200a81995287047
       size: 304
@@ -14,20 +14,20 @@ stages:
       size: 6032
     outs:
     - path: lab/data/processed
-      md5: acf8e37789cd3991ab60577afcc83c29.dir
-      size: 141880
+      md5: d65ddb3b71e4e9e7e7a00c7c1f8bb311.dir
+      size: 225890
       nfiles: 6
   train_standard_classifiers:
     cmd: python3 lab/processes/train_standard_classifiers/main.py
     deps:
     - path: lab/data/processed
-      md5: acf8e37789cd3991ab60577afcc83c29.dir
-      size: 141880
+      md5: d65ddb3b71e4e9e7e7a00c7c1f8bb311.dir
+      size: 225890
       nfiles: 6
     - path: lab/processes/train_standard_classifiers
-      md5: bc1535cecd929bba979fe61058a1713e.dir
-      size: 67336
-      nfiles: 7
+      md5: 8602bb7aa5379e4cea4dd3650fc8e222.dir
+      size: 69423
+      nfiles: 8
     - path: lib/viz.py
       md5: e627741bc71aea17c1c7a7133fbc0607
       size: 4939
@@ -59,13 +59,13 @@ stages:
     cmd: python3 lab/processes/train_dnn_pytorch/main.py
     deps:
     - path: lab/data/processed
-      md5: acf8e37789cd3991ab60577afcc83c29.dir
-      size: 141880
+      md5: d65ddb3b71e4e9e7e7a00c7c1f8bb311.dir
+      size: 225890
       nfiles: 6
     - path: lab/processes/train_dnn_pytorch
-      md5: 84a6f395b3c85bb2feb5636a434c4860.dir
-      size: 72139
-      nfiles: 9
+      md5: f58a5beda31fd88f2d3e4d4e3ec3ce5d.dir
+      size: 74318
+      nfiles: 10
     - path: lib/pytorch.py
       md5: 11efc44c252d49de8f5ecf79971f7364
       size: 6032

@@ -16,6 +16,9 @@ kind: pipeline
 type: kubernetes
 name: example-pipeline
 
+clone:
+  disable: true
+
 trigger:
   ref:
     - refs/tags/run-example-*
@@ -23,34 +26,39 @@ trigger:
 environment:
   PYTHONPATH: /drone/src
   # PATH_CONFIG: /drone/src/lab/processes/config.ini
-  MINIO_DATA_FOLDER: /shared-storage/template-dvc/data # Change to your projec
-  MLFLOW_URL: http://template-dvc-mlflow:5000
+  MINIO_DATA_FOLDER: /shared-storage/template-dvc/data # Change to your project
+  MLFLOW_URL: http://template-dvc-mlflow:5000 # Change to your mlflow url
   MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
   USER: ${DRONE_COMMIT_AUTHOR}
 
 steps:
+  - name: clone
+    image: alpine/git
+    commands:
+      - git clone https://oauth2:${GITHUB_AUTH_TOKEN}@github.com/konstellation-io/kdl-project-template.git .
+      - git checkout $DRONE_COMMIT
+      - git config user.name ${GIT_AUTHOR_NAME}
+      - git config user.email ${CI_COMMIT_AUTHOR_EMAIL}
+
   - name: chown emptydir
     image: alpine
     commands:
       - chown 1000 -R .
-  - name: repro
-    image: konstellation/kdl-py:3.9-1.3.1
+
+  - name: Reproduce example
+    image: konstellation/kdl-py:3.9-1.3.1 # Modify for your projects requirements
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - echo ${DRONE_REPO}
       - pipenv sync --system
       - dvc repro --pull
       - dvc push --run-cache
-      - git remote add test https://pablo.fernandez:xxxxxxxx@github.com/konstellation-io/kdl-project-template.git
       - git add dvc.lock
       - git commit -m 'response'
-      - git config user.name "pablo.fernandez"
-      - git config user.email "pablo.fernandez@intelygenz.com"
-      - git push test HEAD:feat/dvc
+      - git push
     volumes:
       - name: shared-storage
         path: /shared-storage
