@@ -25,18 +25,12 @@ trigger:
 
 environment:
   PYTHONPATH: /drone/src
-  # PATH_CONFIG: /drone/src/lab/processes/config.ini
   MINIO_DATA_FOLDER: /shared-storage/template-dvc/data # Change to your project
   MLFLOW_URL: http://template-dvc-mlflow:5000 # Change to your mlflow url
   MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
   USER: ${DRONE_COMMIT_AUTHOR}
 
 steps:
-  - name: echo variables
-    image: alpine/git
-    commands:
-      - env
-
   - name: clone
     image: alpine/git
     commands:

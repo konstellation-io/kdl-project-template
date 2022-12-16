@@ -12,6 +12,7 @@ mlflow = "==1.28.0"
 numpy = "==1.23.5"
 dvc = {extras = ["s3"], version = "==2.38.1"}
 boto3 = "*"
+pyarrow = "*"
 
 [dev-packages]
 pylint = "==2.15.0"
