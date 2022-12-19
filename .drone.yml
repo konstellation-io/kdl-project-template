@@ -50,8 +50,7 @@ steps:
     commands:
       - pipenv sync --system
       - dvc exp run  --pull
-      - dvc push --run-cache
-      - dvc exp push --rev ${DRONE_TAG} remote_repo -v
+      - dvc exp push remote_repo -v
     volumes:
       - name: shared-storage
         path: /shared-storage
