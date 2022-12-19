@@ -31,7 +31,7 @@ steps:
   - name: add remote
     image: alpine/git
     commands:
-      - git remote add test https://pablo.fernandez:xxxxxxxx@github.com/intelygenz/github-repo-template.git
+      - git remote add test https://pablo.fernandez:xxxxxxxx@github.com/konstellation-io/kdl-project-template.git
       - git config user.name "${GIT_COMMITTER_NAME}"
       - git config user.email ${CI_COMMIT_AUTHOR_EMAIL}
 
