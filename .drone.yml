@@ -49,8 +49,8 @@ steps:
         from_secret: minio-secret
     commands:
       - pipenv sync --system
-      - dvc exp run  --pull
-      - dvc exp push remote_repo -v
+      - dvc exp run --pull --name ${DRONE_TAG}
+      - dvc exp push remote_repo ${DRONE_TAG} -v
     volumes:
       - name: shared-storage
         path: /shared-storage
