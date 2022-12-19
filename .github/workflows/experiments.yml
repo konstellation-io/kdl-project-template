@@ -1,0 +1,53 @@
+name: experiments
+on:
+  push:
+    tags:
+      - "run-example-github*"
+env:
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  CI_COMMIT_MESSAGE: experiment run
+  CI_COMMIT_AUTHOR: Continuous Integration
+  RUN_NAME: ${{ github.ref_name }}
+  PYTHONPATH: lab
+jobs:
+  train-and-report:
+    runs-on: ["self-hosted", "igz", "cpu"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9.11"
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: dschep/install-pipenv-action@v1
+
+      - uses: iterative/setup-dvc@v1
+
+      - name: Pipenv setup
+
+        run: |
+          pipenv sync --system
+      - name: GIT setup
+        run: |
+          git remote add test https://oauth2:${GITHUB_AUTH_TOKEN}@github.com/konstellation-io/kdl-project-template.git
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "pablo-fernandez-IGZ@users.noreply.github.com"
+      - name: Run Experiments
+        env:
+          MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
+          MLFLOW_URL: https://poc-dvc-mlflow.kdl-dell.konstellation.io
+          AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+        run: |
+          dvc exp run --name '${{ env.RUN_NAME }}'
+      - name: Share experiments
+        # Only run on main branch push (e.g. after pull request merge).
+        run: |
+          dvc exp push --rev ${{ github.ref_name }} test -v
