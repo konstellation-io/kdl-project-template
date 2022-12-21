@@ -7,8 +7,8 @@ env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   CI_COMMIT_MESSAGE: experiment run
   CI_COMMIT_AUTHOR: Continuous Integration
-  RUN_NAME: ${{ github.ref_name }}
-  PYTHONPATH: ${{ github.workspace }}/lab
+  GIT_TAG: ${{ github.ref_name }}
+  PYTHONPATH: ${{ github.workspace }}
 jobs:
   train-and-report:
     runs-on: ["self-hosted", "igz", "cpu"]
@@ -30,24 +30,32 @@ jobs:
 
       - uses: iterative/setup-dvc@v1
 
-      - name: Pipenv setup
-
-        run: |
-          pipenv sync --system
       - name: GIT setup
-        run: |
-          git remote add test https://oauth2:${GITHUB_AUTH_TOKEN}@github.com/konstellation-io/kdl-project-template.git
-          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-          git config --global user.email "oauth2@users.noreply.github.com"
-      - name: Run Experiments
         env:
-          MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-          MLFLOW_URL: https://poc-dvc-mlflow.kdl-dell.konstellation.io
           AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
         run: |
-          dvc exp run --name '${{ env.RUN_NAME }}'
-      - name: Share experiments
-        # Only run on main branch push (e.g. after pull request merge).
+          git remote add test https://oauth2:$ACCESS_TOKEN@github.com/intelygenz/usage-template-dvc.git
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "oauth2@users.noreply.github.com"           
+          dvc remote modify --local minio access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
+          dvc remote modify --local minio secret_access_key ${{ env.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Pipenv setup
         run: |
+          pipenv sync --system
+
+      - name: Run Experiments
+        env:
+          MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
+          MLFLOW_URL: https://template-dvc-tryout-mlflow.kdl-dell.konstellation.io
+          AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+        run: |
+          dvc exp run --name '${{ env.GIT_TAG }}' --pull
+          dvc exp list
+
+      - name: Share experiments
+        run: |
+          git remote -v
           dvc exp push --rev ${{ github.ref_name }} test -v
