@@ -1,5 +1,0 @@
-[core]
-    remote = minio
-['remote "minio"']
-    url = s3://template-dvc/dvc
-    endpointurl = https://minio.kdl-dell.konstellation.io
