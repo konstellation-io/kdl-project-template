@@ -5,14 +5,15 @@ Integration test for train_standard_classifiers
 import os
 from pathlib import Path
 
-import dvc.api
 import pytest
+import yaml
+from yaml.loader import SafeLoader
 
 from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 from lib.testing import get_mlflow_stub
 
-vscode_config = dvc.api.params_show()
-print(vscode_config)
+with open("params.yaml", "rb") as f:
+    vscode_config = yaml.load(f, Loader=SafeLoader)
 vscode_config = vscode_config["test"]
 
 
@@ -26,7 +27,6 @@ def test_train_classifiers_runs_without_errors(temp_data_dir):
 
     Uses test fixture temp_data_dir to create a temporary dataset required by train_classifiers (see conftest.py)
     """
-    vscode_config["paths"]["dir_processed"] = temp_data_dir
 
     mlflow_stub = get_mlflow_stub()
 

@@ -5,8 +5,9 @@ Integration test for train_dnn_pytorch
 import os
 from pathlib import Path
 
-import dvc.api
 import pytest
+import yaml
+from yaml.loader import SafeLoader
 
 from lab.processes.train_dnn_pytorch.densenet import train_densenet
 from lib.testing import get_mlflow_stub
@@ -25,10 +26,11 @@ def test_train_densenet_without_errors(temp_data_dir):
 
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
     """
-    config = dvc.api.params_show()
-    print(config)
+
+    with open("params.yaml", "r") as f:
+        config = yaml.load(f, Loader=SafeLoader)
+
     config = config["test"]
-    print(config)
     mlflow_stub = get_mlflow_stub()
 
     train_densenet(mlflow=mlflow_stub, config=config, mlflow_url=None, mlflow_tags=None)

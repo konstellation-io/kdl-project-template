@@ -57,7 +57,7 @@ class TestCancerDataPreparation:
         assert sum([x_train.shape[0], x_val.shape[0], x_test.shape[0]]) == n_samples
         assert sum([y_train.shape[0], y_val.shape[0], y_test.shape[0]]) == n_samples
 
-    def test_prepare_cancer_data_saves_npy_arrays(self):
+    def test_prepare_cancer_data_saves_parquet_files(self):
         """
         Test that prepare_cancer_data saves arrays as .npy files
         """

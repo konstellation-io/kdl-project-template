@@ -3,12 +3,15 @@ ML pipeline for breast cancer classification
 Part 1: Data preparation
 """
 
-import os
+import yaml
+from yaml.loader import SafeLoader
 
-import dvc.api
 from cancer_data import prepare_cancer_data
 
-DIR_DATA_PROCESSED = dvc.api.params_show()["paths"]["dir_processed"]
+with open("params.yaml", "r") as f:
+    config = yaml.load(f, Loader=SafeLoader)
+
+DIR_DATA_PROCESSED = config["paths"]["dir_processed"]
 
 
 if __name__ == "__main__":

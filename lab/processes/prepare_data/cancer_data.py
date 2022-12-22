@@ -7,8 +7,6 @@ from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
-import pyarrow as pa
-from pyarrow import parquet
 import torch
 from pandas import DataFrame, Series
 from sklearn.datasets import load_breast_cancer

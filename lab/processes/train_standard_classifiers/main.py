@@ -4,14 +4,17 @@ Part 2: Training traditional ML models
 """
 
 
-import configparser
 import os
-import dvc.api
 import mlflow
+
+import yaml
+from yaml.loader import SafeLoader
 
 from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 
-config = dvc.api.params_show()
+
+with open('params.yaml', 'r') as f:
+    config = yaml.load(f, Loader=SafeLoader)
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_TAGS = {"git_tag": os.getenv("DRONE_TAG")}

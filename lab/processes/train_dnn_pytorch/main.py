@@ -3,14 +3,16 @@ ML pipeline for breast cancer classification
 Part 3: Training NN models in PyTroch
 """
 
-import dvc.api
 import os
 
 import mlflow
+import yaml
+from yaml.loader import SafeLoader
 
 from lab.processes.train_dnn_pytorch.densenet import train_densenet
 
-config = dvc.api.params_show()
+with open('params.yaml', 'r') as f:
+    config = yaml.load(f, Loader=SafeLoader)
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_TAGS = {"git_tag": os.getenv("DRONE_TAG")}
