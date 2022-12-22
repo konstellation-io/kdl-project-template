@@ -5,7 +5,7 @@ on:
       - "run-example-github*"
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-  CI_COMMIT_MESSAGE: experiment run
+  CI_COMMIT_MESSAGE: Experiment run
   CI_COMMIT_AUTHOR: Continuous Integration
   GIT_TAG: ${{ github.ref_name }}
   PYTHONPATH: ${{ github.workspace }}
@@ -13,6 +13,7 @@ jobs:
   train-and-report:
     runs-on: ["self-hosted", "igz", "cpu"]
     steps:
+
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.ref_name }}
@@ -35,7 +36,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
         run: |
-          git remote add test https://oauth2:$ACCESS_TOKEN@github.com/intelygenz/usage-template-dvc.git
+          git remote add remote_repo https://oauth2:$ACCESS_TOKEN@github.com/intelygenz/usage-template-dvc.git
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "oauth2@users.noreply.github.com"           
           dvc remote modify --local minio access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
@@ -45,7 +46,7 @@ jobs:
         run: |
           pipenv sync --system
 
-      - name: Run Experiments
+      - name: Run Experiment
         env:
           MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
           MLFLOW_URL: https://template-dvc-tryout-mlflow.kdl-dell.konstellation.io
@@ -55,7 +56,6 @@ jobs:
           dvc exp run --name '${{ env.GIT_TAG }}' --pull
           dvc exp list
 
-      - name: Share experiments
+      - name: Share experiment
         run: |
-          git remote -v
-          dvc exp push --rev ${{ github.ref_name }} test -v
+          dvc exp push --rev ${{ github.ref_name }} remote_repo
