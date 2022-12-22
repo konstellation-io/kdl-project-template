@@ -16,7 +16,7 @@
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.formatting.provider": "black",
     "python.linting.pylintEnabled": true,
-    "python.linting.flake8Enabled": false,
+    "python.linting.flake8Enabled": true,
     "python.linting.mypyEnabled": false,
     "python.linting.pylintArgs": [
         "--max-line-length=120",
@@ -47,7 +47,5 @@
     },
     "terminal.integrated.env.linux": {
         "PYTHONPATH": "${workspaceFolder}"
-    },
-    "python.testing.unittestEnabled": false,
-    "python.linting.enabled": true
+    }
 }
