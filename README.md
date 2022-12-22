@@ -8,6 +8,9 @@ The project repository has the following directory structure:
 ├── .vscode
 │   └── launch.json <- Configuration for test executions in Vscode
 │   └── config.json <- Base configuration for VSCode
+├── .github
+│   └── workflows
+│       │   └── experiments.yml  <- Pipeline to be run by github
 ├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
 ├── lab
 │   ├── analysis  <- Analyses of data, models etc. (typically notebooks)
@@ -33,10 +36,10 @@ The project repository has the following directory structure:
 │       │   └── Pipfile.lock
 │       └── conftest.py        <- Pytest fixtures
 ├── lib           <- Importable functions used by analysis notebooks and processes scripts
-├──       <- Code for generating deployment runtimes (.krt)
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
-├── dvc.yml       <- Instructions for dvc repro and experiments
 ├── .gitignore
+├── dvc.yml       <- Instructions for dvc repro and experiments
+├── params.yml    <- Configuration file
 ├── README.md     <- Main README
 └── pytest.ini    <- Pytest configuration
 └── Pipfile       <- Global dependencies
@@ -71,17 +74,53 @@ However, the idea of modularizing the analysis into separate processes facilitat
 
 ## First steps
 
-Add ACCESS_TOKEN, MINIO_ACCESS_KEY_ID and MINIO_SECRET_ACCESS_KEY_ID to the github repository
-Pipenv sync --dev
-dvc init
-dvc remote add minio s3://<bucket_namet>/dvc -d
+In order to start making use of this repository, certain steps need to be executed
+
+### Secrets for github
+In the github repository we will need to add the following secrets:
+- ACCESS_TOKEN: a github access token it may be the same that was used to connect KDL
+- MINIO_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
+- MINIO_SECRET_KEY_ID: same as with MINIO_ACCESS_KEY_ID
+
+### Initialize dvc
+In order to start tracking your data, pipelines and models we will need to initiate our dvc repository.
+We first need to install our dependencies (which include dvc)
+
+`Pipenv sync --dev`
+
+We can then initiate dvc
+`pipenv shell`
+`dvc init`
+
+Now our repository is dvc tracked too!
+last thing is to set our remote dvc repository to share our data
+
+`dvc remote add minio s3://<bucket_namet>/dvc -d
 dvc remote modify minio endpointurl https://minio.kdl-dell.konstellation.io
-dvc remote modify --local minio access_key_id "minio"
-dvc remote modify --local minio secret_access_key "minio123"
-pytest
-Search and change the TODOs in .github/workflows/experiments.yml
-commit, tag and push for first experiment launch
-dvc exp apply <exp-name>
+dvc remote modify --local minio access_key_id <access_key_id>
+dvc remote modify --local minio secret_access_key <secret_access_key>
+`
+
+### Make sure the everything is installed correctly
+To make sure our project is good to go you will first need to run the tests
+
+`pytest`
+
+If test run correctly locally we can now see if our actions are also set.
+We will first need to modify our experiments.yml depending on our bucket's name
+
+With this modfications we can now commit, tag and push to start our run!
+
+If the job has been runned correctly we should see our experiment in our mlflow url
+we should also be able to visualize it in our dvc experiments by running
+
+`dvc exp list origin`
+
+If we are happy with the results of our experiment we may want to apply it to our repository by running
+
+`dvc exp pull <experiment-name> origin
+dvc exp apply <experiment-name>`
+
 ## Example project pipeline
 
 KDL contains various components that need to be correctly orchestrated and connected.

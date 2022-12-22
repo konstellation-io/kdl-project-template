@@ -2,7 +2,7 @@ name: experiments
 on:
   push:
     tags:
-      - "run-example-github*"
+      - "run-example*"
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   CI_COMMIT_MESSAGE: Experiment run
