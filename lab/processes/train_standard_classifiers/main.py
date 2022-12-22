@@ -13,11 +13,11 @@ from yaml.loader import SafeLoader
 from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 
 
-with open('params.yaml', 'r') as f:
+with open("params.yaml", "r") as f:
     config = yaml.load(f, Loader=SafeLoader)
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
-MLFLOW_TAGS = {"git_tag": os.getenv("DRONE_TAG")}
+MLFLOW_TAGS = {"git_tag": os.getenv("GIT_TAG")}
 
 
 if __name__ == "__main__":

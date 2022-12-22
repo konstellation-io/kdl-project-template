@@ -69,6 +69,19 @@ The process names from the template are not likely to generalize to other projec
 In the examples shown, all processes files are Python `.py` files.
 However, the idea of modularizing the analysis into separate processes facilitates changing any of those processes to a different language as may be required, for example R or Julia.
 
+## First steps
+
+Add ACCESS_TOKEN, MINIO_ACCESS_KEY_ID and MINIO_SECRET_ACCESS_KEY_ID to the github repository
+Pipenv sync --dev
+dvc init
+dvc remote add minio s3://<bucket_namet>/dvc -d
+dvc remote modify minio endpointurl https://minio.kdl-dell.konstellation.io
+dvc remote modify --local minio access_key_id "minio"
+dvc remote modify --local minio secret_access_key "minio123"
+pytest
+Search and change the TODOs in .github/workflows/experiments.yml
+commit, tag and push for first experiment launch
+dvc exp apply <exp-name>
 ## Example project pipeline
 
 KDL contains various components that need to be correctly orchestrated and connected.

@@ -58,7 +58,7 @@ def prepare_cancer_data(dir_output: str) -> None:
     Returns:
         (None)
     """
-    Path(dir_output).mkdir(exist_ok=True)
+    Path(dir_output).mkdir(exist_ok=True, parents=True)
 
     # Load digit data
     imgs, y = load_cancer_data()
