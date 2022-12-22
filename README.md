@@ -31,13 +31,11 @@ The project repository has the following directory structure:
 │       │   └── classifiers_test.py
 │       │   └── Pipfile                 <- Custom dependencies for train_standard_classifiers process
 │       │   └── Pipfile.lock
-│       ├── config.ini         <- Config for Drone runs
-│       ├── config_test.ini   <- Config for local test runs
 │       └── conftest.py        <- Pytest fixtures
 ├── lib           <- Importable functions used by analysis notebooks and processes scripts
+├──       <- Code for generating deployment runtimes (.krt)
 ├── runtimes      <- Code for generating deployment runtimes (.krt)
-├── .drone.yml    <- Instructions for Drone runners
-├── .env          <- Local environment variables for VScode IDE
+├── dvc.yml       <- Instructions for dvc repro and experiments
 ├── .gitignore
 ├── README.md     <- Main README
 └── pytest.ini    <- Pytest configuration
