@@ -85,7 +85,7 @@ def prepare_cancer_data(dir_output: str) -> None:
 
 def load_data_splits(
     dir_processed: Union[str, Path], as_type: str
-    ) -> Tuple[Union[np.ndarray, torch.Tensor]]:
+) -> Tuple[Union[np.ndarray, torch.Tensor]]:
     """
     Loads train/val/test files for X and y (named 'X_train.npy', 'y_train.npy', etc.)
     from the location specified and returns as numpy arrays.
@@ -123,16 +123,18 @@ def load_data_splits(
     else:
         raise ValueError(
             "Please specify as_type argument as one of 'array' or 'tensor'"
-            )
+        )
 
 
 def load_data_splits_as_dataloader(
     dir_processed: str, batch_size: int, n_workers: int
-    ) -> Tuple[DataLoader]:
+) -> Tuple[DataLoader]:
     """
     Loads data tensors saved in processed data directory and returns as dataloaders.
     """
-    X_train, X_val, X_test, y_train, y_val, y_test = load_data_splits(dir_processed, as_type="tensor")
+    X_train, X_val, X_test, y_train, y_val, y_test = load_data_splits(
+        dir_processed, as_type="tensor"
+    )
 
     # Convert tensors to dataloaders
     dataloader_args = dict(batch_size=batch_size, num_workers=n_workers, shuffle=True)

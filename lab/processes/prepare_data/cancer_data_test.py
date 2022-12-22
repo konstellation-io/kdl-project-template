@@ -48,7 +48,7 @@ class TestCancerDataPreparation:
 
         assert (
             len(result) == 6
-            ), "Expected split_data to return 6 objects (train/test/split for each of X and y)"
+        ), "Expected split_data to return 6 objects (train/test/split for each of X and y)"
 
         # Unpack the result and check the dimensions of elements
         x_train, x_val, x_test, y_train, y_val, y_test = result
@@ -75,11 +75,11 @@ class TestCancerDataPreparation:
         files_created = os.listdir(dir_output)
         assert (
             len(files_created) == 6
-            ), "Expected to find 6 files created by prepare_cancer_data"
+        ), "Expected to find 6 files created by prepare_cancer_data"
         for fname in files_created:
             assert (
                 ".gzip" in fname
-            ), "Expected the files created by prepare_cancer_data to be saved as parquet"
+        ), "Expected the files created by prepare_cancer_data to be saved as parquet"
 
         # Cleanup: remove temporary file
         assert dir_output == "temp"  # Prevent catastrophe if changing directory by mistake
@@ -120,6 +120,6 @@ class TestCancerDataLoading:
         """
         result = load_data_splits_as_dataloader(
             dir_processed=temp_data_dir, batch_size=4, n_workers=1
-            )
+        )
         for loader in result:
             assert isinstance(loader, torch.utils.data.DataLoader)

@@ -65,7 +65,7 @@ class DenseNN(nn.Module):
 
 def train_densenet(
     mlflow, config: Union[dict, ConfigParser], mlflow_url: str, mlflow_tags: dict
-    ) -> None:
+) -> None:
     """
     The main function of the example Pytorch model training script
 

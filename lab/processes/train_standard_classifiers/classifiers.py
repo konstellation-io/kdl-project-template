@@ -76,7 +76,9 @@ def train_classifiers(
     with mlflow.start_run(run_name="sklearn_example_train", tags=mlflow_tags):
 
         # Load training and validation data
-        X_train, X_val, _, y_train, y_val, _ = load_data_splits(dir_processed=dir_processed, as_type="array")
+        X_train, X_val, _, y_train, y_val, _ = load_data_splits(
+            dir_processed=dir_processed, as_type="array"
+        )
 
         # Define a number of classifiers
         models = create_classifiers()

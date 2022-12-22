@@ -22,4 +22,6 @@ MLFLOW_TAGS = {"git_tag": os.getenv("GIT_TAG")}
 
 if __name__ == "__main__":
 
-    train_classifiers(mlflow=mlflow, config=config, mlflow_url=MLFLOW_URL, mlflow_tags=MLFLOW_TAGS)
+    train_classifiers(
+        mlflow=mlflow, config=config, mlflow_url=MLFLOW_URL, mlflow_tags=MLFLOW_TAGS
+    )
