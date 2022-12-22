@@ -14,7 +14,7 @@ training:
 
 test:
   paths:
-    dir_processed: "lab/data/processed"
+    dir_processed: "temp"
     dir_artifacts_standard: "lab/artifacts/standard_classifier"
     dir_artifacts_dnn: "lab/artifacts/dnn"
 

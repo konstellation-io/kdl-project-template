@@ -73,7 +73,7 @@ class TestCancerDataPreparation:
         files_created = os.listdir(dir_output)
         assert len(files_created) == 6, "Expected to find 6 files created by prepare_cancer_data"
         for fname in files_created:
-            assert ".npy" in fname, "Expected the files created by prepare_cancer_data to be saved as npy arrays"
+            assert ".gzip" in fname, "Expected the files created by prepare_cancer_data to be saved as parquet"
 
         # Cleanup: remove temporary file
         assert dir_output == "temp"  # Prevent catastrophe if changing directory by mistake

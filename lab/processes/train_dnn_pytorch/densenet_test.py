@@ -26,8 +26,9 @@ def test_train_densenet_without_errors(temp_data_dir):
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
     """
     config = dvc.api.params_show()
+    print(config)
     config = config["test"]
-
+    print(config)
     mlflow_stub = get_mlflow_stub()
 
     train_densenet(mlflow=mlflow_stub, config=config, mlflow_url=None, mlflow_tags=None)
