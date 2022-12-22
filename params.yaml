@@ -14,9 +14,9 @@ training:
 
 test:
   paths:
-    dir_processed: "temp"
-    dir_artifacts_standard: "lab/artifacts/standard_classifier"
-    dir_artifacts_dnn: "lab/artifacts/dnn"
+    dir_processed: "temp/data"
+    dir_artifacts_standard: "temp/artifacts/standard_classifier"
+    dir_artifacts_dnn: "temp/artifacts/dnn"
 
   mlflow_experiment:
 
