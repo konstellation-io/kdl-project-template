@@ -4,16 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+dvc = {extras = ["s3"], version = "==2.37.0"}
 matplotlib = "==3.5.3"
 mlflow = "==1.28.0"
 numpy = "==1.23.5"
-dvc = {extras = ["s3"], version = "==2.38.1"}
 boto3 = "1.24.59"
-pyarrow = "10.0.1"
 pandas = "==1.4.3"
 sklearn = "==0.0"
 torch = "==1.12.1"
-pyyaml = "*"
+pyyaml = "==3.12"
 
 [dev-packages]
 black = "==22.6.0"
