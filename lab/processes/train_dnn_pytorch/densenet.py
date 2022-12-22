@@ -63,7 +63,9 @@ class DenseNN(nn.Module):
         return x
 
 
-def train_densenet(mlflow, config: Union[dict, ConfigParser], mlflow_url: str, mlflow_tags: dict) -> None:
+def train_densenet(
+    mlflow, config: Union[dict, ConfigParser], mlflow_url: str, mlflow_tags: dict
+    ) -> None:
     """
     The main function of the example Pytorch model training script
 
@@ -122,8 +124,12 @@ def train_densenet(mlflow, config: Union[dict, ConfigParser], mlflow_url: str, m
         net.load_state_dict(torch.load(filepath_model))
 
         # Get metrics on best model
-        train_loss, train_acc, _ = val_loop(dataloader=train_loader, model=net, loss_fn=loss_fn)
-        val_loss, val_acc, (y_val_true, y_val_pred) = val_loop(dataloader=val_loader, model=net, loss_fn=loss_fn)
+        train_loss, train_acc, _ = val_loop(
+            dataloader=train_loader, model=net, loss_fn=loss_fn
+        )
+        val_loss, val_acc, (y_val_true, y_val_pred) = val_loop(
+            dataloader=val_loader, model=net, loss_fn=loss_fn
+        )
         cm = confusion_matrix(y_val_true, y_val_pred)
 
         # Save artifacts
@@ -133,7 +139,9 @@ def train_densenet(mlflow, config: Union[dict, ConfigParser], mlflow_url: str, m
             title="Confusion matrix (validation set)",
             savepath=filepath_conf_matrix,
         )
-        plot_training_history(df_history, title="Training history", savepath=filepath_training_history)
+        plot_training_history(
+            df_history, title="Training history", savepath=filepath_training_history
+        )
         df_history.to_csv(filepath_training_history_csv)
 
         # Log to MLflow
