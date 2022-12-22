@@ -11,8 +11,8 @@ from yaml.loader import SafeLoader
 
 from lab.processes.train_dnn_pytorch.densenet import train_densenet
 
-with open("params.yaml", "rb") as f:
-    config = yaml.load(f, Loader=SafeLoader)
+with open("params.yaml", "rb") as config_file:
+    config = yaml.load(config_file, Loader=SafeLoader)
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_TAGS = {"git_tag": os.getenv("GIT_TAG")}

@@ -12,8 +12,8 @@ from yaml.loader import SafeLoader
 from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 from lib.testing import get_mlflow_stub
 
-with open("params.yaml", "rb") as f:
-    vscode_config = yaml.load(f, Loader=SafeLoader)
+with open("params.yaml", "rb") as config_file:
+    vscode_config = yaml.load(config_file, Loader=SafeLoader)
 vscode_config = vscode_config["test"]
 
 
