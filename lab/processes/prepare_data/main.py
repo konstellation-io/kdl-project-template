@@ -8,7 +8,7 @@ from yaml.loader import SafeLoader
 
 from cancer_data import prepare_cancer_data
 
-with open("params.yaml", "r") as f:
+with open("params.yaml", "rb") as f:
     config = yaml.load(f, Loader=SafeLoader)
 
 DIR_DATA_PROCESSED = config["paths"]["dir_processed"]

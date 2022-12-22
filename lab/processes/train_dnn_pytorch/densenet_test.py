@@ -27,7 +27,7 @@ def test_train_densenet_without_errors(temp_data_dir):
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
     """
 
-    with open("params.yaml", "r") as f:
+    with open("params.yaml", "rb") as f:
         config = yaml.load(f, Loader=SafeLoader)
 
     config = config["test"]

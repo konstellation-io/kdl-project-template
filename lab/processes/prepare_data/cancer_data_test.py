@@ -79,10 +79,12 @@ class TestCancerDataPreparation:
         for fname in files_created:
             assert (
                 ".gzip" in fname
-        ), "Expected the files created by prepare_cancer_data to be saved as parquet"
+            ), "Expected the files created by prepare_cancer_data to be saved as parquet"
 
         # Cleanup: remove temporary file
-        assert dir_output == "temp"  # Prevent catastrophe if changing directory by mistake
+        assert (
+            dir_output == "temp"
+        )  # Prevent catastrophe if changing directory by mistake
         shutil.rmtree(dir_output)
 
 
