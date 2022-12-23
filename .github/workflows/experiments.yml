@@ -35,8 +35,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
         run: |
-          # TODO: Change repo name
-          git remote add remote_repo https://oauth2:$ACCESS_TOKEN@github.com/<repo-url>.git
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "oauth2@users.noreply.github.com"           
           dvc remote modify --local minio access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
@@ -54,9 +52,13 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
         run: |
-          dvc exp run --name '${{ env.GIT_TAG }}' --pull
-          dvc exp list
-
+          dvc repro --pull
+          
       - name: Share experiment
         run: |
-          dvc exp push --rev ${{ github.ref_name }} remote_repo
+          git add .
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw#*/}
+          dvc push
+          git push origin "HEAD:$branch"

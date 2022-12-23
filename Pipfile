@@ -13,6 +13,7 @@ pandas = "==1.4.3"
 pyyaml = "==3.12"
 sklearn = "==0.0"
 torch = "==1.12.1"
+pyarrow = "==10.0.1"
 
 [dev-packages]
 black = "==22.6.0"
