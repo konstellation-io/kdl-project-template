@@ -78,7 +78,6 @@ In order to start making use of this repository, certain steps need to be execut
 
 ### Secrets for github
 In the github repository we will need to add the following secrets:
-- ACCESS_TOKEN: a github access token it may be the same that was used to connect KDL
 - MINIO_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
 - MINIO_SECRET_KEY_ID: same as with MINIO_ACCESS_KEY_ID
 
@@ -86,40 +85,47 @@ In the github repository we will need to add the following secrets:
 In order to start tracking your data, pipelines and models we will need to initiate our dvc repository.
 We first need to install our dependencies (which include dvc)
 
-`Pipenv sync --dev`
+```bash
+pipenv sync --dev
+```
 
 We can then initiate dvc
-`pipenv shell`
-`dvc init`
-
+```bash
+pipenv shell
+dvc init
+```
 Now our repository is dvc tracked too!
 last thing is to set our remote dvc repository to share our data
 
-`dvc remote add minio s3://<bucket_namet>/dvc -d
+```bash
+dvc remote add minio s3://<bucket_namet>/dvc -d
 dvc remote modify minio endpointurl https://minio.kdl-dell.konstellation.io
 dvc remote modify --local minio access_key_id <access_key_id>
 dvc remote modify --local minio secret_access_key <secret_access_key>
-`
+```
 
+### Optional: add pre commiting hooks
+
+Optionally we may want to install dvc hooks which make it simple to integrate all actions when commiting and publishing changes
+```bash
+dvc install --use-pre-commit-tool
+```
+If we do not take this option we must remember that:
+- After any git commit, there is a dvc status to visuzalize changes in pipeline
+- After any git push, we should run dvc push to update the remote
+- After any git checkout, we must dvc checkout to update artifacts in that revision of code
 ### Make sure the everything is installed correctly
 To make sure our project is good to go you will first need to run the tests
 
-`pytest`
-
+``` bash
+pytest
+```
 If test run correctly locally we can now see if our actions are also set.
-We will first need to modify our experiments.yml depending on our bucket's name
+We will first need to modify our experiments.yml adding our mlflow url
 
 With this modfications we can now commit, tag and push to start our run!
 
-If the job has been runned correctly we should see our experiment in our mlflow url
-we should also be able to visualize it in our dvc experiments by running
-
-`dvc exp list origin`
-
-If we are happy with the results of our experiment we may want to apply it to our repository by running
-
-`dvc exp pull <experiment-name> origin
-dvc exp apply <experiment-name>`
+If the job has been runned correctly we should see that a new commit has been made by our CI. To visualize these changes we need to git pull and dvc pull the changes.
 
 ## Example project pipeline
 
@@ -156,7 +162,8 @@ More information on each of these steps:
   the training history (accuracy and loss per epoch on both training and validation data) are stored as an artifact in MLflow (`training_history.csv` and visualized in `.png`).
   The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
 
-The execution of the example classification pipeline on Drone agents is specified in [.drone.yml](.drone.yml)
+The pipelines is defined in [dvc.yaml](dvc.yaml)
+The execution of the example classification pipeline on github actions is specified in [.github/workflows/experiments.yml](.github/workflows/experiments.yml)
 (for simplicity, we are omitting various additional components here, such as the environment variables and the AWS secrets):
 
 ```yaml
