@@ -130,6 +130,7 @@ If we do not take this option we must remember that:
 -  After any git commit, it is recommended to run dvc status to visualize if your data version also needs to be committed
 - After any git push, we should run dvc push to update the remote
 - After any git checkout, we must dvc checkout to update artifacts in that revision of code
+
 ### Test installation
 To make sure our project is good to go we will first need to run the tests
 
@@ -183,21 +184,11 @@ More information on each of these steps:
   The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
 
 The full definition of the pipeline is defined in [dvc.yaml](dvc.yaml).
-This file shows the steps our pipeline needs to take in order to complete.
-Each step is composed of:
- - Name: which can be use to make reference in dvc commands
- - cmd: the command to be run in the step. Usually it will be a single command to run one of our scripts
- - deps: dependencies of our step. In this section we should include input data for our scripts as well as the code in which the step is dependent (The code being runned as well as any local file it requires). 
- - params: similar to deps but to the variable level. Our parameters are define in [params.yaml](params.yaml). In here we can define which parameters are relevant to our step. 
- - outs: The outputs expected for this step. This can be any directory, dataset or artifact expected from our code.
- - always_changed (optional): If set to True, dvc will always consider this step has been modified from the last execution. This makes it so that dvc always runs this step. This may be desirable when need to query an untracked dataset that could be modified since the last execution (such as in the example)
+We will see the components of this pipeline later on the TODO
 
-It is important to define all dependencies, params and outs for each step. When executing the pipeline, dvc will check if any dependency or parameter has been changed since last execution. If none has changed, dvc will just checkout the tracked output, skipping the execution of the step. This is specially helpful when avoiding time consuming steps that do not modify often (Such as preprocessing).
-
-## Continuous development execution
+### Continuous development execution
 The execution of the example classification pipeline on github actions is specified in [.github/workflows/experiments.yml](.github/workflows/experiments.yml).
-
-The execution pipeline has the following code block.
+We will see hat each block of code does later on the TODO. But for now we will focus on:
 **Execution trigger**
 ```yaml
 on:
@@ -205,72 +196,13 @@ on:
     tags:
       - "run-example*"
 ```
-When this pipeline should be executed. In this case, when a tag is pushed which beggin with _run-example_
-
-**Environment definition**
-```yaml
-env:
-  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-  CI_COMMIT_MESSAGE: Experiment run
-  CI_COMMIT_AUTHOR: Continuous Development
-  GIT_TAG: ${{ github.ref_name }}
-  PYTHONPATH: ${{ github.workspace }}
-```
-Several environment variables needed in the step of the execution pipeline.
-
-**Pipeline setup**
-```yaml
-runs-on: ["self-hosted", "igz", "cpu"]
-steps:
-  - uses: actions/checkout@v3
-    ...
-  - name: Pipenv setup
-    run: |
-      pipenv sync --system
-```
-These steps should not be modified since they are needed for dvc usage as well as commiting the results of our pipeline.
-
-**Run pipeline**
-```yaml
-- name: Run Experiment
-  env:
-    MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-    MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
-    AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
-  run: |
-    dvc repro --pull
-```
-
-This step is the one that executes our entire pipeline. dvc requires the remote information to be able to get the tracked data (as our CD will not have any). If your project is based on an input dataset/artifact rather than the query used for the example. You may need to add a `dvc pull data/`before the exectuion of the pipeline.
-
-**Tracking Modifications**
-```yaml
-      - name: Share experiment
-        run: |
-          raw=$(git branch -r --contains ${{ github.ref }})
-          branch=${raw#*/}
-          commit_message=$(git show -s --format=%B $branch)
-          commit_message="${commit_message}-results"
-          git add dvc.lock
-          git commit -m "$commit_message"
-          dvc push
-          git push origin "HEAD:$branch"
-```
-This step will commit the updated dvc.lock so that we can view the results in our user-tools and keep the state of our pipeline tracked.
-A detail explanation of what the step is doing would be:
- - Finding the branch belonging to this commit. Since we are using a tag we need to find to which branch this tag corresponds to
- - Get the original commit message and add a _-results-_ to be able to track what commit the results are from
- - Add and commit the changes done, which should only be dvc.lock. Since keeps track of our datafiles
- - Push changes both to git and dvc to the corresponding branch
-
 To **launch the execution** of this pipeline on Github Actions, push a tag containing the name matching the defined trigger to the remote repository.
 In this case, the tag pattern is `run-example-*`,
 therefore to launch the execution run the following commands in the Terminal:
 `git tag run-example-v0 && git push origin run-example-v0`.
 For more information and examples, see the section Launching experiment runs below.
 
-The **results of executions** are stored in MLflow.
+The **results of executions** will generate a new commit with the results of the execution as well as store it in MLflow.
 In the example of training traditional ML models, we are only tracking one parameter (the name of the classifier) and one metric (the obtained validation accuracy). In the PyTorch neural network training example, we are tracking the same metric (validation accuracy) for comparisons, but a different set of hyperparameters, such as learning rate, batch size, number of epochs etc.
 In a real-world project, you are likely to be tracking many more parameters and metrics of interest.
 The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/train_standard_classifiers/main.py) and with the environment variables in [.drone.yml](.drone.yml).
@@ -333,6 +265,48 @@ This then allows importing library functions directly from the Python script tha
 ```python
 from lib.viz import plot_confusion_matrix
 ```
+## Data tracking and Pipeline tracking
+
+By using dvc, we are capable of tracking data, processes and their outputs
+in order to keep the status of the project in its interiety on our git history.
+
+### Track datasets
+
+In order to start tracking a new dataset. We must download the dataset on our user-tools' vscode. 
+We can then add the data o be tracked by dvc by running
+```bash
+dvc add data/file.txt
+```
+We will see that this commands generates a new file _data/file.txt.dvc_. This new file will be tracked by our git
+while a .gitignore will indicate git to not track the original file.
+We can then commit the new dataset and push it to our remote.
+```bash
+dvc commit
+dvc push
+```
+Now our data is tracked and shared
+
+### Track pipelines
+
+Tracking data is useful, but in some cases we do not only want to track the data but how the data is created.
+This would be the cases when we get our raw data and process it. We would like to not only track the processed data, 
+but what code created it. 
+To do so, we will use dvc pipelines.
+
+We create our pipeline in _dvc.yaml_, defining all the steps required from data preprocessing, experiment training and evaluating. 
+This file shows the steps our pipeline needs to take in order to complete.
+Each step is composed of:
+ - Name: which can be use to make reference in dvc commands
+ - cmd: the command to be run in the step. Usually it will be a single command to run one of our scripts
+ - deps: dependencies of our step. In this section we should include input data for our scripts as well as the code in which the step is dependent (The code being runned as well as any local file it requires). 
+ - params: similar to deps but to the variable level. Our parameters are define in [params.yaml](params.yaml). In here we can define which parameters are relevant to our step. 
+ - outs: The outputs expected for this step. This can be any directory, dataset or artifact expected from our code.
+ - always_changed (optional): If set to True, dvc will always consider this step has been modified from the last execution. This makes it so that dvc always runs this step. This may be desirable when need to query an untracked dataset that could be modified since the last execution (such as in the example)
+
+It is important to define all dependencies, params and outs for each step.
+When executing the pipeline, dvc will check if any dependency or parameter has been changed since last execution. 
+If none has changed, dvc will just checkout the tracked output, skipping the execution of the step.
+This is specially helpful because we can execute the entire pipeline and skip the steps that have not changed.
 
 ## Launching experiment runs (Github Actions)
 
@@ -343,9 +317,9 @@ are run on Github runners instead of the user's Jupyter or Vscode tools.
 This way, any past execution can always be traced to the exact version of the code that was run (`Triggered` in the UI of the Action run)
 and the runs can be reproduced with a click of the button in the UI of the Drone run (`Re-run jobs`).
 
-The event that launches a pipeline execution is defined by the trigger specified in .experiments.yml.
-An example is shown below:
-
+The event that launches a pipeline execution is defined by the trigger specified in .github/workflows/experiments.yml
+This file is divided in blocks of codes with dedicated responisibilities
+**Execution trigger**
 ```yaml
 on:
   push:
@@ -353,12 +327,71 @@ on:
       - "run-example*"
 ```
 
-With this trigger in place, the pipeline will be executed on Github runner whenever a tag matching the pattern specified in the trigger is pushed to the remote repository, for example:
+With this trigger in place, the pipeline will be executed on Github runner whenever a tag matching the pattern
+specified in the trigger is pushed to the remote repository, for example:
 
 ```bash
 git tag run-example-v0
 git push origin run-example-v0
 ```
+
+**Environment definition**
+```yaml
+env:
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  PYTHONPATH: ${{ github.workspace }}
+```
+Several environment variables needed in the step of the execution pipeline.
+
+**Pipeline setup**
+```yaml
+runs-on: ["self-hosted", "igz", "cpu"]
+steps:
+  - uses: actions/checkout@v3
+    ...
+  - name: Pipenv setup
+    run: |
+      pipenv sync --system
+```
+These steps should not be modified since they are needed for dvc usage as well as commiting the results of our pipeline.
+
+**Run pipeline**
+```yaml
+- name: Run Experiment
+  env:
+    MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
+    MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
+    AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+  run: |
+    dvc repro --pull
+```
+
+This step is the one that executes our entire pipeline. 
+dvc requires the remote information to be able to get the tracked data (as our CD will not have any).
+If your project is based on an input dataset/artifact rather than the query used for the example.
+You may need to add a `dvc pull data/`before the exectuion of the pipeline.
+
+**Tracking Modifications**
+```yaml
+      - name: Share experiment
+        run: |
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw#*/}
+          commit_message=$(git show -s --format=%B $branch)
+          commit_message="${commit_message}-results"
+          git add dvc.lock
+          git commit -m "$commit_message"
+          dvc push
+          git push origin "HEAD:$branch"
+```
+This step will commit the updated dvc.lock so that we can view the results in our user-tools
+and keep the state of our pipeline tracked.
+A detail explanation of what the step is doing would be:
+ - Finding the branch belonging to this commit. Since we are using a tag we need to find to which branch this tag corresponds to
+ - Get the original commit message and add a _-results_ to be able to track what commit the results are from
+ - Add and commit the changes done, which should only be dvc.lock. Since keeps track of our datafiles
+ - Push changes both to git and dvc to the corresponding branch
 
 TODO: Check with konstellation team on this section
 ### Docker images for experiments & trainings 
