@@ -5,9 +5,6 @@ on:
       - "run-example*"
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-  CI_COMMIT_MESSAGE: Experiment run
-  CI_COMMIT_AUTHOR: Continuous Integration
-  GIT_TAG: ${{ github.ref_name }}
   PYTHONPATH: ${{ github.workspace }}
 jobs:
   train-and-report:
@@ -35,7 +32,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
         run: |
-          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.name "Continuous Development"
           git config --global user.email "oauth2@users.noreply.github.com"           
           dvc remote modify --local minio access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
           dvc remote modify --local minio secret_access_key ${{ env.AWS_SECRET_ACCESS_KEY }}
@@ -53,12 +50,14 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
         run: |
           dvc repro --pull
-          
+
       - name: Share experiment
         run: |
-          git add .
-          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           raw=$(git branch -r --contains ${{ github.ref }})
           branch=${raw#*/}
+          commit_message=$(git show -s --format=%B $branch)
+          commit_message="${commit_message}-results"
+          git add dvc.lock
+          git commit -m "$commit_message"
           dvc push
           git push origin "HEAD:$branch"
