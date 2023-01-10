@@ -74,24 +74,39 @@ However, the idea of modularizing the analysis into separate processes facilitat
 
 ## First steps
 
-In order to start making use of this repository, certain steps need to be executed
+In order to start making use of this repository, certain steps need to be taken in order to have our CD running.
 
-### Secrets for github
+### Github secrets
 In the github repository we will need to add the following secrets:
 - MINIO_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
 - MINIO_SECRET_KEY_ID: same as with MINIO_ACCESS_KEY_ID
 
 ### Initialize dvc
-In order to start tracking your data, pipelines and models we will need to initiate our dvc repository.
-We first need to install our dependencies (which include dvc)
+In order to start our project we will need to install the dependencies. 
+These dependencies will allow us to run the template's example as well as initiate our data tracking.
+To get the dependencies from the Pipfile.lock we run
 
 ```bash
 pipenv sync --dev
 ```
-
-We can then initiate dvc
+If we need to modify the dependencies (either to remove, update or add dependencies),
+we instead would update the Pipfile and run 
+``bash
+pipenv install --dev
+```
+Once our dependencies are installed we can start our virtual environment
 ```bash
 pipenv shell
+```
+
+### Track data
+Among our dependencies we have installed dvc. 
+Dvc is a data tracking tool which will allow us to track modifications 
+and control the versions of our data through git (for more information got to dvc.org).
+
+To start tracking our data we first need to initiate dvc by running
+
+```bash
 dvc init
 ```
 Now our repository is dvc tracked too!
@@ -106,26 +121,31 @@ dvc remote modify --local minio secret_access_key <secret_access_key>
 
 ### Optional: add pre commiting hooks
 
-Optionally we may want to install dvc hooks which make it simple to integrate all actions when commiting and publishing changes
+Optionally we may want to install dvc pre commiting hooks which automatizes common actions need when git commiting
+and pushing.To do so we install the pre-commit-tool
 ```bash
 dvc install --use-pre-commit-tool
 ```
 If we do not take this option we must remember that:
-- After any git commit, there is a dvc status to visuzalize changes in pipeline
+-  After any git commit, it is recommended to run dvc status to visualize if your data version also needs to be committed
 - After any git push, we should run dvc push to update the remote
 - After any git checkout, we must dvc checkout to update artifacts in that revision of code
-### Make sure the everything is installed correctly
-To make sure our project is good to go you will first need to run the tests
+### Test installation
+To make sure our project is good to go we will first need to run the tests
 
 ``` bash
 pytest
 ```
-If test run correctly locally we can now see if our actions are also set.
+If test are run correctly locally we can now see if our actions are also set.
 We will first need to modify our experiments.yml adding our mlflow url
 
-With this modfications we can now commit, tag and push to start our run!
+With this modfications we can now commit, tag and push with git to start our run!
 
-If the job has been runned correctly we should see that a new commit has been made by our CI. To visualize these changes we need to git pull and dvc pull the changes.
+If the job has been run correctly we should see that a new commit has been made by our CD. 
+
+This new commit will mantain the code it was used to execute it, 
+with the addition that now it will have updated our dvc tracked artifacts
+To visualize these changes we need to git pull and dvc pull the changes.
 
 ## Example project pipeline
 
@@ -162,29 +182,96 @@ More information on each of these steps:
   the training history (accuracy and loss per epoch on both training and validation data) are stored as an artifact in MLflow (`training_history.csv` and visualized in `.png`).
   The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
 
-The pipelines is defined in [dvc.yaml](dvc.yaml)
-The execution of the example classification pipeline on github actions is specified in [.github/workflows/experiments.yml](.github/workflows/experiments.yml)
-(for simplicity, we are omitting various additional components here, such as the environment variables and the AWS secrets):
+The full definition of the pipeline is defined in [dvc.yaml](dvc.yaml).
+This file shows the steps our pipeline needs to take in order to complete.
+Each step is composed of:
+ - Name: which can be use to make reference in dvc commands
+ - cmd: the command to be run in the step. Usually it will be a single command to run one of our scripts
+ - deps: dependencies of our step. In this section we should include input data for our scripts as well as the code in which the step is dependent (The code being runned as well as any local file it requires). 
+ - params: similar to deps but to the variable level. Our parameters are define in [params.yaml](params.yaml). In here we can define which parameters are relevant to our step. 
+ - outs: The outputs expected for this step. This can be any directory, dataset or artifact expected from our code.
+ - always_changed (optional): If set to True, dvc will always consider this step has been modified from the last execution. This makes it so that dvc always runs this step. This may be desirable when need to query an untracked dataset that could be modified since the last execution (such as in the example)
 
+It is important to define all dependencies, params and outs for each step. When executing the pipeline, dvc will check if any dependency or parameter has been changed since last execution. If none has changed, dvc will just checkout the tracked output, skipping the execution of the step. This is specially helpful when avoiding time consuming steps that do not modify often (Such as preprocessing).
+
+## Continuous development execution
+The execution of the example classification pipeline on github actions is specified in [.github/workflows/experiments.yml](.github/workflows/experiments.yml).
+
+The execution pipeline has the following code block.
+**Execution trigger**
 ```yaml
----
-kind: pipeline
-type: kubernetes
-name: example-pipeline
+on:
+  push:
+    tags:
+      - "run-example*"
+```
+When this pipeline should be executed. In this case, when a tag is pushed which beggin with _run-example_
 
-trigger:
-  ref:
-    - refs/tags/run-example-*
+**Environment definition**
+```yaml
+env:
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  CI_COMMIT_MESSAGE: Experiment run
+  CI_COMMIT_AUTHOR: Continuous Development
+  GIT_TAG: ${{ github.ref_name }}
+  PYTHONPATH: ${{ github.workspace }}
+```
+Several environment variables needed in the step of the execution pipeline.
+
+**Pipeline setup**
+```yaml
+runs-on: ["self-hosted", "igz", "cpu"]
+steps:
+  - uses: actions/checkout@v3
+    ...
+  - name: Pipenv setup
+    run: |
+      pipenv sync --system
+```
+These steps should not be modified since they are needed for dvc usage as well as commiting the results of our pipeline.
+
+**Run pipeline**
+```yaml
+- name: Run Experiment
+  env:
+    MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
+    MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
+    AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+  run: |
+    dvc repro --pull
 ```
 
-To **launch the execution** of this pipeline on Drone runners, push a tag containing the name matching the defined trigger to the remote repository.
+This step is the one that executes our entire pipeline. dvc requires the remote information to be able to get the tracked data (as our CD will not have any). If your project is based on an input dataset/artifact rather than the query used for the example. You may need to add a `dvc pull data/`before the exectuion of the pipeline.
+
+**Tracking Modifications**
+```yaml
+      - name: Share experiment
+        run: |
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw#*/}
+          commit_message=$(git show -s --format=%B $branch)
+          commit_message="${commit_message}-results"
+          git add dvc.lock
+          git commit -m "$commit_message"
+          dvc push
+          git push origin "HEAD:$branch"
+```
+This step will commit the updated dvc.lock so that we can view the results in our user-tools and keep the state of our pipeline tracked.
+A detail explanation of what the step is doing would be:
+ - Finding the branch belonging to this commit. Since we are using a tag we need to find to which branch this tag corresponds to
+ - Get the original commit message and add a _-results-_ to be able to track what commit the results are from
+ - Add and commit the changes done, which should only be dvc.lock. Since keeps track of our datafiles
+ - Push changes both to git and dvc to the corresponding branch
+
+To **launch the execution** of this pipeline on Github Actions, push a tag containing the name matching the defined trigger to the remote repository.
 In this case, the tag pattern is `run-example-*`,
 therefore to launch the execution run the following commands in the Terminal:
 `git tag run-example-v0 && git push origin run-example-v0`.
-For more information and examples, see the section Launching experiment runs (Drone) below.
+For more information and examples, see the section Launching experiment runs below.
 
 The **results of executions** are stored in MLflow.
-In the example of training traditional ML models, we are only tracking one parameter (the name of the classifier)and one metric (the obtained validation accuracy). In the PyTorch neural network training example, we are tracking the same metric (validation accuracy) for comparisons, but a different set of hyperparameters, such as learning rate, batch size, number of epochs etc.
+In the example of training traditional ML models, we are only tracking one parameter (the name of the classifier) and one metric (the obtained validation accuracy). In the PyTorch neural network training example, we are tracking the same metric (validation accuracy) for comparisons, but a different set of hyperparameters, such as learning rate, batch size, number of epochs etc.
 In a real-world project, you are likely to be tracking many more parameters and metrics of interest.
 The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/train_standard_classifiers/main.py) and with the environment variables in [.drone.yml](.drone.yml).
 For more information on MLflow tracking, see the section "Logging experiment results (MLflow)" below.
@@ -195,11 +282,11 @@ To see the tracked experiments, visit the MLflow tool UI.
 The recommended way to handle specific dependencies and versions across different processes is to have a custom `Pipfile`
 inside each process folder. Only the necessary dependencies for each process need to be specified in each `Pipfile`. In this way the time of execution and preparation of the environment for each process is limited as much as possible, avoiding installing dependencies that are not necessary.
 
-In the pipeline, dependencies can be installed as follow:
+In the [dvc.yaml](dvc.yaml), dependencies can be installed as follow:
 
 ```yaml
----
-commands:
+step_name:
+  cmd:  
   - cd lab/processes/prepare_data/
   - pipenv install --system
   - python main.py
@@ -232,53 +319,49 @@ so in order to run code with imports from Vscode terminal,
 prepend your calls to Python scripts with `PYTHONPATH=lab` as follows:
 `PYTHONPATH=lab python {filename.py}`.
 
-**On Drone:**
-To be able to run imports from the `lib` directory on Drone, you may add it to PYTHONPATH in .drone.yml as indicated:
+**On Github Actions:**
+To be able to run imports from the `lib` directory on Github Actions, you may add it to PYTHONPATH in experiments.yml as indicated:
 
 ```yaml
-environment:
-  PYTHONPATH: /drone/src/lab
+env:
+  PYTHONPATH:  ${{ github.workspace }}
 ```
 
-`/drone/src` is the location on the Drone runner that the repository is cloned to, and `lab` is the name of the laboratory section of our repository which includes `lib`.
+`github.workspace` is the root on the github runner that the repository is cloned to,  which includes `lib`.
 This then allows importing library functions directly from the Python script that is being executed on the runner, for instance:
 
 ```python
 from lib.viz import plot_confusion_matrix
 ```
 
-To see a working example, refer to the existing `application-examples` pipeline defined in .drone.yml
-(the PyTorch example pipeline uses library imports in `processes/pytorch_example/main.py`).
-
-## Launching experiment runs (Drone)
+## Launching experiment runs (Github Actions)
 
 To enable full tracability and reproducibility, all executions that generate results or artifacts
 (e.g. processed datasets, trained models, validation metrics, plots of model validation, etc.)
-are run on Drone runners instead of the user's Jupyter or Vscode tools.
+are run on Github runners instead of the user's Jupyter or Vscode tools.
 
-This way, any past execution can always be traced to the exact version of the code that was run (`VIEW SOURCE </>` in the UI of the Drone run)
-and the runs can be reproduced with a click of the button in the UI of the Drone run (`RESTART`).
+This way, any past execution can always be traced to the exact version of the code that was run (`Triggered` in the UI of the Action run)
+and the runs can be reproduced with a click of the button in the UI of the Drone run (`Re-run jobs`).
 
-The event that launches a pipeline execution is defined by the trigger specified in .drone.yml.
+The event that launches a pipeline execution is defined by the trigger specified in .experiments.yml.
 An example is shown below:
 
 ```yaml
-trigger:
-  ref:
-    - refs/tags/process-data-*
+on:
+  push:
+    tags:
+      - "run-example*"
 ```
 
-With this trigger in place, the pipeline will be executed on Drone agents whenever a tag matching the pattern specified in the trigger is pushed to the remote repository, for example:
+With this trigger in place, the pipeline will be executed on Github runner whenever a tag matching the pattern specified in the trigger is pushed to the remote repository, for example:
 
 ```bash
-git tag process-data-v0
-git push origin process-data-v0
+git tag run-example-v0
+git push origin run-example-v0
 ```
 
-Note: If using an external repository (e.g. hosted on Github), a delay in synchronization between Gitea and the mirrored external repo may cause a delay in launching the pipeline on the Drone runners.
-This delay can be overcome by manually forcing a synchronization of the repository in the Gitea UI Settings.
-
-### Docker images for experiments & trainings
+TODO: Check with konstellation team on this section
+### Docker images for experiments & trainings 
 
 In the `drone.yml` file you can specify the image that is going to be used for each pipeline step.
 
@@ -299,15 +382,15 @@ There are two recommendations regarding which image to use:
 To compare various experiments, and to inspect the effect of the model hyperparameters on the results obtained, you can use MLflow experiment tracking.
 Experiment tracking with MLflow enables logging the parameters with which every run was executed and the metrics of interest, as well as any artifacts produced by the run.
 
-The experiments are only tracked from the executions on Drone.
+The experiments are only tracked from the executions on Github Actions.
 In local test runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code).
 
-The environment variables for connecting to MLflow server are provided in .drone.yml:
+The environment variables for connecting to MLflow server are provided in .experiments.yml:
 
 ```yaml
-environment:
-  MLFLOW_URL: http://mlflow-server:5000
-  MLFLOW_S3_ENDPOINT_URL: http://{{ ProjectID }}:9000
+env:
+  MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
+  MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
 ```
 
 The use of MLflow for experiment tracking is illustrated by the scikit-learn example pipeline in [lab/processes/train_standard_classifiers/main.py](lab/processes/train_standard_classifiers/main.py).
@@ -389,7 +472,8 @@ Unlike the command line option, the UI option also permits the use of the intera
 
 ### Data for testing
 
-Integration tests (and some unit tests) require the existence of a dataset to be able to run.
+Thanks to the use of dvc. We will always have our latest datasets in our vscode.
+However if we were to need a mock dataset to avoid running a preprocessing or such we can still create a mock dataset.
 This temporary dataset is provided to such tests
 through the use of a test fixture defined in `conftest.py`,
 and is eliminated by the same fixture after the test is executed.
