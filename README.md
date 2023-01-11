@@ -184,11 +184,13 @@ More information on each of these steps:
   The model with the highest validation accuracy is saved as a .joblib file in MLflow artifacts, and is used to produce an assessment of model performance on the validation dataset (e.g. saving the loss and accuracy metrics, and the confusion matrix of the validation set, `confusion_matrix.png`, all logged to MLflow).
 
 The full definition of the pipeline is defined in [dvc.yaml](dvc.yaml).
-We will see the components of this pipeline later on the TODO
+We will see the components of this pipeline later on the section [Track pipelines](##Track-pielines)
 
 ### Continuous development execution
 The execution of the example classification pipeline on github actions is specified in [.github/workflows/experiments.yml](.github/workflows/experiments.yml).
-We will see hat each block of code does later on the TODO. But for now we will focus on:
+We will see hat each block of code does later on the [Launching experiment runs (Github Actions)](##Launching-experiment-runs-(Github-Actions)). 
+But for now we will focus on:
+
 **Execution trigger**
 ```yaml
 on:
@@ -319,6 +321,7 @@ and the runs can be reproduced with a click of the button in the UI of the Drone
 
 The event that launches a pipeline execution is defined by the trigger specified in .github/workflows/experiments.yml
 This file is divided in blocks of codes with dedicated responisibilities
+
 **Execution trigger**
 ```yaml
 on:
@@ -374,16 +377,16 @@ You may need to add a `dvc pull data/`before the exectuion of the pipeline.
 
 **Tracking Modifications**
 ```yaml
-      - name: Share experiment
-        run: |
-          raw=$(git branch -r --contains ${{ github.ref }})
-          branch=${raw#*/}
-          commit_message=$(git show -s --format=%B $branch)
-          commit_message="${commit_message}-results"
-          git add dvc.lock
-          git commit -m "$commit_message"
-          dvc push
-          git push origin "HEAD:$branch"
+- name: Share experiment
+  run: |
+    raw=$(git branch -r --contains ${{ github.ref }})
+    branch=${raw#*/}
+    commit_message=$(git show -s --format=%B $branch)
+    commit_message="${commit_message}-results"
+    git add dvc.lock
+    git commit -m "$commit_message"
+    dvc push
+    git push origin "HEAD:$branch"
 ```
 This step will commit the updated dvc.lock so that we can view the results in our user-tools
 and keep the state of our pipeline tracked.
