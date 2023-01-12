@@ -81,7 +81,7 @@ In the github repository we will need to add the following secrets:
 - MINIO_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
 - MINIO_SECRET_KEY_ID: same as with MINIO_ACCESS_KEY_ID
 
-### Initialize dvc
+### Install dependencies
 In order to start our project we will need to install the dependencies. 
 These dependencies will allow us to run the template's example as well as initiate our data tracking.
 To get the dependencies from the Pipfile.lock we run
@@ -102,7 +102,7 @@ pipenv shell
 ### Track data
 Among our dependencies we have installed dvc. 
 Dvc is a data tracking tool which will allow us to track modifications 
-and control the versions of our data through git (for more information got to dvc.org).
+and control the versions of our data through git (for more information got to [dvc.org](https://dvc.org/).
 
 To start tracking our data we first need to initiate dvc by running
 
@@ -127,7 +127,7 @@ and pushing.To do so we install the pre-commit-tool
 dvc install --use-pre-commit-tool
 ```
 If we do not take this option we must remember that:
--  After any git commit, it is recommended to run dvc status to visualize if your data version also needs to be committed
+- After any git commit, it is recommended to run dvc status to visualize if your data version also needs to be committed
 - After any git push, we should run dvc push to update the remote
 - After any git checkout, we must dvc checkout to update artifacts in that revision of code
 
@@ -270,7 +270,7 @@ from lib.viz import plot_confusion_matrix
 ## Data tracking and Pipeline tracking
 
 By using dvc, we are capable of tracking data, processes and their outputs
-in order to keep the status of the project in its interiety on our git history.
+in order to keep the status of the project in its intirety on our git history.
 
 ### Track datasets
 
@@ -279,36 +279,37 @@ We can then add the data o be tracked by dvc by running
 ```bash
 dvc add data/file.txt
 ```
-We will see that this commands generates a new file _data/file.txt.dvc_. This new file will be tracked by our git
+We will see that this commands generates a new file `data/file.txt.dvc`. This new file will be tracked by our git
 while a .gitignore will indicate git to not track the original file.
-We can then commit the new dataset and push it to our remote.
+We can then dvc commit the new dataset and push it to our remote.
 ```bash
 dvc commit
 dvc push
 ```
-Now our data is tracked and shared
+Now our data is tracked and shared to our S3.
 
 ### Track pipelines
 
 Tracking data is useful, but in some cases we do not only want to track the data but how the data is created.
-This would be the cases when we get our raw data and process it. We would like to not only track the processed data, 
+This would be the case when we get our raw data and process it. We would like to not only track the processed data, 
 but what code created it. 
 To do so, we will use dvc pipelines.
 
-We create our pipeline in _dvc.yaml_, defining all the steps required from data preprocessing, experiment training and evaluating. 
+We create our pipeline in `dvc.yaml`, defining all the steps required from data preprocessing, experiment training, evaluation, etc. 
 This file shows the steps our pipeline needs to take in order to complete.
 Each step is composed of:
  - Name: which can be use to make reference in dvc commands
- - cmd: the command to be run in the step. Usually it will be a single command to run one of our scripts
+ - cmd: the command(s) to be run in the step. Usually it will be a single command to run one of our scripts
  - deps: dependencies of our step. In this section we should include input data for our scripts as well as the code in which the step is dependent (The code being runned as well as any local file it requires). 
  - params: similar to deps but to the variable level. Our parameters are define in [params.yaml](params.yaml). In here we can define which parameters are relevant to our step. 
  - outs: The outputs expected for this step. This can be any directory, dataset or artifact expected from our code.
- - always_changed (optional): If set to True, dvc will always consider this step has been modified from the last execution. This makes it so that dvc always runs this step. This may be desirable when need to query an untracked dataset that could be modified since the last execution (such as in the example)
+ - always_changed (optional): If set to True, dvc will always consider this step has been modified from the last execution. This makes it so that dvc always runs this step. We use this flag specially to query an untracked dataset that could be modified since the last execution (such as in the template example, where the raw dataset is hosted by scikit-learn)
 
 It is important to define all dependencies, params and outs for each step.
 When executing the pipeline, dvc will check if any dependency or parameter has been changed since last execution. 
 If none has changed, dvc will just checkout the tracked output, skipping the execution of the step.
-This is specially helpful because we can execute the entire pipeline and skip the steps that have not changed.
+By doing so, we do not need to partition our pipeline to be executed independently. 
+We can make sure our whole pipeline is sound without having to execute its entirety every time.
 
 ## Launching experiment runs (Github Actions)
 
@@ -319,7 +320,7 @@ are run on Github runners instead of the user's Jupyter or Vscode tools.
 This way, any past execution can always be traced to the exact version of the code that was run (`Triggered` in the UI of the Action run)
 and the runs can be reproduced with a click of the button in the UI of the Drone run (`Re-run jobs`).
 
-The event that launches a pipeline execution is defined by the trigger specified in .github/workflows/experiments.yml
+The event that launches a pipeline execution is defined by the trigger specified in `.github/workflows/experiments.yml`
 This file is divided in blocks of codes with dedicated responisibilities
 
 **Execution trigger**
@@ -357,6 +358,7 @@ steps:
       pipenv sync --system
 ```
 These steps should not be modified since they are needed for dvc usage as well as commiting the results of our pipeline.
+In case you `dvc.yaml`contemplates setting individual environments per step, you may want to skip the Pipenv setup step.
 
 **Run pipeline**
 ```yaml
@@ -397,6 +399,7 @@ A detail explanation of what the step is doing would be:
  - Push changes both to git and dvc to the corresponding branch
 
 TODO: Check with konstellation team on this section
+
 ### Docker images for experiments & trainings 
 
 In the `drone.yml` file you can specify the image that is going to be used for each pipeline step.
