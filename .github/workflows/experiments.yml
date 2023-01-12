@@ -6,6 +6,11 @@ on:
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   PYTHONPATH: ${{ github.workspace }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+  MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
+  # TODO: Change bucket name
+  MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
 jobs:
   train-and-report:
     runs-on: ["self-hosted", "igz", "cpu"]
@@ -28,9 +33,6 @@ jobs:
       - uses: iterative/setup-dvc@v1
 
       - name: GIT setup
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
         run: |
           git config --global user.name "Continuous Development"
           git config --global user.email "oauth2@users.noreply.github.com"           
@@ -42,12 +44,6 @@ jobs:
           pipenv sync --system
 
       - name: Run Experiment
-        env:
-          MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-          # TODO: Change bucket name
-          MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
-          AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
         run: |
           dvc repro --pull
 
