@@ -311,7 +311,7 @@ on:
 To **launch the execution** of this pipeline on Github Actions, push a tag containing the name matching the defined trigger to the remote repository.
 In this case, the tag pattern is `run-example-*`,
 therefore to launch the execution run the following commands in the Terminal:
-`git tag run-example-v0 && git push origin run-example-v0`.
+`git tag run-example-v0.0.0 && git push origin run-example-v0.0.0`.
 For more information and examples, see the section Launching experiment runs below.
 
 The **results of executions** will generate a new commit with the results of the execution as well as store it in MLflow.
@@ -445,8 +445,8 @@ With this trigger in place, the pipeline will be executed on Github runner whene
 specified in the trigger is pushed to the remote repository, for example:
 
 ```bash
-git tag run-example-v0
-git push origin run-example-v0
+git tag run-example-v0.0.0
+git push origin run-example-v0.0.0
 ```
 
 **Environment definition**
