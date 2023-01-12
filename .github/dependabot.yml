@@ -17,7 +17,7 @@ updates:
       - "dependencies"
     # Add reviewers
     reviewers:
-      - "konstellation-io/ds"
+      - "konstellation-io/data-scientists"
 
   # Enable updates for Github Actions
   - package-ecosystem: "github-actions"
@@ -31,4 +31,4 @@ updates:
       - "dependencies"
     # Add reviewers
     reviewers:
-      - "konstellation-io/ci-cd"
+      - "konstellation-io/devops"
