@@ -11,15 +11,18 @@
     - [Github secrets](#github-secrets)
     - [Install dependencies](#install-dependencies)
     - [Track data](#track-data)
-  - [Optional - pre-commit](#optional---pre-commit)
+    - [Assign your MLFLOW URL](#assign-your-mlflow-url)
+    - [Optional - pre-commit](#optional---pre-commit)
     - [Test installation](#test-installation)
   - [Example project pipeline](#example-project-pipeline)
     - [Continuous development execution](#continuous-development-execution)
     - [Handling Process Dependencies](#handling-process-dependencies)
   - [Importing library functions](#importing-library-functions)
-  - [Data tracking and Pipeline tracking](#data-tracking-and-pipeline-tracking)
-    - [Track datasets](#track-datasets)
-    - [Track pipelines](#track-pipelines)
+  - [Data Version Control (DVC)](#data-version-control-dvc)
+    - [Adding data](#adding-data)
+      - [Local Dataset](#local-dataset)
+      - [Data from external database](#data-from-external-database)
+    - [Pipeline (dvc.yaml)](#pipeline-dvcyaml)
   - [Launching experiment runs (Github Actions)](#launching-experiment-runs-github-actions)
     - [Docker images for experiments \& trainings](#docker-images-for-experiments--trainings)
   - [Logging experiment results (MLflow)](#logging-experiment-results-mlflow)
@@ -104,15 +107,18 @@ However, the idea of modularizing the analysis into separate processes facilitat
 
 ## First steps
 
-In order to start making use of this repository, certain steps need to be taken in order to have our CD running.
+In order to start making use of this repository, certain steps need to be taken in order to have our CD running and our data tracked.
+Only one team member is required to follow these steps. After which, the rest of team members just need to make sure to be up to date with the last git commit.
 
 ### Github secrets
 In the github repository we will need to add the following secrets:
 - MINIO_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
 - MINIO_SECRET_KEY_ID: same as with MINIO_ACCESS_KEY_ID
 
+To add secrets to your github repository go to your github repository -> Settings -> Secrets and variables -> Actions. In there selecet `New repository secret` add the Name of your secret and is value.
+
 ### Install dependencies
-In order to start our project we will need to install the dependencies. 
+In order to start our project we will need to install the required dependencies. 
 These dependencies will allow us to run the template's example as well as initiate our data tracking.
 To get the dependencies from the Pipfile.lock we run
 
@@ -138,13 +144,14 @@ Among our dependencies we have installed dvc.
 Dvc is a data tracking tool which will allow us to track modifications 
 and control the versions of our data through git (for more information got to [dvc.org](https://dvc.org/).
 
-To start tracking our data we first need to initiate dvc by running
+To start tracking our data we first need to initiate a dvc repository by running
 
 ```bash
 dvc init
 ```
-Now our repository is dvc tracked too!
-last thing is to set our remote dvc repository to share our data
+Now our repository is dvc tracked too. We can now locally track our data and pipeline executions.
+However, to be able to share these updates with our teammates as well as Github Actions we need to add a remote
+To do so we run the following commands:
 
 ```bash
 dvc remote add minio s3://<bucket_namet>/dvc -d
@@ -152,8 +159,13 @@ dvc remote modify minio endpointurl https://minio.kdl-dell.konstellation.io
 dvc remote modify --local minio access_key_id <access_key_id>
 dvc remote modify --local minio secret_access_key <secret_access_key>
 ```
+Remember to update your <bucket_name> as well as  <access_key_id> and <secret_access_key>
 
-## Optional - pre-commit
+### Assign your MLFLOW URL
+Our experiment will be tracked by mlflow when run on Github Actions.
+In order for Github to know where to send the new information we need to modify the environment variable in [experiments.yml](.github/workflows/experiments.yml). A `TODO` mark has been left to indicate where to make the modification to our bucket's name
+
+### Optional - pre-commit
 
 Code quality and security are important aspects of software development. To help with this, we have included a [pre-commit](https://pre-commit.com/index.html) configuration file that will run a series of checks on your code before you commit it. This will help you to catch issues before they are committed to the repository.
 
@@ -247,7 +259,7 @@ To make sure our project is good to go we will first need to run the tests
 ``` bash
 pytest
 ```
-If test are run correctly locally we can now see if our actions are also set.
+If tests are run correctly locally we can now see if our actions are also set.
 We will first need to modify our experiments.yml adding our mlflow url
 
 With this modfications we can now commit, tag and push with git to start our run!
@@ -377,49 +389,104 @@ This then allows importing library functions directly from the Python script tha
 ```python
 from lib.viz import plot_confusion_matrix
 ```
-## Data tracking and Pipeline tracking
 
-By using dvc, we are capable of tracking data, processes and their outputs
-in order to keep the status of the project in its intirety on our git history.
+## Data Version Control (DVC)
 
-### Track datasets
+### Adding data
+Depending on our problem we may have one of two types of datasets: local and external. 
+Local datasets are those that can be hosted within KDL. These datasets are usually in the form of parquet files, images or videos, we can track this data directly with dvc. 
+External datasets, on the other hand, are those that reside in an external database and need to be queried/downloaded (sklearn dataset, Hadoop, Big Table, Snowflake, etc.). For these cases, we will need to develop a query script that saves the data locally and track changes on this script.
 
-In order to start tracking a new dataset. We must download the dataset on our user-tools' vscode. 
-We can then add the data o be tracked by dvc by running
+#### Local Dataset
+To make use of a local dataset we are going to follow a two step process. First we are going to send our data to minio in order to have a safe storage of the raw data received. We then are going to bring that data to our user tools and track them with dvc. By doing so we are going to have two copies of the same data: one will reside in Minio as an insurance in case git/dvc breaks down or there is a need to restart the project, the other is going to reside in our usertools and is the one we are going to use on a daily basis.
+
+To start we will need our data to be stored in our minio’s bucket in the directory data/raw, this copy will be untouchable. If new data were to come and needed to substitute previous data we will not overwrite the original dataset, this will be done in our user tools.
+
+Once the data is in the bucket’s minio `<bucket_name>/data/raw` directory we will download it to our usertools. To do so, we will use our minio client to download our data. For that we will use the `cp` (copy) command indicating from where we are copying the data and the destination directory; we also add the recursive flag to ensure data within subdirectories is downloaded:
+
 ```bash
-dvc add data/file.txt
+mc cp minio/{bucket_name}/data/raw data/raw –recursive
 ```
-We will see that this commands generates a new file `data/file.txt.dvc`. This new file will be tracked by our git
-while a .gitignore will indicate git to not track the original file.
-We can then dvc commit the new dataset and push it to our remote.
+
+Once the command has been executed, we should be able to see it in our working space.
+
+Now we need to start tracking its modifications. To do so, we are going to use dvc. Dvc commands are very similar to the git commands, although their functionality are slightly different. To start tracking a data file we need to add it with dvc. We can do this file, by file or in a glob:
+
+```bash
+dvc add data/raw/** –recursive
+```
+
+The recursive flag indicates to dvc to track each individual file. Dvc can track full directories, however this is NOT recommended, since it would not be clear what its contents are and can induce errors. If a new user were to access our repository, they would be able to understand the type and quantity of data our repository needs without having to pull the data.
+
+With the command runned we should see that for each of our file a file_name.dvc is created. This .dvc file is the connection between git and dvc. This file will be tracked by git, and dvc will be able to interpret it as a version of our data that stores in our minio’s dvc directory. Now, any modification to the data will be recorded by dvc, dvc will then update our .dvc file and git will track this last file.
+
+To be able to commit changes in files tracked by dvc, we will use the same command as git:
+
 ```bash
 dvc commit
+```
+
+And to be able to share it with other user, we will push this update to the repository:
+
+```bash
 dvc push
 ```
-Now our data is tracked and shared to our S3.
 
-### Track pipelines
+This last command can be hooked to our git push in order to automate that every time a new code version is updated on origin, the corresponding dvc is also updated. (see [pre-commit](#optional---pre-commit))
 
-Tracking data is useful, but in some cases we do not only want to track the data but how the data is created.
-This would be the case when we get our raw data and process it. We would like to not only track the processed data, 
-but what code created it. 
-To do so, we will use dvc pipelines.
+#### Data from external database
+In the cases where our data resides in an external database we will need to query the versions of our data. To do so, we will need to develop a query script or method. This query should save the data in our directory `data/raw` within our repository. We could then track this data with dvc as with the static method. Nevertheless, in the cases where our data may change (because there is an update in the database or we want to collect different data) we may want to add the query method as part of our dvc pipeline.
 
-We create our pipeline in `dvc.yaml`, defining all the steps required from data preprocessing, experiment training, evaluation, etc. 
-This file shows the steps our pipeline needs to take in order to complete.
-Each step is composed of:
- - Name: which can be use to make reference in dvc commands
- - cmd: the command(s) to be run in the step. Usually it will be a single command to run one of our scripts
- - deps: dependencies of our step. In this section we should include input data for our scripts as well as the code in which the step is dependent (The code being runned as well as any local file it requires). 
- - params: similar to deps but to the variable level. Our parameters are define in [params.yaml](params.yaml). In here we can define which parameters are relevant to our step. 
- - outs: The outputs expected for this step. This can be any directory, dataset or artifact expected from our code.
- - always_changed (optional): If set to True, dvc will always consider this step has been modified from the last execution. This makes it so that dvc always runs this step. We use this flag specially to query an untracked dataset that could be modified since the last execution (such as in the template example, where the raw dataset is hosted by scikit-learn)
+An example on how to use external databases is given by the template-example in the step prepare_data
+
+```yaml
+prepare_data:
+  cmd: python3 lab/processes/prepare_data/main.py
+  deps:
+    - lab/processes/prepare_data/main.py
+    - lab/processes/prepare_data/cancer_data.py
+    - lib/pytorch.py
+  outs:
+    - ${paths.dir_processed}
+  always_changed: true
+```
+
+We will go into the details on the components of `dvc.yaml` in [dvc.yaml](#dvc.yaml).
+For now, we just need to understand that this stage of the pipeline will execute our query and track the versioning of the data that would be saved in data/raw.
+We set the always_changed flag to indicate that this stage should always be run since we do not know when the data at the source may have change.
+If the results of the query does not change from execution to execution, dvc will realize and will NOT generate a new version of our data.
+
+### Pipeline (dvc.yaml)
+
+Dvc not only tracks versions of our files, it can also track the pipelines that lead to other data, code, models, metrics, etc. This is done through the dvc pipelines.
+
+The default pipeline file for dvc is the dvc.yaml.
+Whenever we execute a dvc command without any targets, it will search for this file.
+If our project only requires one pipeline we recommend saving this pipeline on the `dvc.yaml` file.
+If we require more than one pipeline we  will have to generate a seperate directory for each pipeline, but the yaml file must always be named `dvc.yaml`. We will then need to add as a target when running dvc repro.
+
+dvc.yaml files are divided in steps. These steps are define by the following fields:
+ - cmd (command): the command (or commands) to run on this step.This is where we will indicate which script to execute
+ - deps (Dependencies): such as the input data and the scripts that are needed for this step. These dependencies determine if the command needs to be executed or not, if no changes have been made to the dependencies, the command will be skipped and the outputs will be cached
+ - outs (outputs): any outputs of the step such as processed data or model. These are particularly important if the following step depends on this output (if this is the case, the artifact should appear in this step’s outs and the following step’s deps). If the step is skipped, this are the artifacts that will be cached
+ - params (parameters): tracked variables in our code (such as epochs, tree depth, layer sized, etc.). The parameters themselves can reside in a config file (either .py, .yaml or .init).
+ - always_changed flag: An optional flag to indicate to dvc to always run the step. Default is False
 
 It is important to define all dependencies, params and outs for each step.
-When executing the pipeline, dvc will check if any dependency or parameter has been changed since last execution. 
-If none has changed, dvc will just checkout the tracked output, skipping the execution of the step.
-By doing so, we do not need to partition our pipeline to be executed independently. 
-We can make sure our whole pipeline is sound without having to execute its entirety every time.
+
+This pipeline can now be executed by dvc. To do so we just need to run the command:
+
+```bash
+dvc repro
+```
+
+In doing so, dvc will reproduce the pipeline. 
+When dvc reproduces a pipeline it will go step by step. 
+In each step it will first verify if the dependencies have been changes since the last reproduction 
+(if this is the first time reproducing , it will always be considered changed). 
+If modifications have been made, the step’s cmd will be executed and the outputs will be tracked. 
+If a steps dependencies and parameters have not changed since the last execution, 
+the step will be skipped and instead its outputs will be taken from cached.
 
 ## Launching experiment runs (Github Actions)
 
@@ -507,6 +574,8 @@ A detail explanation of what the step is doing would be:
  - Get the original commit message and add a _-results_ to be able to track what commit the results are from
  - Add and commit the changes done, which should only be dvc.lock. Since keeps track of our datafiles
  - Push changes both to git and dvc to the corresponding branch
+
+If the process has been runned correctly, we should see a new commit on our branch in the cloud repository.
 
 TODO: Check with konstellation team on this section
 
