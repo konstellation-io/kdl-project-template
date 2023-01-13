@@ -21,7 +21,7 @@
   - [Data Version Control (DVC)](#data-version-control-dvc)
     - [Adding data](#adding-data)
       - [Local Dataset](#local-dataset)
-      - [Data from external database](#data-from-external-database)
+      - [External database](#external-database)
     - [Pipeline (dvc.yaml)](#pipeline-dvcyaml)
   - [Launching experiment runs (Github Actions)](#launching-experiment-runs-github-actions)
     - [Docker images for experiments \& trainings](#docker-images-for-experiments--trainings)
@@ -434,7 +434,7 @@ dvc push
 
 This last command can be hooked to our git push in order to automate that every time a new code version is updated on origin, the corresponding dvc is also updated. (see [pre-commit](#optional---pre-commit))
 
-#### Data from external database
+#### External database
 In the cases where our data resides in an external database we will need to query the versions of our data. To do so, we will need to develop a query script or method. This query should save the data in our directory `data/raw` within our repository. We could then track this data with dvc as with the static method. Nevertheless, in the cases where our data may change (because there is an update in the database or we want to collect different data) we may want to add the query method as part of our dvc pipeline.
 
 An example on how to use external databases is given by the template-example in the step prepare_data
@@ -497,7 +497,11 @@ are run on Github runners instead of the user's Jupyter or Vscode tools.
 This way, any past execution can always be traced to the exact version of the code that was run (`Triggered` in the UI of the Action run)
 and the runs can be reproduced with a click of the button in the UI of Github Actions (`Re-run jobs`).
 
-The event that launches a pipeline execution is defined by the trigger specified in `.github/workflows/experiments.yml`
+The execution pipeline that github is going to reference is find in [`.github/workflows/experiments.yml`](.github/workflows/experiments.yml). 
+This execution pipeline is NOT the training pipeline,
+it just prepares github to be able to run our experiments and share them.
+Thus, little to no modifications are needed in order to use it.
+
 This file is divided in blocks of codes with dedicated responisibilities
 
 **Execution trigger**
@@ -508,25 +512,36 @@ on:
       - "run-example*"
 ```
 
-With this trigger in place, the pipeline will be executed on Github runner whenever a tag matching the pattern
-specified in the trigger is pushed to the remote repository, for example:
-
-```bash
-git tag run-example-v0.0.0
-git push origin run-example-v0.0.0
-```
+This block defines the type of tag that would trigger our CD. 
+You may change the tag as needed for your project. 
 
 **Environment definition**
+
 ```yaml
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   PYTHONPATH: ${{ github.workspace }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+  MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
+  MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
 ```
-Several environment variables needed in the step of the execution pipeline.
 
-**Pipeline setup**
+Several environment variables needed in the step of the execution pipeline.
+As mentioned in [first steps](#Assign-your-MLFLOW-URL), remember to modify the `MLFLOW_URL` variable
+
+**Machine selection**
+
 ```yaml
 runs-on: ["self-hosted", "igz", "cpu"]
+```
+
+In here we define the machine where to run our Github Action. 
+Modify as needed according to your requirements (hosting machine, cpu/gpu, etc.)
+
+**Library installation**
+
+```yaml
 steps:
   - uses: actions/checkout@v3
     ...
@@ -534,27 +549,24 @@ steps:
     run: |
       pipenv sync --system
 ```
+
 These steps should not be modified since they are needed for dvc usage as well as commiting the results of our pipeline.
-In case you `dvc.yaml`contemplates setting individual environments per step, you may want to skip the Pipenv setup step.
+In case your `dvc.yaml`contemplates setting individual environments per step, you may want to skip the Pipenv setup step.
 
 **Run pipeline**
+
 ```yaml
 - name: Run Experiment
-  env:
-    MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-    MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
-    AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
   run: |
     dvc repro --pull
 ```
 
-This step is the one that executes our entire pipeline. 
-dvc requires the remote information to be able to get the tracked data (as our CD will not have any).
+This step is the one that executes our entire pipeline define at [`dvc.yaml`](dvc.yaml). 
 If your project is based on an input dataset/artifact rather than the query used for the example.
 You may need to add a `dvc pull data/`before the exectuion of the pipeline.
 
 **Tracking Modifications**
+
 ```yaml
 - name: Share experiment
   run: |
@@ -567,6 +579,7 @@ You may need to add a `dvc pull data/`before the exectuion of the pipeline.
     dvc push
     git push origin "HEAD:$branch"
 ```
+
 This step will commit the updated dvc.lock so that we can view the results in our user-tools
 and keep the state of our pipeline tracked.
 A detail explanation of what the step is doing would be:
