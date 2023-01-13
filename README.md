@@ -49,6 +49,8 @@ The project repository has the following directory structure:
 ├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
 ├── lab
 │   ├── analysis  <- Analyses of data, models etc. (typically notebooks)
+│   ├── artifacts  <- Directory to save models/training artifacts
+│   ├── data  <- Directory to save data
 │   ├── docs      <- High-level reports, executive summaries at each milestone (typically .md)
 │   └── processes           <- Source code for reproducible workflow steps.
 │       ├── prepare_data
