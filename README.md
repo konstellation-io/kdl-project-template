@@ -27,6 +27,7 @@
   - [Launching experiment runs (Github Actions)](#launching-experiment-runs-github-actions)
     - [Docker images for experiments \& trainings](#docker-images-for-experiments--trainings)
   - [Logging experiment results (MLflow)](#logging-experiment-results-mlflow)
+  - [Model registry and going to production](#model-registry-and-going-to-production)
   - [Testing](#testing)
     - [Running tests from command line](#running-tests-from-command-line)
     - [Running tests from Vscode UI](#running-tests-from-vscode-ui)
@@ -112,6 +113,7 @@ In order to start making use of this repository, certain steps need to be taken 
 Only one team member is required to follow these steps. After which, the rest of team members just need to make sure to be up to date with the last git commit.
 
 ### Github secrets
+
 In the github repository we will need to add the following secrets:
 - MINIO_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
 - MINIO_SECRET_KEY_ID: same as with MINIO_ACCESS_KEY_ID
@@ -119,6 +121,7 @@ In the github repository we will need to add the following secrets:
 To add secrets to your github repository go to your github repository -> Settings -> Secrets and variables -> Actions. In there selecet `New repository secret` add the Name of your secret and is value.
 
 ### Install dependencies
+
 In order to start our project we will need to install the required dependencies. 
 These dependencies will allow us to run the template's example as well as initiate our data tracking.
 To get the dependencies from the Pipfile.lock we run
@@ -141,6 +144,7 @@ pipenv shell
 ```
 
 ### Track data
+
 Among our dependencies we have installed dvc. 
 Dvc is a data tracking tool which will allow us to track modifications 
 and control the versions of our data through git (for more information got to [dvc.org](https://dvc.org/).
@@ -163,6 +167,7 @@ dvc remote modify --local minio secret_access_key <secret_access_key>
 Remember to update your <bucket_name> as well as  <access_key_id> and <secret_access_key>
 
 ### Assign your MLFLOW URL
+
 Our experiment will be tracked by mlflow when run on Github Actions.
 In order for Github to know where to send the new information we need to modify the environment variable in [experiments.yml](.github/workflows/experiments.yml). A `TODO` mark has been left to indicate where to make the modification to our bucket's name
 
@@ -255,6 +260,7 @@ If we do not take this option we must remember that:
 - After any git checkout, we must dvc checkout to update artifacts in that revision of code
 
 ### Test installation
+
 To make sure our project is good to go we will first need to run the tests
 
 ``` bash
@@ -310,6 +316,7 @@ The full definition of the pipeline is defined in [dvc.yaml](dvc.yaml).
 We will see the components of this pipeline later on the section [Track pipelines](##Track-pielines)
 
 ### Continuous development execution
+
 The execution of the example classification pipeline on github actions is specified in [.github/workflows/experiments.yml](.github/workflows/experiments.yml).
 We will see hat each block of code does later on the [Launching experiment runs (Github Actions)](##Launching-experiment-runs-(Github-Actions)). 
 But for now we will focus on:
@@ -394,11 +401,13 @@ from lib.viz import plot_confusion_matrix
 ## Data Version Control (DVC)
 
 ### Adding data
+
 Depending on our problem we may have one of two types of datasets: local and external. 
 Local datasets are those that can be hosted within KDL. These datasets are usually in the form of parquet files, images or videos, we can track this data directly with dvc. 
 External datasets, on the other hand, are those that reside in an external database and need to be queried/downloaded (sklearn dataset, Hadoop, Big Table, Snowflake, etc.). For these cases, we will need to develop a query script that saves the data locally and track changes on this script.
 
 #### Local Dataset
+
 To make use of a local dataset we are going to follow a two step process. First we are going to send our data to minio in order to have a safe storage of the raw data received. We then are going to bring that data to our user tools and track them with dvc. By doing so we are going to have two copies of the same data: one will reside in Minio as an insurance in case git/dvc breaks down or there is a need to restart the project, the other is going to reside in our usertools and is the one we are going to use on a daily basis.
 
 To start we will need our data to be stored in our minio’s bucket in the directory data/raw, this copy will be untouchable. If new data were to come and needed to substitute previous data we will not overwrite the original dataset, this will be done in our user tools.
@@ -436,6 +445,7 @@ dvc push
 This last command can be hooked to our git push in order to automate that every time a new code version is updated on origin, the corresponding dvc is also updated. (see [pre-commit](#optional---pre-commit))
 
 #### External database
+
 In the cases where our data resides in an external database we will need to query the versions of our data. To do so, we will need to develop a query script or method. This query should save the data in our directory `data/raw` within our repository. We could then track this data with dvc as with the static method. Nevertheless, in the cases where our data may change (because there is an update in the database or we want to collect different data) we may want to add the query method as part of our dvc pipeline.
 
 An example on how to use external databases is given by the template-example in the step prepare_data
@@ -469,7 +479,7 @@ If we require more than one pipeline we  will have to generate a seperate direct
 dvc.yaml files are divided in steps. These steps are define by the following fields:
  - cmd (command): the command (or commands) to run on this step.This is where we will indicate which script to execute
  - deps (Dependencies): such as the input data and the scripts that are needed for this step. These dependencies determine if the command needs to be executed or not, if no changes have been made to the dependencies, the command will be skipped and the outputs will be cached
- - outs (outputs): any outputs of the step such as processed data or model. These are particularly important if the following step depends on this output (if this is the case, the artifact should appear in this step’s outs and the following step’s deps). If the step is skipped, this are the artifacts that will be cached
+ - outs (outputs): any outputs of the step such as processed data or models. These are particularly important if the following step depends on this output (if this is the case, the artifact should appear in this step’s outs and the following step’s deps). If the step is skipped, these artifacts will be cached.
  - params (parameters): tracked variables in our code (such as epochs, tree depth, layer sized, etc.). The parameters themselves can reside in a config file (either .py, .yaml or .init).
  - always_changed flag: An optional flag to indicate to dvc to always run the step. Default is False
 
@@ -639,7 +649,7 @@ Experiment tracking with MLflow enables logging the parameters with which every 
 The experiments are only tracked from the executions on Github Actions.
 In local test runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code).
 
-The environment variables for connecting to MLflow server are provided in .experiments.yml:
+The environment variables for connecting to MLflow server are provided in [experiments.yml](.github/workflows/experiments.yml):
 
 ```yaml
 env:
@@ -686,6 +696,34 @@ with mlflow.start_run(run_name=MLFLOW_RUN_NAME, tags=MLFLOW_TAGS):
 To compare the executions and vizualise the effect of logged parameters on the logged metrics,
 you can select the runs you wish to compare in the MLflow UI, select "Compare" and add the desired parameters and metrics to the visualizations provided through the UI.
 Alternatively, the results can also be queried with the MLflow API. For more information on the latter, see [MLflow documentation on querying runs](https://www.mlflow.org/docs/latest/tracking.html#querying-runs-programmatically).
+
+## Model registry and going to production
+
+To make a smooth transition between the KAI LAB and the KRE it is important that each of our experiments have their models ready for production.
+
+In order to do so, we are going to use dvc pipeline tracking.
+To register models, and other artifacts, 
+we should include them as part of our step's outs as well as save them through our code.
+To register through our pipeline we just need to add them as our outs:
+
+```yaml
+train_dnn_pytorch:
+  ...
+  outs:
+    - artifacts/dnn_pytorch/
+```
+
+Now any element saved in our `artifacts/dnn_pytorch` directory will be tracked by dvc.
+The only element missing is to make sure our scripts save our artifacts and models to that directory
+
+```python
+torch.save(model.state_dict(), 'artifacts/dnn_pytorch/densenet.pt')
+```
+
+By ensuring these elements are in place we can now run experiments modifying our code.
+Once one of our experiments reaches our desired metrics, we can merge the commit dedicated to that experiment to main.
+In that commit we will find the code for the entire training pipeline, 
+the data used and the model needed for production.
 
 ## Testing
 
