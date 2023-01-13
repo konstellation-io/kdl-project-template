@@ -16,10 +16,11 @@ stages:
       - lab/processes/train_standard_classifiers/classifiers.py
       - lib/viz.py
       - ${paths.dir_processed}
-    outs:
-      - ${paths.dir_artifacts_standard}
     params:
       - training.random_seed
+    outs:
+      - ${paths.dir_artifacts_standard}
+
 
   train_dnn_pytorch:
     cmd: python3 lab/processes/train_dnn_pytorch/main.py
