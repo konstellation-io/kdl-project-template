@@ -503,18 +503,22 @@ the step will be skipped and instead its outputs will be taken from cached.
 
 Since our data, models, artifacts are now tracked by dvc through our git history we will always have access to prior versions of those elements.
 We can access them with python through the dvc.api.
-To compare any element tracked by dvc we can use the following code snipet:
+To compare any element tracked by dvc, we can reference it through its git tag/branch/commit. 
+This would allow us to compare any revision of our dvc tracked element. 
+To do so, we can use the following code snippet:
 
 ```python
 import dvc.api
 
+# Read data from git tag tag-prior-commit
 data_prior_commit = dvc.api.read(
   'data/my_data.txt',
-  rev='tag-prior-commit'
+  rev='tag-prior-commit' 
 )
 
+# Read same data but from current workingspace
 current_data = dvc.api.read(
-  'data/my_data.txt'
+  'data/my_data.txt' 
 )
 ```
 
@@ -820,4 +824,3 @@ defines what happens before and after executing a test that uses that fixture:
 If we drop the `temp_data_dir` parameter from this test function, the test will run without the fixture, and will fail because the required data directory does not exist.
 
 To learn more, see the documentation on [pytest fixtures](https://docs.pytest.org/en/6.2.x/fixture.html).
-
