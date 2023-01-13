@@ -1,10 +1,15 @@
 paths:
+  # Processed data directory
   dir_processed: "lab/data/processed"
+  # Output directory for the standard classifier
   dir_artifacts_standard: "lab/artifacts/standard_classifier"
+  # Output directory for the deep neural network classifier
   dir_artifacts_dnn: "lab/artifacts/dnn"
 
+# mlflow run name
 mlflow_experiment: "kdl-project-template"
 
+# training hyperparameters
 training:
   random_seed: 0
   n_workers: 2
@@ -12,6 +17,8 @@ training:
   epochs: 15
   lr: 0.0001
 
+# test configuration, with less epochs 
+# and temporary directories that are deleted after testing
 test:
   paths:
     dir_temp: "temp"
