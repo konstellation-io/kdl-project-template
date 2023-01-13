@@ -23,6 +23,7 @@
       - [Local Dataset](#local-dataset)
       - [External database](#external-database)
     - [Pipeline (dvc.yaml)](#pipeline-dvcyaml)
+    - [Comparing verisons](#comparing-verisons)
   - [Launching experiment runs (Github Actions)](#launching-experiment-runs-github-actions)
     - [Docker images for experiments \& trainings](#docker-images-for-experiments--trainings)
   - [Logging experiment results (MLflow)](#logging-experiment-results-mlflow)
@@ -487,6 +488,28 @@ In each step it will first verify if the dependencies have been changes since th
 If modifications have been made, the step’s cmd will be executed and the outputs will be tracked. 
 If a steps dependencies and parameters have not changed since the last execution, 
 the step will be skipped and instead its outputs will be taken from cached.
+
+### Comparing verisons
+
+Since our data, models, artifacts are now tracked by dvc through our git history we will always have access to prior versions of those elements.
+We can access them with python through the dvc.api.
+To compare any element tracked by dvc we can use the following code snipet:
+
+```python
+import dvc.api
+
+data_prior_commit = dvc.api.read(
+  'data/my_data.txt',
+  rev='tag-prior-commit'
+)
+
+current_data = dvc.api.read(
+  'data/my_data.txt'
+)
+```
+
+In this example we access a tracked file within the `data` folder however,
+any element tracked by dvc can be accessed the same way (whether it be a model, image, pre-processed data, etc.)
 
 ## Launching experiment runs (Github Actions)
 
