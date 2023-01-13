@@ -6,8 +6,6 @@ import os
 from pathlib import Path
 
 import pytest
-import yaml
-from yaml.loader import SafeLoader
 
 from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 from lib.testing import get_mlflow_stub

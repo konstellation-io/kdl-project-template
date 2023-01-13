@@ -6,8 +6,6 @@ import os
 from pathlib import Path
 
 import pytest
-import yaml
-from yaml.loader import SafeLoader
 
 from lab.processes.train_dnn_pytorch.densenet import train_densenet
 from lib.testing import get_mlflow_stub

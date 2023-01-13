@@ -22,7 +22,7 @@ def load_params(params_path: str) -> ConfigBox:
     Returns:
         _type_: _description_
     """
-    with open(params_path, "r") as f:
-        params = yaml.safe_load(f)
+    with open(params_path, "rb") as config_file:
+        params = yaml.safe_load(config_file)
         params = ConfigBox(params)
     return params

@@ -4,10 +4,9 @@ Configuration for pytest unit tests
 
 import shutil
 
-from pathlib import Path
 import pytest
-from lib.utils import load_params
 
+from lib.utils import load_params
 from processes.prepare_data.cancer_data import prepare_cancer_data
 
 
