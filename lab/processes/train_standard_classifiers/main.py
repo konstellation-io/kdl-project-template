@@ -7,14 +7,10 @@ Part 2: Training traditional ML models
 import os
 import mlflow
 
-import yaml
-from yaml.loader import SafeLoader
-
+from utils.lib import load_params
 from lab.processes.train_standard_classifiers.classifiers import train_classifiers
 
-
-with open("params.yaml", "rb") as config_file:
-    config = yaml.load(config_file, Loader=SafeLoader)
+config = load_params("params.yaml")
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_TAGS = {"git_tag": os.getenv("GIT_TAG")}

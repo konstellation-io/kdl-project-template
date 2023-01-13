@@ -6,13 +6,11 @@ Part 3: Training NN models in PyTroch
 import os
 
 import mlflow
-import yaml
-from yaml.loader import SafeLoader
 
+from utils.lib import load_params
 from lab.processes.train_dnn_pytorch.densenet import train_densenet
 
-with open("params.yaml", "rb") as config_file:
-    config = yaml.load(config_file, Loader=SafeLoader)
+config = load_params("params.yaml")
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
 MLFLOW_TAGS = {"git_tag": os.getenv("GIT_TAG")}
