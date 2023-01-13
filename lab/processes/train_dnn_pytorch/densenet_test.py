@@ -15,7 +15,7 @@ from lib.testing import get_mlflow_stub
 
 @pytest.mark.integration
 @pytest.mark.filterwarnings("ignore:CUDA initialization")
-def test_train_densenet_without_errors(temp_data_dir):
+def test_train_densenet_without_errors(temp_data_dir, config_test):
     """
     Runs train_densenet with a mock mlflow instance.
 
@@ -27,16 +27,12 @@ def test_train_densenet_without_errors(temp_data_dir):
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
     """
 
-    with open("params.yaml", "rb") as config_file:
-        config = yaml.load(config_file, Loader=SafeLoader)
-
-    config = config["test"]
     mlflow_stub = get_mlflow_stub()
 
-    train_densenet(mlflow=mlflow_stub, config=config, mlflow_url=None, mlflow_tags=None)
+    train_densenet(mlflow=mlflow_stub, config=config_test, mlflow_url=None, mlflow_tags=None)
 
     # Check the resulting artifact files (.csv y .png) have been created
-    dir_artifacts = config["paths"]["dir_artifacts_dnn"]
+    dir_artifacts = config_test.paths.dir_artifacts_dnn
     artifacts_contents = os.listdir(dir_artifacts)
     fname_model = "densenet.pt"
     fname_conf_matrix = "confusion_matrix.png"
