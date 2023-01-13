@@ -10,10 +10,10 @@
   - [First steps](#first-steps)
     - [Github secrets](#github-secrets)
     - [Install dependencies](#install-dependencies)
-    - [Track data](#track-data)
+    - [Initialize dvc](#initialize-dvc)
     - [Assign your MLFLOW URL](#assign-your-mlflow-url)
-    - [Optional - pre-commit](#optional---pre-commit)
     - [Test installation](#test-installation)
+    - [Optional - pre-commit](#optional---pre-commit)
   - [Example project pipeline](#example-project-pipeline)
     - [Continuous development execution](#continuous-development-execution)
     - [Handling Process Dependencies](#handling-process-dependencies)
@@ -145,7 +145,7 @@ Once our dependencies are installed we can start our virtual environment
 pipenv shell
 ```
 
-### Track data
+### Initialize dvc
 
 Among our dependencies we have installed dvc. 
 Dvc is a data tracking tool which will allow us to track modifications 
@@ -172,6 +172,24 @@ Remember to update your <bucket_name> as well as  <access_key_id> and <secret_ac
 
 Our experiment will be tracked by mlflow when run on Github Actions.
 In order for Github to know where to send the new information we need to modify the environment variable in [experiments.yml](.github/workflows/experiments.yml). A `TODO` mark has been left to indicate where to make the modification to our bucket's name
+
+### Test installation
+
+To make sure our project is good to go we will first need to run the tests
+
+``` bash
+pytest
+```
+If tests are run correctly locally we can now see if our actions are also set.
+We will first need to modify our experiments.yml adding our mlflow url
+
+With this modfications we can now commit, tag and push with git to start our run!
+
+If the job has been run correctly we should see that a new commit has been made by our CD. 
+
+This new commit will mantain the code it was used to execute it, 
+with the addition that now it will have updated our dvc tracked artifacts
+To visualize these changes we need to git pull and dvc pull the changes.
 
 ### Optional - pre-commit
 
@@ -260,24 +278,6 @@ If we do not take this option we must remember that:
 - After any git commit, it is recommended to run dvc status to visualize if your data version also needs to be committed
 - After any git push, we should run dvc push to update the remote
 - After any git checkout, we must dvc checkout to update artifacts in that revision of code
-
-### Test installation
-
-To make sure our project is good to go we will first need to run the tests
-
-``` bash
-pytest
-```
-If tests are run correctly locally we can now see if our actions are also set.
-We will first need to modify our experiments.yml adding our mlflow url
-
-With this modfications we can now commit, tag and push with git to start our run!
-
-If the job has been run correctly we should see that a new commit has been made by our CD. 
-
-This new commit will mantain the code it was used to execute it, 
-with the addition that now it will have updated our dvc tracked artifacts
-To visualize these changes we need to git pull and dvc pull the changes.
 
 ## Example project pipeline
 
