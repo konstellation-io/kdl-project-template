@@ -23,6 +23,7 @@ def test_train_densenet_without_errors(temp_data_dir, config_test):
     - the mlflow provided to the function is called to log the metrics, params and artifacts
 
     Uses test fixture temp_data_dir to create a temporary dataset required by train_densenet (see conftest.py)
+    Uses test fiture config_test to load the specific parameters for testing
     """
 
     mlflow_stub = get_mlflow_stub()

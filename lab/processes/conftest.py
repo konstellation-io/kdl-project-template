@@ -26,7 +26,7 @@ def load_test_config():
 def temporary_cancer_data_directory(config_test):
     """
     Pytest fixture for those tests that require a data directory containing the cancer dataset arrays.
-    As part of setup, the fixture creates those arrays in the temporary location specified by dir_temp
+    As part of setup, the fixture creates those arrays in the temporary location specified by the test parameters
 
     Keyword Arguments:
         dir_temp {str} -- Path where the files will be temporarily generated; the directory is cleared up after

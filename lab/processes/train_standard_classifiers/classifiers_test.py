@@ -20,7 +20,7 @@ def test_train_classifiers_runs_without_errors(config_test, temp_data_dir):
     - the mlflow provided to the function is called to log the metrics, params and artifacts
 
     Uses test fixture temp_data_dir to create a temporary dataset required by train_classifiers (see conftest.py)
-    as well as load_test_config to load the testing config file
+    as well as config_test to load the testing config file
     """
 
     mlflow_stub = get_mlflow_stub()
