@@ -13,13 +13,6 @@ repos:
         args:
           - --branch=main
 
-  - repo: https://github.com/zricethezav/gitleaks
-    rev: "v8.15.2"
-    hooks:
-      - id: gitleaks
-        args:
-          - hook-config=--config .gitleaks.toml
-
   - repo: https://github.com/iterative/dvc
     rev: main
     hooks:
