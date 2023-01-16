@@ -13,35 +13,25 @@ env:
   MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
 jobs:
   train-and-report:
-    runs-on: ["self-hosted", "igz", "cpu"]
+    runs-on: ["igz", "dell", "cpu", "testing"]
+    container:
+      image: konstellation/kdl-py:3.9-cuda11.6-cudnn8-1.4.0
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.9.11"
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - uses: dschep/install-pipenv-action@v1
-
-      - uses: iterative/setup-dvc@v1
+      - name: Pipenv setup
+        run: |
+          pipenv sync --system
 
       - name: GIT setup
         run: |
           git config --global user.name "Continuous Development"
-          git config --global user.email "oauth2@users.noreply.github.com"           
+          git config --global user.email "oauth2@users.noreply.github.com"
           dvc remote modify --local minio access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
           dvc remote modify --local minio secret_access_key ${{ env.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Pipenv setup
-        run: |
-          pipenv sync --system
 
       - name: Run Experiment
         run: |
@@ -51,7 +41,7 @@ jobs:
         run: |
           raw=$(git branch -r --contains ${{ github.ref }})
           branch=${raw#*/}
-          commit_message=$(git show -s --format=%B $branch)
+          commit_message=$(git show -s --format=%B "origin/$branch")
           commit_message="${commit_message}-results"
           git add dvc.lock
           git commit -m "$commit_message"
