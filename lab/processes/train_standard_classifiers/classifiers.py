@@ -6,6 +6,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Union
 
+from box import ConfigBox
 import numpy as np
 from sklearn.ensemble import (
     AdaBoostClassifier,
@@ -44,7 +45,7 @@ def create_classifiers() -> dict:
 
 def train_classifiers(
     mlflow: ModuleType,
-    config: Union[ConfigParser, dict],
+    config: Union[ConfigParser, dict, ConfigBox],
     mlflow_url: str,
     mlflow_tags: dict,
 ) -> None:
@@ -53,10 +54,10 @@ def train_classifiers(
 
     Arguments:
         mlflow {ModuleType} --  MLflow module or its mock replacement
-        config {Union[ConfigParser, dict]} -- configuration for the training, with the required sections:
+        config {Union[ConfigParser, dict, ConfigBox]} -- configuration for the training, with the required sections:
             - "training": containing "random_seed";
-            - "paths": containing "artifacts_temp" and "dir_processed";
-            - "mlflow": containing "mlflow_experiment"
+            - "paths": containing "dir_artifacts_standard" and "dir_processed";
+            - "mlflow_experiment"
         mlflow_url {str} -- MLflow URL (empty if replacing mlflow with a mock)
         mlflow_tags {dict} -- MLflow tags (empty if replacing mlflow with a mock)
     """
@@ -76,9 +77,7 @@ def train_classifiers(
     with mlflow.start_run(run_name="sklearn_example_train", tags=mlflow_tags):
 
         # Load training and validation data
-        X_train, X_val, _, y_train, y_val, _ = load_data_splits(
-            dir_processed=dir_processed, as_type="array"
-        )
+        X_train, X_val, _, y_train, y_val, _ = load_data_splits(dir_processed=dir_processed, as_type="array")
 
         # Define a number of classifiers
         models = create_classifiers()
