@@ -7,7 +7,7 @@ import os
 
 import mlflow
 
-from utils.lib import load_params
+from lib.utils import load_params
 from lab.processes.train_dnn_pytorch.densenet import train_densenet
 
 config = load_params("params.yaml")

@@ -3,7 +3,7 @@ ML pipeline for breast cancer classification
 Part 1: Data preparation
 """
 
-from utils.lib import load_params
+from lib.utils import load_params
 from cancer_data import prepare_cancer_data
 
 config = load_params("params.yaml")
