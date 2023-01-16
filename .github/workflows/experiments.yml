@@ -11,6 +11,7 @@ env:
   MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
   # TODO: Change bucket name
   MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
+  GIT_TAG: ${{ github.ref_name }}
 jobs:
   train-and-report:
     runs-on: ["igz", "dell", "cpu", "testing"]
