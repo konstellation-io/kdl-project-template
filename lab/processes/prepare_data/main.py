@@ -4,6 +4,8 @@ Part 1: Data preparation
 """
 
 from lib.utils import load_params
+
+# You may also use relative imports
 from cancer_data import prepare_cancer_data
 
 config = load_params("params.yaml")
