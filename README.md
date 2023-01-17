@@ -117,8 +117,8 @@ Only one team member is required to follow these steps. After which, the rest of
 ### Github secrets
 
 In the github repository we will need to add the following secrets:
-- MINIO_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
-- MINIO_SECRET_KEY_ID: same as with MINIO_ACCESS_KEY_ID
+- AWS_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
+- AWS_SECRET_ACCESS_KEY: same as with MINIO_ACCESS_KEY_ID
 
 To add secrets to your github repository go to your github repository -> Settings -> Secrets and variables -> Actions. In there selecet `New repository secret` add the Name of your secret and is value.
 

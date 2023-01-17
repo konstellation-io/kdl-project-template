@@ -6,15 +6,14 @@ on:
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   PYTHONPATH: ${{ github.workspace }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-  # TODO: Change bucket name
-  MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
+  MLFLOW_URL: https://san001-dni-extract-mlflow.kdl-dell.konstellation.io
   GIT_TAG: ${{ github.ref_name }}
 jobs:
   train-and-report:
-    runs-on: ["igz", "dell", "cpu", "testing"]
+    runs-on: ["igz", "dell", "cpu"]
     container:
       image: konstellation/kdl-py:3.9-cuda11.6-cudnn8-1.4.0
     steps:
@@ -34,6 +33,10 @@ jobs:
           dvc remote modify --local minio access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
           dvc remote modify --local minio secret_access_key ${{ env.AWS_SECRET_ACCESS_KEY }}
 
+      - name: Pull raw data
+        run: |
+          dvc pull lab/data/raw/*
+
       - name: Run Experiment
         run: |
           dvc repro --pull
@@ -44,7 +47,7 @@ jobs:
           branch=${raw#*/}
           commit_message=$(git show -s --format=%B "origin/$branch")
           commit_message="${commit_message}-results"
-          git add dvc.lock
+          git add dvc.lock "**/**/.gitignore"
           git commit -m "$commit_message"
           dvc push
           git push origin "HEAD:$branch"
