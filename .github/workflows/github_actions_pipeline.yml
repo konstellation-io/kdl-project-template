@@ -9,7 +9,8 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-  MLFLOW_URL: https://san001-dni-extract-mlflow.kdl-dell.konstellation.io
+  TODO: Change bucket name
+  MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
   GIT_TAG: ${{ github.ref_name }}
 jobs:
   train-and-report:
@@ -35,7 +36,7 @@ jobs:
 
       - name: Pull raw data
         run: |
-          dvc pull lab/data/raw/*
+          dvc pull lab/data/raw --recursive
 
       - name: Run Experiment
         run: |
@@ -49,5 +50,5 @@ jobs:
           commit_message="${commit_message}-results"
           git add dvc.lock "**/**/.gitignore"
           git commit -m "$commit_message"
-          dvc push
           git push origin "HEAD:$branch"
+          dvc push
