@@ -18,9 +18,6 @@ stages:
       - ${paths.dir_processed}
     params:
       - training.random_seed
-    outs:
-      - ${paths.dir_artifacts_standard}
-
 
   train_dnn_pytorch:
     cmd: python3 lab/processes/train_dnn_pytorch/main.py
@@ -35,5 +32,3 @@ stages:
       - training.batch_size
       - training.lr
       - training.epochs
-    outs:
-      - ${paths.dir_artifacts_dnn}
