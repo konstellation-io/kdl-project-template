@@ -13,6 +13,7 @@
     - [Initialize dvc](#initialize-dvc)
     - [Assign your MLFLOW URL](#assign-your-mlflow-url)
     - [Test installation](#test-installation)
+    - [First CD run](#first-cd-run)
     - [Optional - pre-commit](#optional---pre-commit)
   - [Example project pipeline](#example-project-pipeline)
     - [Continuous development execution](#continuous-development-execution)
@@ -176,8 +177,10 @@ To make sure our project is good to go we will first need to run the tests
 ``` bash
 pytest
 ```
-If tests are run correctly locally we can now see if our actions are also set.
-We will first need to modify our experiments.yml adding our mlflow url
+
+If tests run correctly on our user-tools, we can now see if our actions are also set.
+
+### First CD run
 
 With this modfications we can now commit, tag and push with git to start our run!
 
