@@ -185,7 +185,14 @@ If the job has been run correctly we should see that a new commit has been made 
 
 This new commit will mantain the code it was used to execute it, 
 with the addition that now it will have updated our dvc tracked artifacts
-To visualize these changes we need to git pull and dvc pull the changes.
+To visualize these changes we need to run:
+
+```bash
+git pull # Get our lates code versions, .dvc files and dvc.lock update
+dvc pull # Get the dvc tracked data corresonding to this code version
+```
+
+We should now see that [data/processed](lab/data/processed) has new files, corresponding to the output of our `prepare_data` step.
 
 ### Optional - pre-commit
 
