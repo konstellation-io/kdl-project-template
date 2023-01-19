@@ -132,13 +132,6 @@ To get the dependencies from the Pipfile.lock we run
 pipenv sync --dev
 ```
 
-If we need to modify the dependencies (either to remove, update or add dependencies),
-we instead would update the Pipfile and run 
-
-```bash
-pipenv install --dev
-```
-
 Once our dependencies are installed we can start our virtual environment
 
 ```bash
