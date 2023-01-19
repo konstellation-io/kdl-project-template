@@ -11,8 +11,7 @@
   - [Metrics](#metrics)
   - [Modeling](#modeling)
   - [Results](#results)
-  - [Conclusions](#conclusions)
-  - [Next Steps](#next-steps)
+  - [Conclusions \& Next Steps](#conclusions--next-steps)
 
 ## Executive Summary
 
@@ -43,10 +42,7 @@
 
 ...
 
-## Conclusions
+## Conclusions & Next Steps
 
 ...
 
-## Next Steps
-
-...
