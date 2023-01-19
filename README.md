@@ -45,7 +45,7 @@ The project repository has the following directory structure:
 │   └── config.json <- Base configuration for VSCode
 ├── .github
 │   └── workflows
-│       │   └── experiments.yml  <- Pipeline to be run by github
+│       │   └── github_actions_pipeline.yml  <- Pipeline to be run by github
 ├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
 ├── lab
 │   ├── analysis  <- Analyses of data, models etc. (typically notebooks)
@@ -156,22 +156,25 @@ To start tracking our data we first need to initiate a dvc repository by running
 ```bash
 dvc init
 ```
+
 Now our repository is dvc tracked too. We can now locally track our data and pipeline executions.
 However, to be able to share these updates with our teammates as well as Github Actions we need to add a remote
 To do so we run the following commands:
 
 ```bash
-dvc remote add minio s3://<bucket_namet>/dvc -d
+dvc remote add minio s3://<bucket_namet>/dvc --default
 dvc remote modify minio endpointurl https://minio.kdl-dell.konstellation.io
 dvc remote modify --local minio access_key_id <access_key_id>
 dvc remote modify --local minio secret_access_key <secret_access_key>
 ```
+
 Remember to update your <bucket_name> as well as  <access_key_id> and <secret_access_key>
 
 ### Assign your MLFLOW URL
 
 Our experiment will be tracked by mlflow when run on Github Actions.
-In order for Github to know where to send the new information we need to modify the environment variable in [experiments.yml](.github/workflows/experiments.yml). A `TODO` mark has been left to indicate where to make the modification to our bucket's name
+In order for Github to know where to send the new information we need to modify the environment variable in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml). 
+A `TODO` mark has been left to indicate where to make the modification to our bucket's name
 
 ### Test installation
 
@@ -319,7 +322,7 @@ We will see the components of this pipeline later on the section [Track pipeline
 
 ### Continuous development execution
 
-The execution of the example classification pipeline on github actions is specified in [.github/workflows/experiments.yml](.github/workflows/experiments.yml).
+The execution of the example classification pipeline on github actions is specified in [.github/workflows/github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml).
 We will see hat each block of code does later on the [Launching experiment runs (Github Actions)](##Launching-experiment-runs-(Github-Actions)). 
 But for now we will focus on:
 
@@ -339,7 +342,7 @@ For more information and examples, see the section Launching experiment runs bel
 The **results of executions** will generate a new commit with the results of the execution as well as store it in MLflow.
 In the example of training traditional ML models, we are only tracking one parameter (the name of the classifier) and one metric (the obtained validation accuracy). In the PyTorch neural network training example, we are tracking the same metric (validation accuracy) for comparisons, but a different set of hyperparameters, such as learning rate, batch size, number of epochs etc.
 In a real-world project, you are likely to be tracking many more parameters and metrics of interest.
-The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/train_standard_classifiers/main.py) and with the environment variables in [experiments.yml](github/workflows/experiments.yml).
+The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/train_standard_classifiers/main.py) and with the environment variables in [github_actions_pipeline.yml](github/workflows/github_actions_pipeline.yml).
 For more information on MLflow tracking, see the section "Logging experiment results (MLflow)" below.
 To see the tracked experiments, visit the MLflow tool UI.
 
@@ -386,7 +389,7 @@ prepend your calls to Python scripts with `PYTHONPATH=lab` as follows:
 `PYTHONPATH=lab python {filename.py}`.
 
 **On Github Actions:**
-To be able to run imports from the `lib` directory on Github Actions, you may add it to PYTHONPATH in experiments.yml as indicated:
+To be able to run imports from the `lib` directory on Github Actions, you may add it to PYTHONPATH in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml) as indicated:
 
 ```yaml
 env:
@@ -536,7 +539,7 @@ are run on Github runners instead of the user's Jupyter or Vscode tools.
 This way, any past execution can always be traced to the exact version of the code that was run (`Triggered` in the UI of the Action run)
 and the runs can be reproduced with a click of the button in the UI of Github Actions (`Re-run jobs`).
 
-The execution pipeline that github is going to reference is find in [`.github/workflows/experiments.yml`](.github/workflows/experiments.yml). 
+The execution pipeline that github is going to reference is find in [`.github/workflows/github_actions_pipeline.yml`](.github/workflows/github_actions_pipeline.yml). 
 This execution pipeline is NOT the training pipeline,
 it just prepares github to be able to run our experiments and share them.
 Thus, little to no modifications are needed in order to use it.
@@ -655,7 +658,7 @@ Experiment tracking with MLflow enables logging the parameters with which every 
 The experiments are only tracked from the executions on Github Actions.
 In local test runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code).
 
-The environment variables for connecting to MLflow server are provided in [experiments.yml](.github/workflows/experiments.yml):
+The environment variables for connecting to MLflow server are provided in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml):
 
 ```yaml
 env:
