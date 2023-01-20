@@ -431,7 +431,7 @@ Once the command has been executed, we should be able to see it in our working s
 Now we need to start tracking its modifications. To do so, we are going to use dvc. Dvc commands are very similar to the git commands, although their functionality are slightly different. To start tracking a data file we need to add it with dvc. We can do this file, by file or in a glob:
 
 ```bash
-dvc add data/raw/** –recursive
+dvc add lab/data/raw –recursive
 ```
 
 The recursive flag indicates to dvc to track each individual file. Dvc can track full directories, however this is NOT recommended, since it would not be clear what its contents are and can induce errors. If a new user were to access our repository, they would be able to understand the type and quantity of data our repository needs without having to pull the data.
