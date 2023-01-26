@@ -18,33 +18,49 @@ mc cp minio/{bucket_name}/data/raw data/raw –recursive
 
 Once the command has been executed, we should be able to see it in our working space.
 
-Now we need to start tracking its modifications. To do so, we are going to use dvc. Dvc commands are very similar to the git commands, although their functionality are slightly different. To start tracking a data file we need to add it with dvc. We can do this file, by file or in a glob:
+Now we need to start tracking its modifications. To do so, we are going to use dvc. Dvc commands are very similar to the git commands, although their functionality are slightly different. To start tracking a data file we need to add it with dvc. We can track single files or entire directories:
 
 ```bash
-dvc add lab/data/raw –recursive
+dvc add lab/data/raw
 ```
 
-The recursive flag indicates to dvc to track each individual file. Dvc can track full directories, however this is NOT recommended, since it would not be clear what its contents are and can induce errors. If a new user were to access our repository, they would be able to understand the type and quantity of data our repository needs without having to pull the data.
-
-With the command runned we should see that for each of our file a file_name.dvc is created. This .dvc file is the connection between git and dvc. This file will be tracked by git, and dvc will be able to interpret it as a version of our data that stores in our minio’s dvc directory. Now, any modification to the data will be recorded by dvc, dvc will then update our .dvc file and git will track this last file.
-
-To be able to commit changes in files tracked by dvc, we will use the same command as git:
+It is preferable to track full directories as opposed to every single file, especially when there are several of them (more than 30). In order to keep information what the dataset holds we can add a description and/or metadata
 
 ```bash
-dvc commit
+dvc add lab/data/raw --desc "Two parquet files, one with the input (X.csv) and one with expected output (y.csv)" --meta extension=.gzip
 ```
+This would allow for future developers to understand better what to expect from our data.
 
-And to be able to share it with other user, we will push this update to the repository:
+After running the command we should see one or two files generated: a .dvc file and a .gitignore file.
+
+The .gitignore file is only generated if our file was not previously ignored, 
+if you do not see the .gitignore, is because it was already ignored.
+
+The .dvc file is always generated, this file is the key for dvc.
+This .dvc file is going to tracked with git, the file itself has an md5 address that dvc can interpret to collect our data.
+This way git tracks our .dvc file and dvc interprets it to collect our data.
+
+However, this tracked file only exists in our local repository. 
+(Kind of having a branch that has never been pushed by git)
+In order to share it with other users, we need push this update to our minio:
 
 ```bash
 dvc push
 ```
 
-This last command can be hooked to our git push in order to automate that every time a new code version is updated on origin, the corresponding dvc is also updated. (see [pre-commit](#optional---pre-commit))
+Now, any person that access this git commit can pull the data by running
+
+```bash
+dvc pull lab/data/raw
+```
 
 #### External database
 
-In the cases where our data resides in an external database we will need to query the versions of our data. To do so, we will need to develop a query script or method. This query should save the data in our directory `data/raw` within our repository. We could then track this data with dvc as with the static method. Nevertheless, in the cases where our data may change (because there is an update in the database or we want to collect different data) we may want to add the query method as part of our dvc pipeline.
+In the cases where our data resides in an external database we will need to query the versions of our data. 
+To do so, we will need to develop a query script. 
+This query should save the data in our directory `data/raw` within our repository. 
+We could then track this data with dvc as with the static method. Nevertheless, 
+in the cases where our data may change (because there is an update in the database or we want to collect different data) we may want to add the query method as part of our dvc pipeline.
 
 An example on how to use external databases is given by the template-example in the step prepare_data
 
