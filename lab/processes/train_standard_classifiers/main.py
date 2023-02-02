@@ -13,7 +13,7 @@ from lab.processes.train_standard_classifiers.classifiers import train_classifie
 config = load_params("params.yaml")
 
 MLFLOW_URL = os.getenv("MLFLOW_URL")
-MLFLOW_TAGS = {"git_tag": os.getenv("GIT_TAG")}
+MLFLOW_TAGS = {"git_sha": os.getenv("GIT_SHA")}
 
 
 if __name__ == "__main__":

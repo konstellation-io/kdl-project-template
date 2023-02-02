@@ -1,6 +1,12 @@
-name: experiments
+name: Create pr
 on:
-  push:
+  workflow_dispatch:
+    inputs:
+      experiment_name:
+        description: "Name of experiment"
+        required: true
+
+run-name: "Create PR for experiment ${{ github.event.inputs.experiment_name }}"
 
 env:
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
@@ -8,13 +14,11 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-  TODO: Change bucket name
+  TODO:
   MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
-  GIT_SHA: ${{ github.sha }}
 
 jobs:
   train-and-report:
-    if: "contains(github.event.head_commit.message, 'experiment:')"
     runs-on: ["igz", "dell", "cpu"]
     container:
       image: konstellation/kdl-py:3.9-1.5.0
@@ -28,25 +32,27 @@ jobs:
         run: |
           pipenv sync --system
 
-      - name: Remote setup
+      - name: Dvc setup
         run: |
           dvc remote modify --local minio access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
           dvc remote modify --local minio secret_access_key ${{ env.AWS_SECRET_ACCESS_KEY }}
           TODO:
           git remote add experiments_adress https://oauth2:${{ env.REPO_TOKEN }}<http address of remote repository>
 
-      - name: Set experiment name
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short=7 HEAD)" >> $GITHUB_OUTPUT
+      - name: Create branch
+        run: |
+          dvc exp pull experiments_adress "${{ github.event.inputs.experiment_name }}"
+          dvc exp branch "${{ github.event.inputs.experiment_name }}" "${{ github.event.inputs.experiment_name }}"
+          git checkout "${{ github.event.inputs.experiment_name }}"
 
       - name: Pull raw data
         run: |
           dvc pull lab/data/raw --recursive
 
-      - name: Run Experiment ${{ steps.vars.outputs.sha_short }}
+      - name: Reproduce Experiment ${{ github.event.inputs.experiment_name }}
         run: |
-          dvc exp run --name "${{ steps.vars.outputs.sha_short }}" --pull
+          dvc repro --pull
 
       - name: Share experiment
         run: |
-          dvc exp push experiments_adress "${{ steps.vars.outputs.sha_short }}"
+          cml pr create --targetBranch=main
