@@ -24,7 +24,7 @@ pylint = "==2.15.10"
 pytest = "==7.2.0"
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"
 
 [pipenv]
 allow_prereleases = false

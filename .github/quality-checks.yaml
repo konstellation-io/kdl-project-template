@@ -1,0 +1,104 @@
+name: Quality checks
+
+on:
+  pull_request:
+    paths:
+      - "lab/**/*"
+      - ".github/workflows/quality-checks.yaml"
+  push:
+    paths:
+      - "lab/**/*"
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: 'pipenv'
+
+    - name: Install pipenv
+      run: |
+        pipx install pipenv
+
+    - name: Install prepare_data dependencies
+      run: |
+        pipenv install --deploy --dev
+      working-directory: ./lab/processes/prepare_data
+    - name: Install train_dnn_pytorch dependencies
+      run: |
+        pipenv install --deploy --dev
+      working-directory: ./lab/processes/train_dnn_pytorch
+    - name: Install train_standard_classifiers dependencies
+      run: |
+        pipenv install --deploy --dev
+      working-directory: ./lab/processes/train_standard_classifiers
+
+    - name: Run prepare_data unit tests with pytest
+      run: |
+        pipenv run pytest -m unittest --cov --cov-report=xml
+      working-directory: ./lab/processes/prepare_data
+    - name: Run train_dnn_pytorch unit tests with pytest
+      run: |
+        pipenv run pytest -m unittest --cov --cov-report=xml
+      working-directory: ./lab/processes/train_dnn_pytorch
+    - name: Run train_standard_classifiers unit tests with pytest
+      run: |
+        pipenv run pytest -m unittest --cov --cov-report=xml
+      working-directory: ./lab/processes/train_standard_classifiers
+
+    - name: Archive prepare_data code coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: prepare-data-coverage-report
+        path: lab/processes/prepare_data/coverage.xml
+    - name: Archive train_dnn_pytorch code coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: train-dnn-pytorch-coverage-report
+        path: lab/processes/train_dnn_pytorch/coverage.xml
+    - name: Archive train_standard_classifiers code coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: train-standard-classifiers-coverage-report
+        path: lab/processes/train_standard_classifiers/coverage.xml
+
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Download prepare_data code coverage results
+        uses: actions/download-artifact@v3
+        with:
+          name: prepare-data-coverage-report
+          path: lab/processes/prepare_data
+      - name: Download train_dnn_pytorch code coverage results
+        uses: actions/download-artifact@v3
+        with:
+          name: train-dnn-pytorch-coverage-report
+          path: lab/processes/train_dnn_pytorch
+      - name: Download train_standard_classifiers code coverage results
+        uses: actions/download-artifact@v3
+        with:
+          name: train-standard-classifiers-coverage-report
+          path: lab/processes/train_standard_classifiers
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: lab
+          args: >
+            -Dsonar.python.version=3.10
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
