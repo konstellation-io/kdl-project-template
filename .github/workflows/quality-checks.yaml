@@ -9,7 +9,6 @@ on:
   push:
     paths:
       - "lab/**/*"
-      - ".github/workflows/quality-checks.yaml"
 
 jobs:
   test:
