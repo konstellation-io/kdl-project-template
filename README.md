@@ -25,6 +25,7 @@
   - [Logging experiment results (MLflow)](#logging-experiment-results-mlflow)
   - [Docker images for experiments \& trainings](#docker-images-for-experiments--trainings)
   - [Optional - installing pre-commit](#optional---installing-pre-commit)
+  - [Information on dvc](#information-on-dvc)
 
 ---
 
@@ -465,8 +466,6 @@ There are two recommendations regarding which image to use:
 1. Using an official runtime image. These images are used for running the KDL Usertools and have everything you need to run your code. If using one of these images take into account that the first thing you would need to do in the drone pipeline is to install your custom dependencies (`pipenv install`). You can find info about runtimes and their docker images inside KDL in the Usertools Settings section.
 2. Using a custom image. For this case it is recommended to build a new layer on top of the official runtime images adding whatever you need to run your experiments/trainings.
 
-
-
 ## Optional - installing pre-commit
 
 Code quality and security are important aspects of software development. To help with this, we have included a [pre-commit](https://pre-commit.com/index.html) configuration file that will run a series of checks on your code before you commit it. This will help you to catch issues before they are committed to the repository.
@@ -554,3 +553,7 @@ If we do not take this option we must remember that:
 - After any git commit, it is recommended to run dvc status to visualize if your data version also needs to be committed
 - After any git push, we should run dvc push to update the remote
 - After any git checkout, we must dvc checkout to update artifacts in that revision of code
+
+## Information on dvc
+
+For more information on dvc and its usage. Please refer to our (confluence page)[https://intelygenz.atlassian.net/wiki/spaces/K/pages/81362945/Introduction+to+dvc]
