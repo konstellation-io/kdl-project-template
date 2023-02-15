@@ -1,4 +1,6 @@
 paths:
+  # Raw data directory
+  dir_raw: "lab/data/raw/template_data"
   # Processed data directory
   dir_processed: "lab/data/processed"
   # Output directory for the standard classifier
@@ -17,7 +19,7 @@ training:
   epochs: 15
   lr: 0.0001
 
-# test configuration, with less epochs 
+# test configuration, with less epochs
 # and temporary directories that are deleted after testing
 test:
   paths:

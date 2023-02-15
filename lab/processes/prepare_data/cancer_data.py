@@ -19,11 +19,13 @@ from lib.pytorch import create_dataloader
 RANDOM_STATE = 42
 
 
-def load_cancer_data() -> Tuple[DataFrame, Series]:
+def load_cancer_data(dir_raw: str) -> Tuple[DataFrame, Series]:
     """
     Loads breast cancer data as pandas DataFrame (features) and Series (target)
     """
-    X, y = load_breast_cancer(return_X_y=True, as_frame=True)
+    X = pd.read_parquet(Path(dir_raw) / "breast_cancer_data.gzip").to_numpy()
+    y = pd.read_parquet(Path(dir_raw) / "breast_cancer_labels.gzip").squeeze().to_numpy()
+
     return X, y
 
 
@@ -44,7 +46,7 @@ def split_data(X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray]:
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-def prepare_cancer_data(dir_output: str) -> None:
+def prepare_cancer_data(dir_input: str, dir_output: str) -> None:
     """
     Conducts a series of steps necessary to prepare the digit data for training and validation:
     - Loads digit image data from sklearn
@@ -61,7 +63,7 @@ def prepare_cancer_data(dir_output: str) -> None:
     Path(dir_output).mkdir(exist_ok=True, parents=True)
 
     # Load digit data
-    imgs, y = load_cancer_data()
+    imgs, y = load_cancer_data(dir_input)
 
     # Split into train/test/val
     X_train, X_val, X_test, y_train, y_val, y_test = split_data(X=imgs, y=y)
@@ -83,9 +85,7 @@ def prepare_cancer_data(dir_output: str) -> None:
     y_test.to_frame().to_parquet(Path(dir_output) / "y_test.gzip", compression="gzip")
 
 
-def load_data_splits(
-    dir_processed: Union[str, Path], as_type: str
-) -> Tuple[Union[np.ndarray, torch.Tensor]]:
+def load_data_splits(dir_processed: Union[str, Path], as_type: str) -> Tuple[Union[np.ndarray, torch.Tensor]]:
     """
     Loads train/val/test files for X and y (named 'X_train.npy', 'y_train.npy', etc.)
     from the location specified and returns as numpy arrays.
@@ -121,20 +121,14 @@ def load_data_splits(
         return X_train, X_val, X_test, y_train, y_val, y_test
 
     else:
-        raise ValueError(
-            "Please specify as_type argument as one of 'array' or 'tensor'"
-        )
+        raise ValueError("Please specify as_type argument as one of 'array' or 'tensor'")
 
 
-def load_data_splits_as_dataloader(
-    dir_processed: str, batch_size: int, n_workers: int
-) -> Tuple[DataLoader]:
+def load_data_splits_as_dataloader(dir_processed: str, batch_size: int, n_workers: int) -> Tuple[DataLoader]:
     """
     Loads data tensors saved in processed data directory and returns as dataloaders.
     """
-    X_train, X_val, X_test, y_train, y_val, y_test = load_data_splits(
-        dir_processed, as_type="tensor"
-    )
+    X_train, X_val, X_test, y_train, y_val, y_test = load_data_splits(dir_processed, as_type="tensor")
 
     # Convert tensors to dataloaders
     dataloader_args = dict(batch_size=batch_size, num_workers=n_workers, shuffle=True)

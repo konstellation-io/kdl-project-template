@@ -11,8 +11,9 @@ from cancer_data import prepare_cancer_data
 config = load_params("params.yaml")
 
 DIR_DATA_PROCESSED = config.paths.dir_processed
+DIR_DATA_RAW = config.paths.dir_raw
 
 
 if __name__ == "__main__":
 
-    prepare_cancer_data(dir_output=DIR_DATA_PROCESSED)
+    prepare_cancer_data(dir_input=DIR_DATA_RAW, dir_output=DIR_DATA_PROCESSED)
