@@ -2,8 +2,6 @@
 Miscellaneous utility functions
 """
 import subprocess
-import yaml
-from box import ConfigBox
 
 
 def flatten_list(input_list: list) -> list:
@@ -12,6 +10,7 @@ def flatten_list(input_list: list) -> list:
     Only goes one level deep (i.e. works on lists of lists but not lists of lists of lists).
     """
     return [item for sublist in input_list for item in sublist]
+
 
 def run_cmd(cmd: str) -> str:
     """Execute the corresponding cmd
