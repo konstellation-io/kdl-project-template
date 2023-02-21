@@ -16,7 +16,7 @@ env:
   MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
   TODO: Change bucket name
   MLFLOW_URL: https://<project-name>-mlflow.kdl-dell.konstellation.io
-
+  EXP_NAME: ${{ github.event.inputs.experiment_name }}
 jobs:
   train-and-report:
     runs-on: ["igz", "dell", "cpu"]
@@ -39,15 +39,15 @@ jobs:
 
       - name: Create branch
         run: |
-          dvc exp pull experiments_adress "${{ github.event.inputs.experiment_name }}"
-          dvc exp branch "${{ github.event.inputs.experiment_name }}" "${{ github.event.inputs.experiment_name }}"
-          git checkout "${{ github.event.inputs.experiment_name }}"
+          dvc exp pull experiments_adress "${{ env.EXP_NAME }}"
+          dvc exp branch "${{ env.EXP_NAME }}" "${{ env.EXP_NAME }}"
+          git checkout "${{ env.EXP_NAME }}"
 
       - name: Pull raw data
         run: |
           dvc pull lab/data/raw --recursive
 
-      - name: Reproduce Experiment ${{ github.event.inputs.experiment_name }}
+      - name: Reproduce Experiment ${{ env.EXP_NAME }}
         run: |
           dvc repro --pull
 
