@@ -49,7 +49,7 @@ def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_m
             if device_total_memory >= min_memory:
                 available_devices.append(index)
             else:
-                print(f"Device {index} availabe but insuficient memory {device_total_memory}")
+                print(f"Device {index} availabe but insuficient memory: {device_total_memory} GB")
 
     if wait and not available_devices:
         time.sleep(refresh_time)
