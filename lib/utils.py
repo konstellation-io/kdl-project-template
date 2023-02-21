@@ -43,7 +43,9 @@ def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_m
     for index in range(device_count):
         handle = nvmlDeviceGetHandleByIndex(index)
         processes = nvmlDeviceGetComputeRunningProcesses(handle)
+        # If existing process, the gpu is under use
         if not processes:
+            # Get memory size (in B) and transform to GB
             device_memory_info = nvmlDeviceGetMemoryInfo(handle)
             device_total_memory = device_memory_info.total / 1_000_000_000
             if device_total_memory >= min_memory:
