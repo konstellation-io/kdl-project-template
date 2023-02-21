@@ -30,8 +30,6 @@ jobs:
 
       - name: Remote setup
         run: |
-          dvc remote modify --local minio access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
-          dvc remote modify --local minio secret_access_key ${{ env.AWS_SECRET_ACCESS_KEY }}
           TODO:
           git remote add experiments_adress https://oauth2:${{ env.REPO_TOKEN }}<http address of remote repository>
 
