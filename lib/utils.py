@@ -3,7 +3,14 @@ Miscellaneous utility functions
 """
 import time
 
-import py3nvml
+from pynvml import (
+    nvmlDeviceGetComputeRunningProcesses,
+    nvmlDeviceGetCount,
+    nvmlDeviceGetHandleByIndex,
+    nvmlDeviceGetMemoryInfo,
+    nvmlInit,
+    nvmlShutdown,
+)
 
 
 def flatten_list(input_list: list) -> list:
@@ -14,12 +21,13 @@ def flatten_list(input_list: list) -> list:
     return [item for sublist in input_list for item in sublist]
 
 
-def get_available_gpus_devices(wait: bool = False, refresh_time: int = 10) -> list:
+def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_memory: int = -1) -> list[int]:
     """get a list of available gpus
 
     Args:
         wait (bool, optional): Wait until a gpu is free. Defaults to False.
         refresh_time (int, optional): how often to recheck if a gpu is available (only when wait=True). Defaults to 10.
+        min_memory (int, optional): minimum required memory for device (in GB). Defaults to -1
 
     Raises:
         Exception: If no gpu is available
@@ -27,15 +35,26 @@ def get_available_gpus_devices(wait: bool = False, refresh_time: int = 10) -> li
     Returns:
         list: device indexes of available gpus
     """
-    state_gpus = py3nvml.get_free_gpus()
-    free_gpus = [index for index, is_free in enumerate(state_gpus) if is_free]
+    print("Searching for devices")
+    available_devices = []
+    nvmlInit()
+    device_count = nvmlDeviceGetCount()
 
-    while wait and not free_gpus:
+    for index in range(device_count):
+        handle = nvmlDeviceGetHandleByIndex(index)
+        processes = nvmlDeviceGetComputeRunningProcesses(handle)
+        if not processes:
+            device_memory_info = nvmlDeviceGetMemoryInfo(handle)
+            device_total_memory = device_memory_info.total / 1_000_000_000
+            if device_total_memory >= min_memory:
+                available_devices.append(index)
+
+    if wait and not available_devices:
         time.sleep(refresh_time)
-        state_gpus = py3nvml.get_free_gpus()
-        free_gpus = [index for index, is_free in enumerate(state_gpus) if is_free]
+        available_devices = get_available_cuda_devices(wait, refresh_time, min_memory)
+    nvmlShutdown()
 
-    if not free_gpus:
+    if not available_devices:
         raise Exception("No available gpus at the moment")
 
-    return free_gpus
+    return available_devices
