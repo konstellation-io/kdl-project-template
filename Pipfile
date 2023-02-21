@@ -14,8 +14,7 @@ pyarrow = "==10.0.1"
 pyyaml = "==5.4.1"
 scikit-learn = "==1.2.0"
 torch = "==1.12.1"
-py3nvml = "==0.2.7"
-pynvml = "*"
+pynvml = "==11.5.0"
 
 [dev-packages]
 black = "==22.12.0"
