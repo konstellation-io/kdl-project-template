@@ -37,16 +37,16 @@ jobs:
 
       - name: Set experiment name
         id: vars
-        run: echo "sha_short=$(git rev-parse --short=7 HEAD)" >> $GITHUB_OUTPUT
+        run: echo "SHA_SHORT=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
       - name: Pull raw data
         run: |
           dvc pull lab/data/raw --recursive
 
-      - name: Run Experiment ${{ steps.vars.outputs.sha_short }}
+      - name: Run Experiment ${{ env.SHA_SHORT }}
         run: |
-          dvc exp run --name "${{ steps.vars.outputs.sha_short }}" --pull
+          dvc exp run --name "${{ env.SHA_SHORT }}" --pull
 
       - name: Share experiment
         run: |
-          dvc exp push experiments_adress "${{ steps.vars.outputs.sha_short }}"
+          dvc exp push experiments_adress "${{ env.SHA_SHORT }}"
