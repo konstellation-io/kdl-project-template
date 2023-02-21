@@ -53,4 +53,4 @@ jobs:
 
       - name: Create Pull Request
         run: |
-          cml pr create --targetBranch=main
+          cml pr create . --targetBranch=main
