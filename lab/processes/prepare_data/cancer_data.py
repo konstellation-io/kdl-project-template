@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import torch
 from pandas import DataFrame, Series
-from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader
