@@ -488,7 +488,7 @@ First of all, we have provided pre-commit as a dev package in the Pipfile, so yo
 Secondly, you will need to install the pre-commit hooks into your local repository. Pre-commit hooks are scripts that are run before you commit your code. They can check for things like linting errors, security issues, etc. To install the pre-commit hooks, run the following command:
 
 ```bash
-pre-commit install --install-hooks
+pre-commit install --install-hooks -t pre-commit -t pre-push -t post-checkout
 ```
 
 You can learn more about the different ways of installing hooks in your repository clone in this [Github issue](https://github.com/pre-commit/pre-commit.com/issues/255).
