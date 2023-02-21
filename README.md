@@ -8,13 +8,14 @@
   - [Table of contents](#table-of-contents)
   - [Project structure](#project-structure)
   - [First steps](#first-steps)
-    - [Github secrets](#github-secrets)
-    - [Install dependencies](#install-dependencies)
-    - [Initialize dvc](#initialize-dvc)
-    - [Assign your MLFLOW URL and git repo to your workflows](#assign-your-mlflow-url-and-git-repo-to-your-workflows)
-    - [Test installation](#test-installation)
-    - [First workflow](#first-workflow)
-    - [Aplying experiment](#aplying-experiment)
+    - [Github secrets (One team member)](#github-secrets-one-team-member)
+    - [Install dependencies (All team members)](#install-dependencies-all-team-members)
+    - [Initialize dvc (One team member)](#initialize-dvc-one-team-member)
+    - [Set local dvc configurations (All team members)](#set-local-dvc-configurations-all-team-members)
+    - [Assign your MLFLOW URL and git repo to your workflows (One team member)](#assign-your-mlflow-url-and-git-repo-to-your-workflows-one-team-member)
+    - [Test installation (Optional)](#test-installation-optional)
+    - [First workflow (Optional)](#first-workflow-optional)
+    - [Aplying experiment (Optional)](#aplying-experiment-optional)
   - [Example project pipeline](#example-project-pipeline)
   - [Handling Process Dependencies](#handling-process-dependencies)
   - [Importing library functions](#importing-library-functions)
@@ -25,7 +26,7 @@
   - [Logging experiment results (MLflow)](#logging-experiment-results-mlflow)
   - [Docker images for experiments \& trainings](#docker-images-for-experiments--trainings)
   - [Optional - installing pre-commit](#optional---installing-pre-commit)
-  - [Information on dvc](#information-on-dvc)
+  - [Information on dvc aand further reading](#information-on-dvc-aand-further-reading)
 
 ---
 
@@ -35,35 +36,37 @@ The project repository has the following directory structure:
 
 ```
 ├── .vscode
-│   └── launch.json <- Configuration for test executions in Vscode
+│   ├── launch.json <- Configuration for test executions in Vscode
 │   └── config.json <- Base configuration for VSCode
 ├── .github
 │   └── workflows
-│       │   └── github_actions_pipeline.yml  <- Pipeline to be run by github
+│       └── github_actions_pipeline.yml  <- Pipeline to be run by github
 ├── goals         <- Acceptance criteria (typically as automated tests describing desired behaviour)
 ├── lab
 │   ├── analysis  <- Analyses of data, models etc. (typically notebooks)
 │   ├── artifacts  <- Directory to save models/training artifacts
 │   ├── data  <- Directory to save data
+│   │   ├── raw <- Directory for raw data
+│   │   └── processed <- Directory for processed data
 │   ├── docs      <- High-level reports, executive summaries at each milestone (typically .md)
 │   └── processes           <- Source code for reproducible workflow steps.
 │       ├── prepare_data
 │       │   ├── main.py
 │       │   ├── cancer_data.py
-│       │   └── cancer_data_test.py
-│       │   └── Pipfile                 <- Custom dependencies for prepare_data process
+│       │   ├── cancer_data_test.py
+│       │   ├── Pipfile                 <- Custom dependencies for prepare_data process
 │       │   └── Pipfile.lock
 |       ├── train_dnn_pytorch
 │       │   ├── main.py
 │       │   ├── densenet.py
-│       │   └── densenet_test.py
-│       │   └── Pipfile                 <- Custom dependencies for train_dnn_pytorch process
+│       │   ├── densenet_test.py
+│       │   ├── Pipfile                 <- Custom dependencies for train_dnn_pytorch process
 │       │   └── Pipfile.lock
 │       └── train_standard_classifiers
 │       │   ├── main.py
 │       │   ├── classifiers.py
-│       │   └── classifiers_test.py
-│       │   └── Pipfile                 <- Custom dependencies for train_standard_classifiers process
+│       │   ├── classifiers_test.py
+│       │   ├── Pipfile                 <- Custom dependencies for train_standard_classifiers process
 │       │   └── Pipfile.lock
 │       └── conftest.py        <- Pytest fixtures
 ├── lib           <- Importable functions used by analysis notebooks and processes scripts
@@ -72,8 +75,8 @@ The project repository has the following directory structure:
 ├── dvc.yml       <- Instructions for dvc repro and experiments
 ├── params.yml    <- Configuration file
 ├── README.md     <- Main README
-└── pytest.ini    <- Pytest configuration
-└── Pipfile       <- Global dependencies
+├── pytest.ini    <- Pytest configuration
+├── Pipfile       <- Global dependencies
 └── Pipfile.lock
 ```
 
@@ -107,10 +110,10 @@ However, the idea of modularizing the analysis into separate processes facilitat
 
 In order to start making use of this repository,
 certain steps need to be taken in order to have our CD running and our data tracked.
-Only one team member is required to follow these steps.
+Most of the step just required one team member to execute.
 After which, the rest of team members just need to make sure to be up to date with the last git commit.
 
-### Github secrets
+### Github secrets (One team member)
 
 In the github repository we will need to add the following secrets:
 - AWS_ACCESS_KEY_ID: this may change depending on your S3. Consult with the konstellation team if unclear which value this secret should have
@@ -120,9 +123,9 @@ In the github repository we will need to add the following secrets:
 To add secrets to your github repository go to your github repository -> Settings -> Secrets and variables -> Actions.
 In there selecet `New repository secret` add the Name of your secret and is value.
 
-### Install dependencies
+### Install dependencies (All team members)
 
-In order to start our project we will need to install the required dependencies. 
+In order to start our project we will need to install the required dependencies.
 These dependencies will allow us to run the template's example as well as initiate our data tracking.
 To get the dependencies from the Pipfile.lock we run
 
@@ -136,10 +139,10 @@ Once our dependencies are installed we can start our virtual environment
 pipenv shell
 ```
 
-### Initialize dvc
+### Initialize dvc (One team member)
 
-Among our dependencies we have installed dvc. 
-Dvc is a data tracking tool which will allow us to track modifications 
+Among our dependencies we have installed dvc.
+Dvc is a data tracking tool which will allow us to track modifications
 and control the versions of our data through git (for more information got to [dvc.org](https://dvc.org/).
 
 To start tracking our data we first need to initiate a dvc repository by running
@@ -155,20 +158,30 @@ To do so we run the following commands:
 ```bash
 dvc remote add minio s3://<project_name>/dvc --default
 dvc remote modify minio endpointurl https://minio.kdl-dell.konstellation.io
+```
+
+Remember to update your <project_name>.
+
+### Set local dvc configurations (All team members)
+In order to get access to our minio,
+we will need to set our access keys.
+These access keys are common for the entire team (usually).
+However it is not secure to share them in git, which means that each team member must set them locally.
+To do so we run the following commands:
+
+```bash
 dvc remote modify --local minio access_key_id <access_key_id>
 dvc remote modify --local minio secret_access_key <secret_access_key>
 ```
 
-Remember to update your <project_name> as well as  <access_key_id> and <secret_access_key>
-
-### Assign your MLFLOW URL and git repo to your workflows
+### Assign your MLFLOW URL and git repo to your workflows (One team member)
 
 Our experiment will be tracked by mlflow when run on Github Actions.
 In order for Github to know where to send the new information we need to modify the environment variable in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml)
-and [create_pr.yml](.github/workflows/create_pr.yml). 
+and [create_pr.yml](.github/workflows/create_pr.yml).
 A `TODO` mark has been left to indicate where to make the modification to our project_name's name
 
-### Test installation
+### Test installation (Optional)
 
 To make sure our project is good to go we will first need to run the tests
 
@@ -178,28 +191,28 @@ pytest
 
 If tests run correctly on our user-tools, we can now see if our actions are also set.
 
-### First workflow
+### First workflow (Optional)
 
 With these modfications we can now commit and push with git to start our run!
 In order to trigger a github run we need to add a commit message with the estructure "experiment: <commit_message>".
 By pushing that commit we should see in our github actions the run being executed.
 The results of the experiment will be save as usual in MlFlow
 
-### Aplying experiment
+### Aplying experiment (Optional)
 
 Once we are happy with the results of one of our experiments, we can merge them to main.
 To do so, we must go to the Actions section of our github repository and look for the workflow create PR.
 
 In there, we will see a button that says Run workflow:
 
-A prompt will ask us to give the name of the experiment. 
-This name should be recorded in mlflow as the experiments tag 
-and should coincide to the first 7 characters of the commit's SHA that launched the experiment 
+A prompt will ask us to give the name of the experiment.
+This name should be recorded in mlflow as the experiments tag
+and should coincide to the first 7 characters of the commit's SHA that launched the experiment
 (otherwise known as the short-SHA).
 
-By giving the name, 
-the workflow will run, creating a new branch for our experiment from its original commit. 
-It will then reproduce the experiment and create a PR to main. 
+By giving the name,
+the workflow will run, creating a new branch for our experiment from its original commit.
+It will then reproduce the experiment and create a PR to main.
 We can then, visit the branch to add any additional files or open discussion with our colleagues.
 
 ## Example project pipeline
@@ -250,7 +263,7 @@ In the [dvc.yaml](dvc.yaml), dependencies can be installed as follow:
 
 ```yaml
 step_name:
-  cmd:  
+  cmd:
   - cd lab/processes/prepare_data/
   - pipenv install --system
   - python main.py
@@ -284,14 +297,14 @@ prepend your calls to Python scripts with `PYTHONPATH=lab` as follows:
 `PYTHONPATH=lab python {filename.py}`.
 
 **On Github Actions:**
-To be able to run imports from the `lib` directory on Github Actions, you may add it to PYTHONPATH in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml) as indicated:
+To be able to run imports from the `lib` directory on Github Actions, you may add it to PYTHONPATH in your [github workflows](.github/workflows) as indicated:
 
 ```yaml
 env:
   PYTHONPATH:  ${{ github.workspace }}
 ```
 
-`github.workspace` is the root on the github runner that the repository is cloned to,  which includes `lib`.
+`github.workspace` is the root on the github runner that the repository is cloned to, which includes `lib`.
 This then allows importing library functions directly from the Python script that is being executed on the runner, for instance:
 
 ```python
@@ -402,12 +415,12 @@ Experiment tracking with MLflow enables logging the parameters with which every 
 The experiments are only tracked from the executions on Github Actions.
 In local test runs, mlflow tracking is disabled (through the use of a mock object replacing mlflow in the process code).
 
-The environment variables for connecting to MLflow server are provided in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml):
+The environment variables for connecting to MLflow server are provided in [github workflows](.github/workflows):
 
 ```yaml
 env:
   MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-  MLFLOW_URL: https://<bucket-name>-mlflow.kdl-dell.konstellation.io
+  MLFLOW_URL: https://<project-name>-mlflow.kdl-dell.konstellation.io
 ```
 
 The use of MLflow for experiment tracking is illustrated by the scikit-learn example pipeline in [lab/processes/train_standard_classifiers/main.py](lab/processes/train_standard_classifiers/main.py).
@@ -450,14 +463,15 @@ To compare the executions and vizualise the effect of logged parameters on the l
 you can select the runs you wish to compare in the MLflow UI, select "Compare" and add the desired parameters and metrics to the visualizations provided through the UI.
 Alternatively, the results can also be queried with the MLflow API. For more information on the latter, see [MLflow documentation on querying runs](https://www.mlflow.org/docs/latest/tracking.html#querying-runs-programmatically).
 
-## Docker images for experiments & trainings 
+## Docker images for experiments & trainings
 
-In the `drone.yml` file you can specify the image that is going to be used for each pipeline step.
+In the  [github workflows](.github/workflows) files you can specify the image that is going to be used for each pipeline step.
 
 ```yml
-steps:
-  - name: prepare-data
-    image: konstellation/kdl-py:3.9-1.1.0
+job_name:
+    runs-on: ["igz", "dell", "cpu"]
+    container:
+      image: konstellation/kdl-py:3.9-1.5.0
   ...
 ```
 
@@ -554,6 +568,8 @@ If we do not take this option we must remember that:
 - After any git push, we should run dvc push to update the remote
 - After any git checkout, we must dvc checkout to update artifacts in that revision of code
 
-## Information on dvc
+## Information on dvc aand further reading
 
-For more information on dvc and its usage. Please refer to our (confluence page)[https://intelygenz.atlassian.net/wiki/spaces/K/pages/81362945/Introduction+to+dvc]
+For more information on dvc and its usage,
+as well as any other information on how to use the KDL template,
+please refer to our (confluence page)[https://intelygenz.atlassian.net/wiki/spaces/K/pages/81362945/Introduction+to+dvc]
