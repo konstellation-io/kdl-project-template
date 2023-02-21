@@ -59,6 +59,6 @@ def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_m
     nvmlShutdown()
 
     if not available_devices:
-        raise Exception("No available gpus at the moment")
+        raise Exception("No available cuda devices at the moment")
 
     return available_devices
