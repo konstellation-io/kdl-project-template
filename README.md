@@ -26,7 +26,7 @@
   - [Logging experiment results (MLflow)](#logging-experiment-results-mlflow)
   - [Docker images for experiments \& trainings](#docker-images-for-experiments--trainings)
   - [Optional - installing pre-commit](#optional---installing-pre-commit)
-  - [Information on dvc aand further reading](#information-on-dvc-aand-further-reading)
+  - [Information on dvc and further reading](#information-on-dvc-and-further-reading)
 
 ---
 
@@ -567,7 +567,7 @@ If we do not take this option we must remember that:
 - After any git push, we should run dvc push to update the remote
 - After any git checkout, we must dvc checkout to update artifacts in that revision of code
 
-## Information on dvc aand further reading
+## Information on dvc and further reading
 
 For more information on dvc and its usage,
 as well as any other information on how to use the KDL template,
