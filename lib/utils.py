@@ -35,7 +35,7 @@ def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_m
     Returns:
         list: device indexes of available gpus
     """
-    print("Searching for devices")
+    print("Searching for available cuda devices")
     available_devices = []
     nvmlInit()
     device_count = nvmlDeviceGetCount()
@@ -48,6 +48,8 @@ def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_m
             device_total_memory = device_memory_info.total / 1_000_000_000
             if device_total_memory >= min_memory:
                 available_devices.append(index)
+            else:
+                print(f"Device {index} availabe but insuficient memory {device_total_memory}")
 
     if wait and not available_devices:
         time.sleep(refresh_time)
