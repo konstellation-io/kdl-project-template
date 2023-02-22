@@ -21,13 +21,14 @@ def flatten_list(input_list: list) -> list:
     return [item for sublist in input_list for item in sublist]
 
 
-def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_memory: int = -1) -> list[int]:
-    """get a list of available gpus
+def get_available_cuda_devices(min_memory: int = -1, wait: bool = False, refresh_time: int = 10) -> list[int]:
+    """get a list of available cuda devices
+    with total memory over the min_memory
 
     Args:
-        wait (bool, optional): Wait until a gpu is free. Defaults to False.
-        refresh_time (int, optional): how often to recheck if a gpu is available (only when wait=True). Defaults to 10.
         min_memory (int, optional): minimum required memory for device (in GB). Defaults to -1
+        wait (bool, optional): Whether to wait until a cuda is free. Defaults to False.
+        refresh_time (int, optional): how often to recheck if a cuda is available (only when wait=True). Defaults to 10.
 
     Raises:
         Exception: If no gpu is available
@@ -59,11 +60,11 @@ def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_m
     # Repeat process if wait and no devices have been found
     if wait and not available_devices:
         time.sleep(refresh_time)
-        available_devices = get_available_cuda_devices(wait, refresh_time, min_memory)
+        available_devices = get_available_cuda_devices(min_memory, wait, refresh_time)
     nvmlShutdown()
 
     if not available_devices:
-        raise Exception("No available cuda devices at the moment")
+        raise IndexError("No available cuda devices at the moment")
 
     # Sort devices from lowest memory to highest
     available_devices = [device for _, device in sorted(zip(devices_memory, available_devices))]
