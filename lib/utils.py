@@ -31,10 +31,10 @@ def get_available_cuda_devices(min_memory: int = -1, wait: bool = False, refresh
         refresh_time (int, optional): how often to recheck if a cuda is available (only when wait=True). Defaults to 10.
 
     Raises:
-        Exception: If no gpu is available
+        IndexError: If no cuda device is available
 
     Returns:
-        list: device indexes of available gpus, ordered from lowest memory to highest
+        list: device indexes of available cuda devices, ordered from lowest memory to highest
     """
 
     print("Searching for available cuda devices")

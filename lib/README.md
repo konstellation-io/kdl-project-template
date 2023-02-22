@@ -28,6 +28,7 @@ from lib.utils import get_available_cuda_devices
 devices = get_available_cuda_devices(min_memory=15)
 a = torch.Tensor(5).to(device=devices[0])
 ```
+
 If we do not chose to wait for a device to be available and none is found,
 an exception will be raise.
 You may decide to catch this error to make use of the cpu.
