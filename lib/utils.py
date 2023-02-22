@@ -33,26 +33,30 @@ def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_m
         Exception: If no gpu is available
 
     Returns:
-        list: device indexes of available gpus
+        list: device indexes of available gpus, ordered from lowest memory to highest
     """
+
     print("Searching for available cuda devices")
     available_devices = []
+    devices_memory = []
     nvmlInit()
     device_count = nvmlDeviceGetCount()
 
     for index in range(device_count):
         handle = nvmlDeviceGetHandleByIndex(index)
         processes = nvmlDeviceGetComputeRunningProcesses(handle)
-        # If existing process, the gpu is under use
+        # If process exist, the gpu is under use
         if not processes:
             # Get memory size (in B) and transform to GB
             device_memory_info = nvmlDeviceGetMemoryInfo(handle)
             device_total_memory = device_memory_info.total / 1_000_000_000
             if device_total_memory >= min_memory:
                 available_devices.append(index)
+                devices_memory.append(device_total_memory)
             else:
-                print(f"Device {index} availabe but insuficient memory: {device_total_memory} GB")
+                print(f"Device {index} availabe but insuficient memory: {device_total_memory:.2f} GB")
 
+    # Repeat process if wait and no devices have been found
     if wait and not available_devices:
         time.sleep(refresh_time)
         available_devices = get_available_cuda_devices(wait, refresh_time, min_memory)
@@ -60,5 +64,8 @@ def get_available_cuda_devices(wait: bool = False, refresh_time: int = 10, min_m
 
     if not available_devices:
         raise Exception("No available cuda devices at the moment")
+
+    # Sort devices from lowest memory to highest
+    available_devices = [device for _, device in sorted(zip(devices_memory, available_devices))]
 
     return available_devices
