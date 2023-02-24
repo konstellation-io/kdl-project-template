@@ -21,14 +21,14 @@ def flatten_list(input_list: list) -> list:
     return [item for sublist in input_list for item in sublist]
 
 
-def get_available_cuda_devices(min_memory: int = -1, wait: bool = False, refresh_time: int = 10) -> list[int]:
+def get_available_cuda_devices(min_memory: int = 0, wait: bool = False, refresh_time: int = 10) -> list[int]:
     """get a list of available cuda devices
     with total memory over the min_memory
 
     Args:
-        min_memory (int, optional): minimum required memory for device (in GB). Defaults to -1
-        wait (bool, optional): Whether to wait until a cuda is free. Defaults to False.
-        refresh_time (int, optional): how often to recheck if a cuda is available (only when wait=True). Defaults to 10.
+        min_memory (int, optional): minimum required memory for device (in GB). Defaults to 0
+        wait (bool, optional): Whether to wait until a cuda device  is free. Defaults to False.
+        refresh_time (int, optional): how often to recheck if a cuda device is available (only when wait=True). Defaults to 10.
 
     Raises:
         IndexError: If no cuda device is available

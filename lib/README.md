@@ -30,7 +30,7 @@ a = torch.Tensor(5).to(device=devices[0])
 ```
 
 If we do not chose to wait for a device to be available and none is found,
-an exception will be raise.
+an IndexError exception will be raise.
 You may decide to catch this error to make use of the cpu.
 
 ```python
@@ -40,13 +40,17 @@ from lib.utils import get_available_cuda_devices
 
 try:
     devices = get_available_cuda_devices(min_memory=15)
-    a = torch.Tensor(5).to(device=devices[0])
+    device = devices[0]
 except IndexError:
-    a = torch.Tensor(5).to(device='cpu')
+    device = 'cpu'
+a = torch.Tensor(5).to(device=device)
 ```
 
-IMPORTANT TO NOTE: This function does NOT lock the cuda devices. 
-Meaning, that the function should be called right before the first Tensor/model is sent to device. The same device can then be used for the entire process,
-therefore the function only needs to be called once per execution.
-The longer the time between finding the cude device and sending the first Tensor,
-the more likely someone may use the selected cuda device.
+IMPORTANT TO NOTE:
+- This function does NOT lock the cuda device.
+  Meaning, that the function should be called right before the first Tensor/model is sent to device. 
+- The same device can then be used for the entire process,
+  therefore the function only needs to be called once per execution.
+- The longer the time between finding the cude device and sending the first Tensor,
+  the more likely someone may use the selected cuda device.
+- This function does NOT work with MIG (GPU partitions)
