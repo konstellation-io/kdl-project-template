@@ -7,9 +7,9 @@ Importable library functions (including reusable code for ML, visualization, ...
 This function can be used to get available cuda devices.
 
 The function has three inputs:
-- min_memory (int): minimum memory necessary for our process (in GB). 
+- min_memory (int): minimum memory necessary for our process (in GB).
   If cuda devices are available but do not reach the minimum requirements,
-  a message will be printed for our information 
+  a message will be printed for our information
   but the cuda device will NOT appear on the output.
 - wait (bool): whether to wait for a cuda device to be available.
   If your script MUST be runned on a cuda you may want to set this input to true.
@@ -48,7 +48,7 @@ a = torch.Tensor(5).to(device=device)
 
 IMPORTANT TO NOTE:
 - This function does NOT lock the cuda device.
-  Meaning, that the function should be called right before the first Tensor/model is sent to device. 
+  Meaning, that the function should be called right before the first Tensor/model is sent to device.
 - The same device can then be used for the entire process,
   therefore the function only needs to be called once per execution.
 - The longer the time between finding the cude device and sending the first Tensor,
