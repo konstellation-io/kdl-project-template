@@ -2,6 +2,19 @@
 
 ---
 
+|  Component  | Coverage  |  Bugs  |  Maintainability Rating  |
+| :---------: | :-----:   |  :---: |  :--------------------:  |
+|  KDL Project Template  | [![coverage][coverage-badge]][coverage-link] | [![bugs][bugs-badge]][bugs-link] | [![mr][mr-badge]][mr-link] |
+
+[coverage-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=coverage
+[coverage-link]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=coverage
+
+[bugs-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=bugs
+[bugs-link]: https://sonarcloud.io/component_measures?id=konstellation-io_kdl-project-template&metric=Reliability
+
+[mr-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=sqale_rating
+[mr-link]: https://sonarcloud.io/component_measures?id=konstellation-io_kdl-project-template&metric=Maintainability
+
 ## Table of contents
 
 - [KDL Project Template](#kdl-project-template)
