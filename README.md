@@ -2,9 +2,9 @@
 
 ---
 
-|  Component  | Coverage  |  Bugs  |  Maintainability Rating  |
-| :---------: | :-----:   |  :---: |  :--------------------:  |
-|  KDL Project Template  | [![coverage][coverage-badge]][coverage-link] | [![bugs][bugs-badge]][bugs-link] | [![mr][mr-badge]][mr-link] |
+|      Component       |                   Coverage                   |               Bugs               |   Maintainability Rating   |
+| :------------------: | :------------------------------------------: | :------------------------------: | :------------------------: |
+| KDL Project Template | [![coverage][coverage-badge]][coverage-link] | [![bugs][bugs-badge]][bugs-link] | [![mr][mr-badge]][mr-link] |
 
 [coverage-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=coverage
 [coverage-link]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=coverage
@@ -26,6 +26,7 @@
     - [Initialize dvc (One team member)](#initialize-dvc-one-team-member)
     - [Set local dvc configurations (All team members)](#set-local-dvc-configurations-all-team-members)
     - [Assign your MLFLOW URL and git repo to your workflows (One team member)](#assign-your-mlflow-url-and-git-repo-to-your-workflows-one-team-member)
+    - [Dvc add template data (One team member)](#dvc-add-template-data-one-team-member)
     - [Test installation (Optional)](#test-installation-optional)
     - [First workflow (Optional)](#first-workflow-optional)
     - [Aplying experiment (Optional)](#aplying-experiment-optional)
@@ -192,6 +193,23 @@ Our experiment will be tracked by mlflow when run on Github Actions.
 In order for Github to know where to send the new information we need to modify the environment variable in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml)
 and [create_pr.yml](.github/workflows/create_pr.yml).
 A `TODO` mark has been left to indicate where to make the modification to our project_name's name
+
+### Dvc add template data (One team member)
+
+Included in the template, we can find a sample dataset of the breast cancer research.
+In the template it was added with git for simplicity (as dvc was not initialized).
+However, the correct use of this data is to added with dvc.
+To do so, we first need to untrack it with git by running:
+
+```bash
+git rm -r --cached 'lab/data/raw'
+```
+
+we can then add it to dvc by running
+
+```bash
+dvc add lab/data/raw
+```
 
 ### Test installation (Optional)
 

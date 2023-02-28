@@ -22,8 +22,8 @@ def load_cancer_data(dir_raw: str) -> Tuple[DataFrame, Series]:
     """
     Loads breast cancer data as pandas DataFrame (features) and Series (target)
     """
-    X = pd.read_parquet(Path(dir_raw) / "breast_cancer_data.gzip").to_numpy()
-    y = pd.read_parquet(Path(dir_raw) / "breast_cancer_labels.gzip").squeeze().to_numpy()
+    X = pd.read_parquet(Path(dir_raw) / "breast_cancer_data.gzip")
+    y = pd.read_parquet(Path(dir_raw) / "breast_cancer_labels.gzip").squeeze()
 
     return X, y
 

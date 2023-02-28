@@ -23,6 +23,7 @@ training:
 # and temporary directories that are deleted after testing
 test:
   paths:
+    dir_raw: "lab/data/raw/template_data"
     dir_temp: "temp"
     dir_processed: "temp/data"
     dir_artifacts_standard: "temp/artifacts/standard_classifier"
