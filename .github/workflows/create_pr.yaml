@@ -35,7 +35,7 @@ jobs:
       - name: Dvc setup
         run: |
           TODO: Add git repository
-          git remote add experiments_adress https://oauth2:${{ env.REPO_TOKEN }}<http address of remote repository>
+          git remote add experiments_adress https://oauth2:${{ env.REPO_TOKEN }}@github.com/<route to repository>
 
       - name: Create branch
         run: |

@@ -190,9 +190,13 @@ dvc remote modify --local minio secret_access_key <secret_access_key>
 ### Assign your MLFLOW URL and git repo to your workflows (One team member)
 
 Our experiment will be tracked by mlflow when run on Github Actions.
-In order for Github to know where to send the new information we need to modify the environment variable in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yml)
-and [create_pr.yml](.github/workflows/create_pr.yml).
+In order for Github to know where to send the new information we need to modify the environment variable in [github_actions_pipeline.yml](.github/workflows/github_actions_pipeline.yaml)
+and [create_pr.yml](.github/workflows/create_pr.yaml).
 A `TODO` mark has been left to indicate where to make the modification to our project_name's name
+
+In addition to changing the mlflow route, we must also add the project github's repository.
+we can found this information on the url of github
+we just need to add anything after "github.com"
 
 ### Dvc add template data (One team member)
 
