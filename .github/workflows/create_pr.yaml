@@ -14,7 +14,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   MLFLOW_S3_ENDPOINT_URL: https://minio.kdl-dell.konstellation.io
-  TODO: Change bucket name
+  # TODO: Change bucket name
   MLFLOW_URL: https://<project-name>-mlflow.kdl-dell.konstellation.io
   EXP_NAME: ${{ github.event.inputs.experiment_name }}
 jobs:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Dvc setup
         run: |
-          TODO: Add git repository
+          # TODO: Add git repository
           git remote add experiments_adress https://oauth2:${{ env.REPO_TOKEN }}@github.com/<route to repository>
 
       - name: Create branch
