@@ -26,71 +26,15 @@ def get_available_cuda_devices(min_memory: int = 0, wait: bool = False, refresh_
     with total memory over the min_memory
 
     Args:
-        min_memory (int, optional): minimum memory necessary for our process (in GB).
-                                    If cuda devices are available but do not reach the minimum requirements,
-                                    a message will be printed for our information
-                                    but the cuda device will NOT appear on the output. Defaults to 0
-        wait (bool, optional): whether to wait for a cuda device to be available.
-                               If your script MUST be runned on a cuda you may want to set this input to true.
-                               We must consider that the function will run indefenitely until a device is available.
-                               Therefore our script will be on lock until a cuda device is free. Defaults to False.
-        refresh_time (int, optional): How often to check if a cuda device is available (in seconds).
-                                      This is done to avoid overloading with queries the nvidia-smi.
-                                      This value is only used if wait=True. Defaults to 10.
+        min_memory (int, optional): minimum required memory for device (in GB). Defaults to 0
+        wait (bool, optional): Whether to wait until a cuda device  is free. Defaults to False.
+        refresh_time (int, optional): how often to recheck if a cuda device is available (only when wait=True). Defaults to 10.
 
     Raises:
         IndexError: If no cuda device is available
 
     Returns:
         list: device indexes of available cuda devices, ordered from lowest memory to highest
-
-    Usage:
-        Case 1: Simple usage
-        ```python
-        import torch
-
-        from lib.utils import get_available_cuda_devices
-
-        devices = get_available_cuda_devices()
-        a = torch.Tensor(5).to(device=devices[0])
-        ```
-        Case 2: No device found control
-
-        If we do not chose to wait for a device to be available and none is found,
-        an IndexError exception will be raise.
-        You may decide to catch this error to make use of the cpu.
-
-        ```python
-        import torch
-
-        from lib.utils import get_available_cuda_devices
-
-        try:
-            devices = get_available_cuda_devices(min_memory=15)
-            device = devices[0]
-        except IndexError:
-            device = 'cpu'
-        a = torch.Tensor(5).to(device=device)
-        ```
-        Case 3:
-        Always wait until a dvice is available.
-        ```python
-        import torch
-
-        from lib.utils import get_available_cuda_devices
-
-        devices = get_available_cuda_devices(min_memory=15, wait=True)
-        device = devices[0]
-        a = torch.Tensor(5).to(device=device)
-        ```
-    IMPORTANT TO NOTE:
-        - This function does NOT lock the cuda device.
-          Meaning, that the function should be called right before the first Tensor/model is sent to device.
-        - The same device can then be used for the entire process,
-          therefore the function only needs to be called once per execution.
-        - The longer the time between finding the cude device and sending the first Tensor,
-          the more likely someone may use the selected cuda device.
-        - This function does NOT work with MIG (GPU partitions)
     """
 
     print("Searching for available cuda devices")
