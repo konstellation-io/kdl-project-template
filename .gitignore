@@ -1,3 +1,12 @@
+###########################
+##### IMPORTANT NOTE: #####
+###########################
+# If you need to track a file that is ignored by this template,
+# you can unignore it by placing it at the bottom of this file
+# so it overrides this template behavior, there's no need to find
+# and delete it from the list. Then, add an exclamation mark (!) at the
+# beginning of the line.
+
 # Python
 __pycache__
 
