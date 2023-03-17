@@ -1,0 +1,21 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v4.4.0"
+    hooks:
+      - id: check-added-large-files
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: no-commit-to-branch
+        args:
+          - --branch=main
+
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: "v8.15.2"
+    hooks:
+      - id: gitleaks
+        args:
+          - hook-config=--config .gitleaks.toml
