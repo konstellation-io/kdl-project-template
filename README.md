@@ -156,7 +156,7 @@ To **launch the execution** of this pipeline on Drone runners, push a tag contai
 
 The **results of executions** are stored in MLflow. In the example of training traditional ML models, we are only tracking one parameter (the name of the classifier)and one metric (the obtained validation accuracy). In the PyTorch neural network training example, we are tracking the same metric (validation accuracy) for comparisons, but a different set of hyperparameters, such as learning rate, batch size, number of epochs etc. In a real-world project, you are likely to be tracking many more parameters and metrics of interest.
 
-The connection to MLflow to log these parameters and metrics is established via the code in the [main.py](lab/processes/train_standard_classifiers/main.py) and with the environment variables in [.drone.yml](.drone.yml). For more information on MLflow tracking, see the section "Logging experiment results (MLflow)" below. To see the tracked experiments, visit the MLflow tool UI.
+The connection to MLflow to log these parameters and metrics is established via the code in [main.py](lab/processes/train_standard_classifiers/main.py) and with the environment variables in [.drone.yml](.drone.yml). For more information on MLflow tracking, see the section "Logging experiment results (MLflow)" below. To see the tracked experiments, visit the MLflow tool UI.
 
 ### Handling Process Dependencies
 
