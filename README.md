@@ -219,7 +219,7 @@ To enable full traceability and reproducibility, all executions that generate re
 This way, any past execution can always be traced to the exact version of the code that was run (`VIEW SOURCE </>` in the UI of the Drone run)
 and the runs can be reproduced with a click of the button in the UI of the Drone run (`RESTART`).
 
-The event that launches a pipeline execution is defined by the trigger specified in .drone.yml. An example is shown below:
+The event that launches a pipeline execution is defined by the trigger specified in [.drone.yml](.drone.yml). An example is shown below:
 
 ```yaml
 trigger:
