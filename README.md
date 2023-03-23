@@ -238,7 +238,7 @@ Note: If using an external repository (e.g. hosted on Github), a delay in synchr
 
 ### Docker images for experiments & trainings
 
-In the `drone.yml` file you can specify the image that to be used for each pipeline step.
+In the `drone.yml` file you can specify the image to be used for each pipeline step.
 
 ```yml
 steps:
