@@ -214,7 +214,7 @@ To see a working example, refer to the existing `application-examples` pipeline 
 
 ## Launching experiment runs (Drone)
 
-To enable full tracability and reproducibility, all executions that generate results or artifacts (e.g. processed datasets, trained models, validation metrics, plots of model validation, etc.) are run on Drone runners instead of the user's Jupyter or Vscode tools.
+To enable full traceability and reproducibility, all executions that generate results or artifacts (e.g. processed datasets, trained models, validation metrics, plots of model validation, etc.) are run on Drone runners instead of the user's Jupyter or Vscode tools.
 
 This way, any past execution can always be traced to the exact version of the code that was run (`VIEW SOURCE </>` in the UI of the Drone run)
 and the runs can be reproduced with a click of the button in the UI of the Drone run (`RESTART`).
