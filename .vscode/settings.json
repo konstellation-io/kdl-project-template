@@ -47,5 +47,6 @@
     },
     "terminal.integrated.env.linux": {
         "PYTHONPATH": "${workspaceFolder}"
-    }
+    },
+    "jupyter.notebookFileRoot": "${workspaceFolder}"
 }
