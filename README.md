@@ -210,7 +210,7 @@ environment:
 from lib.viz import plot_confusion_matrix
 ```
 
-To see a working example, refer to the existing `application-examples` pipeline defined in .drone.yml (the PyTorch example pipeline uses library imports in `processes/pytorch_example/main.py`).
+To see a working example, refer to the existing `application-examples` pipeline defined in [.drone.yml](.drone.yml) (the PyTorch example pipeline uses library imports in `processes/pytorch_example/main.py`).
 
 ## Launching experiment runs (Drone)
 
