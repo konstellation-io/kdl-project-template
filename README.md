@@ -82,7 +82,7 @@ The project repository has the following directory structure:
 ├── sonar-project.properties
 ```
 
-The `processes` subdirectory contains as its subdirectories the various separate processes (`prepare_data`, etc.), which can be tought of as nodes of an analysis graph. Each of these processes contains:
+The `processes` subdirectory contains separate processes (`prepare_data`, etc.), which can be considered nodes of an analysis graph. Each of these processes contains the following:
 
 - `main.py`, a clearly identifiable main script for running on CI/CD (Drone)
 - `{process}.py`, containing importable functions and classes specific to that process,
