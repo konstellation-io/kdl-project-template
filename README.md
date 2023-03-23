@@ -343,7 +343,7 @@ Unlike the command line option, the UI option also permits the use of the intera
 
 ### Data for testing
 
-Integration tests (and some unit tests) require the existence of a dataset to be able to run. This temporary dataset is provided to such tests
+Integration tests (and some unit tests) require the existence of a dataset to be able to run. This temporary dataset is provided for such tests
 through the use of a test fixture defined in `conftest.py`, and is eliminated by the same fixture after the test is executed. The fixture is passed to any test as a function argument, as seen in the following example (from KDL Project Template):
 
 ```python
