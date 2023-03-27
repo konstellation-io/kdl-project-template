@@ -32,8 +32,9 @@
     - [Data for testing](#data-for-testing)
   - [Optional - pre-commit](#optional---pre-commit)
 - [Project creation](#project-creation)
-  - [Project creation in GitHub](#project-creation-github)
-  - [Project creation in GitLab](#project-creation-gitlab)
+  - [Project creation in GitHub](#project-creation-in-github)
+  - [Project creation in GitLab](#project-creation-in-gitlab)
+  - [Project setup](#project-setup)
 
 ---
 
@@ -481,7 +482,7 @@ Finally, you also can completely avoid using pre-commit by adding the `--no-veri
 ## Project Creation
 Here we define the creation of a new KDL project on different remote repositories.
 
-### Project creation on GitHub
+### Project creation in GitHub
 Step by step guide to create a new KDL project on GitHub:
 
 1. Create a GitHub repository from the [template project](https://github.com/konstellation-io/kdl-project-template)
@@ -502,11 +503,17 @@ Step by step guide to create a new KDL project on GitHub:
     - If the project is hosted inside an organization, you will need to allow the access of the SSH key to the organization by clicking on the `Configure SSO` option, and login into the organization.
 
 
-### Project Creation on GitLab
+### Project Creation in GitLab
 For GitLab the process is mostly the same, but you need to do some extra steps.
 
 1. First clone the [template project](https://github.com/konstellation-io/kdl-project-template) locally, and rename it.
 2. When renamed, add the GitLab remote repository to the git local repository and push all the changes.
+    ```bash
+    git remote add <remote_name> <remote_url>
+    git add .
+    git commit -m "Initial commit"
+    git push <remote_name> <branch_name>
+    ```
 3. Onve we have our renamed project in GitLab, we can login to Konstellation Lab and create a new project
   - Give the project a name and a description
   - Enter the GitLab project url, and your username
