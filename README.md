@@ -31,6 +31,9 @@
     - [Running tests from Vscode UI](#running-tests-from-vscode-ui)
     - [Data for testing](#data-for-testing)
   - [Optional - pre-commit](#optional---pre-commit)
+- [Project creation](#project-creation)
+  - [Project creation in GitHub](#project-creation-github)
+  - [Project creation in GitLab](#project-creation-gitlab)
 
 ---
 
@@ -473,3 +476,54 @@ Fingerprint: .nada:aws-access-token:1
 Check these links for a complete list of the [configured](.pre-commit-config.yaml) and [available](https://pre-commit.com/hooks.html) pre-commit hooks, some of which we make up a common-sense baseline and others that, depending on your project's nature, could make sense to add.
 
 Finally, you also can completely avoid using pre-commit by adding the `--no-verify` flag to your commit command. This will skip all pre-commit checks and commit your code as usual. Also, there could be some situations where you would desire to apply pre-commit rules only to a portion of your code. For example, say you want to run pre-commit on your code but don't apply the changes made to a specific file. To achieve this behavior, you can run pre-commit and let it modify your files, which will be removed from Git's staging area. Then, `git add` those files whose change you want to commit, and `git checkout <filename>` the ones whose modification you wish to override. Then, create the commit using `--no-verify`, as explained above.
+
+
+## Project Creation
+Here we define the creation of a new KDL project on different remote repositories.
+
+### Project creation on GitHub
+Step by step guide to create a new KDL project on GitHub:
+
+1. Create a GitHub repository from the [template project](https://github.com/konstellation-io/kdl-project-template)
+2. Login to Konstellation Lab and create a new project
+  - Give the project a name and a description
+  - Enter the GitHub project url, and your username
+  - To generate a token go to [`settings -> developer settings -> Personal Access Tokens -> Tokens (classic)`](https://github.com/settings/tokens), and click on `generate new token (classic)`
+    - Add then next `scopes`:
+      - repo
+      - workflow
+      - gist
+      - notifications
+      - audit_logs
+  - You should be able to finish the configuration and create the project now.
+3. Once the project is created, you will need to make it accessible through VSCode, for this you will need to...
+  > This step has to be done just once for each GitHub user used, as all the projects will share configured the SSH key.
+  - Copy the SSH key from your profile on the top-right corner of the Konstellation Lab website, under `User settings`, and paste it to your GitHub account at [`settings -> SSH & GPG keys`](https://github.com/settings/keys), selecting the `New SSH key`option.
+    - If the project is hosted inside an organization, you will need to allow the access of the SSH key to the organization by clicking on the `Configure SSO` option, and login into the organization.
+
+
+### Project Creation on GitLab
+For GitLab the process is mostly the same, but you need to do some extra steps.
+
+1. First clone the [template project](https://github.com/konstellation-io/kdl-project-template) locally, and rename it.
+2. When renamed, add the GitLab remote repository to the git local repository and push all the changes.
+3. Onve we have our renamed project in GitLab, we can login to Konstellation Lab and create a new project
+  - Give the project a name and a description
+  - Enter the GitLab project url, and your username
+  - To generate a token go to [`settings -> Access Tokens`](https://gitlab.intelygenz.com/-/profile/personal_access_tokens), and click on `create personal access token`
+    - Add then next `scopes`:
+      - read_repository
+      - write_repository
+  - You should be able to finish the configuration and create the project now.
+3. Once the project is created, you will need to make it accessible through VSCode, for this you will need to...
+  > This step has to be done just once for each GitLab user used, as all the projects will share configured the SSH key.
+  - Copy the SSH key from your profile on the top-right corner of the Konstellation Lab website, under `User settings`, and paste it to your GitHub account at [`settings -> SSH keys`](https://gitlab.intelygenz.com/-/profile/keys), selecting the `Add key`option.
+
+
+### Project setup
+Once the project is created ing GitHub or GitLab, we need to modify some files to setup the project correctly.
+To do so execute the next command from the root of the project, and follow the instructions.
+
+```bash
+make setup_project
+```
