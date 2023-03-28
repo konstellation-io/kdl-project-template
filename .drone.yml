@@ -21,7 +21,7 @@ trigger:
     - refs/tags/run-example-*
 
 environment:
-  PYTHONPATH: /drone/src/lab
+  PYTHONPATH: /drone/src
   PATH_CONFIG: /drone/src/lab/processes/config.ini
   MINIO_DATA_FOLDER: /shared-storage/project-template/data
   MLFLOW_URL: http://project-template-mlflow:5000
@@ -77,4 +77,4 @@ steps:
 volumes:
   - name: shared-storage
     claim:
-      name: received-data-claim
+      name: kdl-received-data-claim
