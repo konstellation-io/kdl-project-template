@@ -63,14 +63,16 @@ def train_classifiers(
     """
     # Unpack config:
     random_seed = int(config["training"]["random_seed"])
+    workspace_dir = Path(config["paths"]["workspace_dir"])
     dir_processed = config["paths"]["dir_processed"]
     dir_artifacts = Path(config["paths"]["artifacts_temp"])
-    filepath_conf_matrix = dir_artifacts / "confusion_matrix.png"
+    full_dir_artifacts = workspace_dir / dir_artifacts
+    filepath_conf_matrix = full_dir_artifacts / "confusion_matrix.png"
     mlflow_experiment = config["mlflow"]["mlflow_experiment"]
 
     # Prepare before run
     np.random.seed(random_seed)
-    dir_artifacts.mkdir(exist_ok=True)
+    full_dir_artifacts.mkdir(exist_ok=True)
     mlflow.set_tracking_uri(mlflow_url)
     mlflow.set_experiment(mlflow_experiment)
 
@@ -100,6 +102,6 @@ def train_classifiers(
                     savepath=filepath_conf_matrix,
                 )
 
-                mlflow.log_artifacts(dir_artifacts)
+                mlflow.log_artifacts(full_dir_artifacts)
                 mlflow.log_params({"classifier": model_name})
                 mlflow.log_metrics({"val_acc": val_accuracy})
