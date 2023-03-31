@@ -6,14 +6,14 @@
 | :------------------: | :------------------------------------------: | :------------------------------: | :------------------------: |
 | KDL Project Template | [![coverage][coverage-badge]][coverage-link] | [![bugs][bugs-badge]][bugs-link] | [![mr][mr-badge]][mr-link] |
 
-[coverage-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=coverage
-[coverage-link]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=coverage
+[coverage-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_alejandro-test&metric=coverage
+[coverage-link]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_alejandro-test&metric=coverage
 
-[bugs-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=bugs
-[bugs-link]: https://sonarcloud.io/component_measures?id=konstellation-io_kdl-project-template&metric=Reliability
+[bugs-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_alejandro-test&metric=bugs
+[bugs-link]: https://sonarcloud.io/component_measures?id=konstellation-io_alejandro-test&metric=Reliability
 
-[mr-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_kdl-project-template&metric=sqale_rating
-[mr-link]: https://sonarcloud.io/component_measures?id=konstellation-io_kdl-project-template&metric=Maintainability
+[mr-badge]: https://sonarcloud.io/api/project_badges/measure?project=konstellation-io_alejandro-test&metric=sqale_rating
+[mr-link]: https://sonarcloud.io/component_measures?id=konstellation-io_alejandro-test&metric=Maintainability
 
 ## Table of contents
 

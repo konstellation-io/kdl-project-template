@@ -21,55 +21,52 @@ trigger:
     - refs/tags/run-example-*
 
 environment:
-  PYTHONPATH: /drone/src/lab
+  PYTHONPATH: /drone/src
   PATH_CONFIG: /drone/src/lab/processes/config.ini
-  MINIO_DATA_FOLDER: /shared-storage/project-template/data
-  MLFLOW_URL: http://project-template-mlflow:5000
+  MINIO_DATA_FOLDER: /shared-storage/alejandro-test/data
+  MLFLOW_URL: http://alejandro-test-mlflow:5000
   MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
   USER: ${DRONE_COMMIT_AUTHOR}
 
 steps:
   - name: prepare-data
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.4.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - cd lab/processes/prepare_data/
-      - pipenv install --system
-      - python main.py
+      - pipenv sync --system
+      - python lab/processes/prepare_data/main.py
     volumes:
       - name: shared-storage
         path: /shared-storage
 
   - name: train-standard-classifiers
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.4.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - cd lab/processes/train_standard_classifiers/
-      - pipenv install --system
-      - python main.py
+      - pipenv sync --system
+      - python lab/processes/train_standard_classifiers/main.py
     volumes:
       - name: shared-storage
         path: /shared-storage
 
   - name: train-pytorch-neural-net
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.4.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
       AWS_SECRET_ACCESS_KEY:
         from_secret: minio-secret
     commands:
-      - cd lab/processes/train_dnn_pytorch/
-      - pipenv install --system
-      - python main.py
+      - pipenv sync --system
+      - python lab/processes/train_dnn_pytorch/main.py
     volumes:
       - name: shared-storage
         path: /shared-storage
