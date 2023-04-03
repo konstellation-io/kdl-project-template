@@ -30,7 +30,7 @@ environment:
 
 steps:
   - name: prepare-data
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.5.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
@@ -45,7 +45,7 @@ steps:
         path: /shared-storage
 
   - name: train-standard-classifiers
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.5.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
@@ -60,7 +60,7 @@ steps:
         path: /shared-storage
 
   - name: train-pytorch-neural-net
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.5.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
