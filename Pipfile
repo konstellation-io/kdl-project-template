@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 boto3 = "1.24.59"
-dvc = {extras = ["s3"], version = "==2.37.0"}
 matplotlib = "==3.6.2"
 mlflow = "==2.2.1"
 numpy = "==1.24.1"
