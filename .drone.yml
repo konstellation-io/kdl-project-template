@@ -21,16 +21,16 @@ trigger:
     - refs/tags/run-example-*
 
 environment:
-  PYTHONPATH: /drone/src/lab
+  PYTHONPATH: /drone/src
   PATH_CONFIG: /drone/src/lab/processes/config.ini
-  MINIO_DATA_FOLDER: /shared-storage/project-template/data
-  MLFLOW_URL: http://project-template-mlflow:5000
+  MINIO_DATA_FOLDER: /shared-storage/kdl-kdl-/data
+  MLFLOW_URL: http://kdl-kdl--mlflow:5000
   MLFLOW_S3_ENDPOINT_URL: http://kdl-server-minio:9000
   USER: ${DRONE_COMMIT_AUTHOR}
 
 steps:
   - name: prepare-data
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.5.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
@@ -45,7 +45,7 @@ steps:
         path: /shared-storage
 
   - name: train-standard-classifiers
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.5.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
@@ -60,7 +60,7 @@ steps:
         path: /shared-storage
 
   - name: train-pytorch-neural-net
-    image: konstellation/kdl-py:3.9-1.1.0
+    image: konstellation/kdl-py:3.9-1.5.0
     environment:
       AWS_ACCESS_KEY_ID:
         from_secret: minio-key-id
@@ -77,4 +77,4 @@ steps:
 volumes:
   - name: shared-storage
     claim:
-      name: received-data-claim
+      name: kdl-kdl-

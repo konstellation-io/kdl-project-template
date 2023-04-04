@@ -82,21 +82,23 @@ def train_densenet(
     n_workers = int(config["training"]["n_workers"])
     epochs = int(config["training"]["epochs"])
     learning_rate = float(config["training"]["lr"])
+    workspace_dir = Path(config["paths"]["workspace_dir"])
     dir_processed = config["paths"]["dir_processed"]
     dir_artifacts = Path(config["paths"]["artifacts_temp"])
-    filepath_conf_matrix = dir_artifacts / config["filenames"]["fname_conf_mat"]
-    filepath_model = dir_artifacts / config["filenames"]["fname_model"]
+    full_dir_artifacts = workspace_dir / dir_artifacts
+    filepath_conf_matrix = full_dir_artifacts / config["filenames"]["fname_conf_mat"]
+    filepath_model = full_dir_artifacts / config["filenames"]["fname_model"]
     filepath_training_history = (
-        dir_artifacts / config["filenames"]["fname_training_history"]
+        full_dir_artifacts / config["filenames"]["fname_training_history"]
     )
     filepath_training_history_csv = (
-        dir_artifacts / config["filenames"]["fname_training_history_csv"]
+        full_dir_artifacts / config["filenames"]["fname_training_history_csv"]
     )
 
     # Prepare before run
     np.random.seed(random_seed)
     torch.manual_seed(random_seed)
-    dir_artifacts.mkdir(exist_ok=True)
+    full_dir_artifacts.mkdir(exist_ok=True)
     mlflow.set_tracking_uri(mlflow_url)
     mlflow.set_experiment(mlflow_experiment)
 
@@ -149,7 +151,7 @@ def train_densenet(
         df_history.to_csv(filepath_training_history_csv)
 
         # Log to MLflow
-        mlflow.log_artifacts(dir_artifacts)
+        mlflow.log_artifacts(full_dir_artifacts)
         mlflow.log_metrics(
             dict(
                 val_loss=val_loss,
