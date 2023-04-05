@@ -6,17 +6,15 @@ SHELL:=/bin/bash
 # Variables
 PROJECT_CONFIG_FILES = lab/processes/config.ini
 TEMPLATE_PROJECT_NAME = kdl-project-template
-DEFAULT = n
 OLD_PROJECT_NAME = $(shell basename $$PWD)
 SECRET_NAME = mlflow-server-secret
-
+DRONE_FILE = .drone.yml
+DRONE_TEMPLATE_PROJECT_NAME = project-template
+SONAR_FILE = sonar-project.properties
 BOLD_GREEN_IN=\033[1;32m
 BOLD_RED_IN=\033[1;31m
 BOLD_YELLOW_IN=\033[1;33m
 STOP=\033[0m
-DRONE_FILE = .drone.yml
-DRONE_TEMPLATE_PROJECT_NAME = project-template
-SONAR_FILE = sonar-project.properties
 
 .ONESHELL:
 setup_project:
@@ -72,7 +70,7 @@ setup_project:
 				echo "\033[33m⚠ Please remember to push the changes to the repository!\033[0m"; \
 			fi
 		fi
-	
+
 # extra warnings
 		echo -e "\n$(BOLD_YELLOW_IN)⚠ Please remember to update the $(SONAR_FILE) file with your project name and key, and rename the project name in the README file!$(STOP)"
 		echo -e "$(BOLD_YELLOW_IN)⚠ Watch out for the Volume Claim name in the Drone file!$(STOP)"
