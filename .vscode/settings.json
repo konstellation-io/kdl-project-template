@@ -48,5 +48,6 @@
     "terminal.integrated.env.linux": {
         "PYTHONPATH": "${workspaceFolder}"
     },
+    "python.pythonPath": ".venv/bin/python",
     "jupyter.notebookFileRoot": "${workspaceFolder}"
 }

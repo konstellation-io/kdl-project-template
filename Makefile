@@ -9,7 +9,6 @@ TEMPLATE_PROJECT_NAME = kdl-project-template
 OLD_PROJECT_NAME = $(shell basename $$PWD)
 SECRET_NAME = mlflow-server-secret
 DRONE_FILE = .drone.yml
-DRONE_TEMPLATE_PROJECT_NAME = project-template
 SONAR_FILE = sonar-project.properties
 BOLD_GREEN_IN=\033[1;32m
 BOLD_RED_IN=\033[1;31m
@@ -42,7 +41,7 @@ setup_project:
 			fi
 
 # and update the URLs in the Drone file
-			sed -si "s/$(DRONE_TEMPLATE_PROJECT_NAME)/$${NEW}/g" $(DRONE_FILE)
+			sed -si "s/$(TEMPLATE_PROJECT_NAME)/$${NEW}/g" $(DRONE_FILE)
 			if [ $$? -eq 0 ]; then \
 				echo -e "$(BOLD_GREEN_IN)✓ All project references where updated to $${NEW} in $(DRONE_FILE)!$(STOP)"; \
 			else \
@@ -63,11 +62,13 @@ setup_project:
 			git add $(PROJECT_CONFIG_FILES) $(DRONE_FILE)
 			git commit -m "Setup project"
 
+			echo ""
+
 			read -p "Do you want to push the changes to the repository? [Y/n]: " PUSH
 			if [ "$${PUSH:-Y}" = "y" ] || [ "$${PUSH:-Y}" = "Y" ]; then \
-				git push && echo "\033[32m✓ Changes have been successfully pushed to the repository!\033[0m"; \
+				git push && echo -e "\n$(BOLD_GREEN_IN)✓ Changes have been successfully pushed to the repository!$(STOP)"; \
 			else \
-				echo "\033[33m⚠ Please remember to push the changes to the repository!\033[0m"; \
+				echo -e "\n$(BOLD_YELLOW_IN)⚠ Please remember to push the changes to the repository!$(STOP)"; \
 			fi
 		fi
 
