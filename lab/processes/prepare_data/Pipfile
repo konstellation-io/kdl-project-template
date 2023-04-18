@@ -7,6 +7,8 @@ name = "pypi"
 torch = "==1.12.1"
 pandas = "==1.4.3"
 sklearn = "==0.0"
+numpy = "==1.24.1"
+pynvml = "==11.5.0"
 
 [dev-packages]
 pylint = "==2.15.0"
