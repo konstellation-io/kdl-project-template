@@ -15,7 +15,6 @@ __pycache__
 *.bundle
 *.csv
 *.joblib
-*.json
 *.kvmodel
 *.npy
 *.pt
@@ -385,7 +384,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib64/
 parts/
 sdist/
 var/
@@ -724,3 +722,6 @@ $RECYCLE.BIN/
 *.msix
 # Windows shortcuts
 *.lnk
+
+# CUSTOM
+!lib/
